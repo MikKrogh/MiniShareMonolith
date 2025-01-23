@@ -1,15 +1,28 @@
 ﻿using MassTransit;
+using PostsModule.Domain;
 namespace PostsModule.Application.Create;
 
 public class CreatePostConsumer : IConsumer<CreatePostCommand>
 {
-	public async Task Consume(ConsumeContext<CreatePostCommand> context)
-	{
+    private readonly IPostsRepository repository;
 
-		var response = new CreatePostResult 
+    public CreatePostConsumer(IPostsRepository repository)
+    {
+        this.repository = repository;
+    }
+    public async Task Consume(ConsumeContext<CreatePostCommand> context)
+	{
+        var post = Post.CreateNew(context.Message.Title, context.Message.CreatorId, context.Message.FactionName);
+        post.SetDescription(context.Message.Description);
+        post.SetPrimaryColour(context.Message.PrimaryColor);
+        post.SetSecondaryColour(context.Message.SecondaryColor);
+        
+        await repository.Save(post);
+
+        var response = new CreatePostResult 
 		{
-			PostId = Guid.NewGuid().ToString()
-		};
+			PostId = post.Id.ToString(),
+        };
 		await context.RespondAsync(response);
 	}
 }

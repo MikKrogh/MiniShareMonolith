@@ -1,29 +1,66 @@
-﻿namespace PostsModule.Domain;
+﻿
+namespace PostsModule.Domain;
 
 public class Post
 {
-	public Guid Id { get; init; } = Guid.NewGuid();
+	public Guid Id { get; private set; } 
 	public string Title { get; private set; } = "";
 	public string? Description { get; private set; }
 	public string CreatorName { get; private set; } = "";
 	public string CreatorId { get; private set; } = "";
-	public Colours PrimaryColour {  get; private set; } = Colours.Unknown;
+	public string FactionName { get; private set; } = "";
+    public string? FigureName { get; private set; }
+    public Colours PrimaryColour {  get; private set; } = Colours.Unknown;
 	public Colours SecondaryColour { get; private set; } = Colours.Unknown;
+	public DateTime CreationDate { get; private set; } = default;
 
-	public Post(string title, string creatorId)
+    private Post(string title, string creatorId, string factionName)
+    {
+        Title = title;
+        CreatorId = creatorId;
+        FactionName = factionName;
+    }
+
+
+    public static Post CreateNew(string title, string creatorId, string factionName)
 	{
-		if (string.IsNullOrEmpty(title) || string.IsNullOrEmpty(creatorId))
-			throw new ArgumentNullException("cant create posts with empty title or creatorId");
-		Title = title;
-		CreatorId = creatorId;
-	}
+		if (string.IsNullOrEmpty(title) || string.IsNullOrEmpty(creatorId) || string.IsNullOrEmpty(factionName)) throw new ArgumentNullException("cant create posts with empty title or creatorId");
 
-	public void SetDescription(string? description)
+		var post = new Post(title, creatorId, factionName) 
+		{
+            Id = Guid.NewGuid(),
+            CreationDate = DateTime.UtcNow
+        };
+        return post;
+    }
+    public void SetId(Guid id)
+    {
+        if (id != Guid.Empty)
+            Id = id;
+    }
+    public void SetId(string id)
+    {
+        if (Guid.TryParse(id, out var result))
+            Id = result;
+    }
+
+    public void SetCreatorName(string creatorName)
+    {
+        if (!string.IsNullOrEmpty(creatorName))
+            CreatorName = creatorName;
+    }
+
+    public void SetTitle(string title)
+    {
+        if (!string.IsNullOrEmpty(title))
+            Title = title;
+    }
+
+    public void SetDescription(string? description)
 	{
 		Description = description;
-	}
-
-	public void SetDisplayName(string displayName)
+	}	
+    public void SetDisplayName(string displayName)
 	{
 		if (!string.IsNullOrEmpty(displayName))		
 			CreatorName = displayName;		
@@ -41,6 +78,13 @@ public class Post
 		Enum.TryParse(colour, true, out result);
 		SecondaryColour = result;
 	}
+	public void SetCreationDate(DateTime creationDate)
+    {
+        if (creationDate != default)
+            CreationDate = creationDate;
+    }
+
+
 }
 
 

@@ -1,25 +1,20 @@
-﻿
-using Microsoft.AspNetCore.Mvc.Testing;
-using PostsModule.Presentation.Endpoints;
+﻿using PostsModule.Presentation.Endpoints;
 using PostsModule.Tests.Helper;
 using System.Net.Http.Json;
 
 namespace PostsModule.Tests;
 
-public class CreatePostsTests : IClassFixture<WebApplicationFactory<Program>>
+public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
 {
-	WebApplicationFactory<Program> _factory;
 	HttpClient _client;
-	public CreatePostsTests(WebApplicationFactory<Program> factory)
+	public CreatePostsTests(PostsWebApplicationFactory factory)
 	{
-		_factory = factory;
 		_client = factory.CreateClient();
 	}
 
 	[Fact]
 	internal async Task WhenCreatePostIsCalledWithValidRequest_ThenSuccessIsReturned()
-	{
-		
+	{		
 		//When
 		var body = PostTestHelper.GetValidDefaultRequest();
 		var response = await _client.PostAsJsonAsync("/Posts", body);

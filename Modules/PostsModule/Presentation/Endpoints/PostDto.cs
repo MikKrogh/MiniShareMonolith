@@ -9,9 +9,9 @@ public record PostDto
 	public string? Description { get; init; } = string.Empty;
 	public string CreatorId { get; init; } = string.Empty ;
 	public string? CreatorName { get; init; } = string.Empty ;
-	public Colours PrimaryColor { get; init; } 
+	public string FactionName { get; init; } = string.Empty;
+    public Colours PrimaryColor { get; init; } 
 	public Colours SecondaryColor { get; init; }
 	public DateTime CreationDate { get; init; }
 	public int Likes { get; init; }
-
 }

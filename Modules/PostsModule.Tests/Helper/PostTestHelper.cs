@@ -1,5 +1,4 @@
-﻿
-using System.Net.Http.Headers;
+﻿using System.Net.Http.Headers;
 using System.Text;
 
 namespace PostsModule.Tests.Helper;
@@ -31,6 +30,7 @@ internal static class PostTestHelper
 	{
 		return new PostsRequestBuilder().Create()
 		.WithTitle("title")
+		.WithFactionName("deathguard")
 		.WithDescription("hello There")
 		.WithMainColor("red")
 		.WithSecondaryColor("blue")

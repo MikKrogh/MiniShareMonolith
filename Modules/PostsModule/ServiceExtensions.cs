@@ -1,18 +1,25 @@
-﻿using MassTransit;
+﻿
+using MassTransit;
+using PostsModule.Domain;
+using PostsModule.Infrastructure;
 namespace PostsModule;
 
 public static class ServiceExtensions
 {
-	public static void AddPostsServiceExtensions(this IServiceCollection serviceCollection)
+	public static void AddPostsServiceExtensions(this IServiceCollection serviceCollection, IConfiguration configuration)
 	{
-		serviceCollection.AddMassTransit(x =>
+        serviceCollection.AddDbContext<PostsContext>();
+		serviceCollection.AddScoped<IPostsRepository, PostsRepository>();
+
+
+        serviceCollection.AddMassTransit(x =>
 		{
 			x.AddConsumers(typeof(ServiceExtensions).Assembly);
-
-			x.UsingInMemory((context, cfg) =>
+            x.UsingInMemory((context, cfg) =>
 			{
 				cfg.ConfigureEndpoints(context);
 			});			
 		});
 	}	
+
 }

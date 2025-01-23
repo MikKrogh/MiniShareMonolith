@@ -12,6 +12,7 @@ internal class Create
 			var command = new CreatePostCommand()
 			{
 				Title = body.Title,
+				FactionName = body.FactionName,
 				Description = body.Description,
 				CreatorId = body.CreatorId,
 				PrimaryColor = body.PrimaryColour,

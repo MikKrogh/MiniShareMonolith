@@ -7,7 +7,7 @@ internal class PostsRequestBuilder
 	{
 		postRequest = new PostRequest
 		{
-			CreatorId = Guid.NewGuid().ToString(),
+			CreatorId ="mikelong",
 		};
 		return this;
 	}
@@ -15,6 +15,11 @@ internal class PostsRequestBuilder
 	public PostsRequestBuilder WithTitle(string title)
 	{
 		postRequest.Title = title;
+		return this;
+	}
+	public PostsRequestBuilder WithFactionName(string faction)
+	{
+		postRequest.FactionName = faction;
 		return this;
 	}
 	public PostsRequestBuilder WithDescription(string description)
