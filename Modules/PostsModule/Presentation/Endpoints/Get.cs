@@ -22,7 +22,6 @@ internal class Get
 				CreatorName = clientResponse.Message.CreatorName,
 				PrimaryColor = clientResponse.Message.PrimaryColour,
 				SecondaryColor = clientResponse.Message.SecondaryColour,
-				CreationDate = clientResponse.Message.CreationDate
 			};
 			return Results.Ok(clientResponse);
 		}

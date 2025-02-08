@@ -8,5 +8,7 @@ public record CreatePostCommand
     public string FactionName { get; init; } = string.Empty;
     public string PrimaryColor { get; init; } = string.Empty;
 	public string SecondaryColor { get; init; } = string.Empty;
+	//public List<IFormFile> Test;
+	public IFormFileCollection Images = new FormFileCollection();
 
 }

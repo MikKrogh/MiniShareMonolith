@@ -1,4 +1,6 @@
-﻿namespace PostsModule.Tests.Helper;
+﻿using Microsoft.AspNetCore.Http;
+
+namespace PostsModule.Tests.Helper;
 
 internal class PostsRequestBuilder
 {
@@ -38,5 +40,23 @@ internal class PostsRequestBuilder
 		return this;
 	}
 
-	public PostRequest Build() => postRequest;
+	public PostsRequestBuilder WithFile(IFormFile file)
+	{
+		if (postRequest.Images is null)
+		{
+			var filesCollection = new FormFileCollection();
+			filesCollection.Add(file);
+			postRequest.Images = filesCollection;
+		}
+		else
+		{
+			var updatedCollection = new FormFileCollection();
+            updatedCollection.AddRange(postRequest.Images);
+			updatedCollection.Add(file);
+			postRequest.Images = updatedCollection;            
+        }
+		return this;
+	}
+
+    public PostRequest Build() => postRequest;
 }

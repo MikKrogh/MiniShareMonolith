@@ -12,6 +12,5 @@ public record PostDto
 	public string FactionName { get; init; } = string.Empty;
     public Colours PrimaryColor { get; init; } 
 	public Colours SecondaryColor { get; init; }
-	public DateTime CreationDate { get; init; }
-	public int Likes { get; init; }
+	public IFormFileCollection? Images { get; init; }
 }

@@ -1,4 +1,6 @@
-﻿namespace PostsModule.Tests.Helper;
+﻿using Microsoft.AspNetCore.Http;
+
+namespace PostsModule.Tests.Helper;
 
 internal class PostRequest
 {
@@ -8,4 +10,5 @@ internal class PostRequest
     public string FactionName { get; set; }
     public string PrimaryColor { get; set; }
     public string SecondaryColor { get; set; }
+    public IFormFileCollection Images { get; set; }
 }

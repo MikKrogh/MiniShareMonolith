@@ -18,11 +18,12 @@ internal class Create
 				PrimaryColor = body.PrimaryColour,
 				SecondaryColor = body.SecondaryColour,
 			};
+
 			var clientResponse = await client.GetResponse<CreatePostResult>(command);
 
 			return Results.Ok(clientResponse.Message);
 		}
-		catch (Exception)
+		catch (Exception ex)
 		{
 			return Results.Problem();
 		}

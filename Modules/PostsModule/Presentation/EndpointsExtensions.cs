@@ -14,7 +14,8 @@ public static class EndpointsExtensions
 			.WithTags("Command")
 			.Produces(200)
 			.Produces(400)
-			.Produces(500);
+			.Produces(500)
+			.DisableAntiforgery(); // should not be disabled?
 
 		api.MapGet("/{postId}", Get.Configure).WithDescription("This endpoint returns a jsonbody for a post")
 			.WithSummary("Gets a single post")
