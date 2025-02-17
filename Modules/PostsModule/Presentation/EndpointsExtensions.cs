@@ -8,7 +8,7 @@ public static class EndpointsExtensions
 	{
 		var api = routeBuilder.MapGroup("/Posts");
 
-		api.MapPost(string.Empty, Create.Configure)
+		api.MapPost(string.Empty, Create.Process)
 			.WithDescription("This endpoint expects a jsonbody with a post and images")
 			.WithSummary("create a post with content")
 			.WithTags("Command")
@@ -17,11 +17,10 @@ public static class EndpointsExtensions
 			.Produces(500)
 			.DisableAntiforgery(); // should not be disabled?
 
-		api.MapGet("/{postId}", Get.Configure).WithDescription("This endpoint returns a jsonbody for a post")
+		api.MapGet("/{postId}", Get.Process).WithDescription("This endpoint returns a jsonbody for a post")
 			.WithSummary("Gets a single post")
 			.WithTags("Query")
 			.Produces<PostDto>(200)
 			.Produces(500);
-
 	}
 }

@@ -1,6 +1,5 @@
 ﻿namespace PostsModule.Application.Get;
 
-public class GetPostCommand
+public record GetPostCommand(string PostId)
 {
-	public string PostId { get; init; } = string.Empty;
 }

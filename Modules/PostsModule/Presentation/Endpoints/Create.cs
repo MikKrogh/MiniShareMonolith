@@ -5,7 +5,7 @@ using PostsModule.Application.Create;
 namespace PostsModule.Presentation.Endpoints;
 internal class Create
 {
-	internal static async Task<IResult> Configure([FromServices] IRequestClient<CreatePostCommand> client, [FromBody] CreateBody body)
+	internal static async Task<IResult> Process([FromServices] IRequestClient<CreatePostCommand> client, [FromBody] CreateBody body)
 	{
 		try
 		{

@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using MassTransit;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using PostsModule.Domain;
 using PostsModule.Infrastructure;
@@ -18,8 +20,21 @@ public class PostsWebApplicationFactory: WebApplicationFactory<Program>
  
         builder.ConfigureServices(services =>
         {
+            //services.AddMassTransitTestHarness();
             ConfigueTestDependencies(services);
             InitialDatabaseSetup(services);
+
+            services.AddMassTransitTestHarness(cfg =>
+            {
+                cfg.AddConsumers(typeof(ServiceExtensions).Assembly);
+                cfg.SetInMemorySagaRepositoryProvider();
+                cfg.UsingInMemory((context, config) =>
+                {
+                    config.ConfigureEndpoints(context);
+                });
+            });
+
+
         });
     }
 

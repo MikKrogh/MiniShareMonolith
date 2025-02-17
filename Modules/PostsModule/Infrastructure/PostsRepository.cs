@@ -22,7 +22,7 @@ internal class PostsRepository : IPostsRepository
 
     public async Task<Post?> Get(string id)
     {
-         var entity = await context.FindAsync<PostEntity>(id);
+         var entity = await context.FindAsync<PostEntity>(id);       
         if (entity == null) return null;
 
         var post =  Post.CreateNew(entity.Title, entity.CreatorId, entity.Faction);
@@ -45,6 +45,7 @@ internal class PostsRepository : IPostsRepository
         var tableEntity = new PostEntity
         {
             Id = post.Id.ToString(),
+            Title = post.Title,
             Description = post.Description,
             CreatorId = creator.Id,
             Faction = post.FactionName,

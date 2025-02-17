@@ -12,13 +12,13 @@ public static class ServiceExtensions
 		serviceCollection.AddScoped<IPostsRepository, PostsRepository>();
 
 
-        serviceCollection.AddMassTransit(x =>
+		serviceCollection.AddMassTransit(x =>
 		{
 			x.AddConsumers(typeof(ServiceExtensions).Assembly);
-            x.UsingInMemory((context, cfg) =>
+			x.UsingInMemory((context, cfg) =>
 			{
 				cfg.ConfigureEndpoints(context);
-			});			
+			});
 		});
 	}	
 

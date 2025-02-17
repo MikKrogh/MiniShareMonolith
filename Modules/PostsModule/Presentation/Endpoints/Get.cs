@@ -6,11 +6,11 @@ namespace PostsModule.Presentation.Endpoints;
 
 internal class Get
 {
-	internal static async Task<IResult> Configure([FromServices] IRequestClient<GetPostCommand> client, [FromRoute]string postId) 
+	internal static async Task<IResult> Process([FromServices] IRequestClient<GetPostCommand> client, [FromRoute]string postId) 
 	{
 		try
 		{
-			var command = new GetPostCommand();
+			var command = new GetPostCommand(postId);
 			var clientResponse = await client.GetResponse<GetPostResult>(command);
 
 			var dto = new PostDto
