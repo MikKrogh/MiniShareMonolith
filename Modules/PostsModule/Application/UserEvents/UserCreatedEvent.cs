@@ -12,7 +12,7 @@ namespace PostsModule.Application.UserEvents
     {
         public Task Consume(ConsumeContext<UserCreatedEvent> context)
         {
-            throw new NotImplementedException();
+            return Task.CompletedTask;
         }
     }
 }

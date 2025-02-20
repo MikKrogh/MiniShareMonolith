@@ -1,9 +1,9 @@
 ﻿using MassTransit;
+using MassTransit.Testing;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using PostsModule.Domain;
 using PostsModule.Infrastructure;
@@ -14,6 +14,7 @@ namespace PostsModule.Tests;
 public class PostsWebApplicationFactory: WebApplicationFactory<Program>
 {
     public FakeImageBlobStorage FakeImageBlobStorage { get; private set; }
+    public MessageBrokerTestFacade MessageBrokerTestFacade { get; private set; }
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Test");
@@ -24,6 +25,7 @@ public class PostsWebApplicationFactory: WebApplicationFactory<Program>
             ConfigueTestDependencies(services);
             InitialDatabaseSetup(services);
 
+
             services.AddMassTransitTestHarness(cfg =>
             {
                 cfg.AddConsumers(typeof(ServiceExtensions).Assembly);
@@ -31,12 +33,18 @@ public class PostsWebApplicationFactory: WebApplicationFactory<Program>
                 cfg.UsingInMemory((context, config) =>
                 {
                     config.ConfigureEndpoints(context);
-                });
+                });                
             });
-
+            services.AddSingleton<MessageBrokerTestFacade>(sp =>
+            {
+                var ibus = sp.GetRequiredService<IBus>();
+                var harness = sp.GetRequiredService<ITestHarness>();
+                return new MessageBrokerTestFacade(ibus, harness);
+            });
 
         });
     }
+
 
     private void ConfigueTestDependencies(IServiceCollection services)
     {

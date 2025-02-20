@@ -11,29 +11,38 @@ namespace PostsModule.Tests.UserEventHandlerTests;
 
 public class UserCreatedEventHandlerTests : IClassFixture<PostsWebApplicationFactory>
 {
+    private readonly MessageBrokerTestFacade messageBroker;
     private readonly PostsWebApplicationFactory _factory;
     private readonly HttpClient _client;
     public UserCreatedEventHandlerTests(PostsWebApplicationFactory factory)
     {
         _factory = factory;
         _client = factory.CreateClient();
+        messageBroker = factory.MessageBrokerTestFacade;
     }
 
     //WhenNewUserIsCreated_ThenUserIsSaved
     [Fact]
     public async Task WhenNewUserIsCreated_ThenUserIsSaved()
     {
-        var testHarness = _factory.Services.GetTestHarness();
-        var bus = _factory.Services.GetService<IBus>(); 
-        var harness = _factory.Services.GetService<ITestHarness>();
 
+        var facade = _factory.Services.GetRequiredService<MessageBrokerTestFacade>();
 
         // Publish a test message
-        await bus.Publish(new UserCreatedEvent { UserId = Guid.NewGuid(), UserName = "mike hawn" });
+        await facade.Publish(new UserCreatedEvent { UserId = Guid.NewGuid(), UserName = "mike hawk" });
+        await facade.Publish(new UserCreatedEvent { UserId = Guid.NewGuid(), UserName = "Jill hawn" });
 
-        //// Ensure the consumer received the message
-        Assert.True(await harness.Consumed.Any<UserCreatedEvent>());
-        Assert.True(await harness.Published.Any<Fault<UserCreatedEvent>>(), "No fault message was published");
+        
+        var biggerPredicate  = new Predicate<UserCreatedEvent>(x =>
+            !string.IsNullOrEmpty(x.UserId.ToString()) &&
+            x.UserName == "mike hawk"
+        );
+
+
+
+        await facade.AssertExactlyOneMessageMatch(biggerPredicate);
+
+
 
     }
     //GivenUserExistsWithOriginalName_WhenUserCreatedEventIsRecievedForExistingUserWithNewName_ThenOriginalNameIsSaved
