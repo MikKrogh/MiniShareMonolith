@@ -21,7 +21,6 @@ public class PostsWebApplicationFactory: WebApplicationFactory<Program>
  
         builder.ConfigureServices(services =>
         {
-            //services.AddMassTransitTestHarness();
             ConfigueTestDependencies(services);
             InitialDatabaseSetup(services);
 

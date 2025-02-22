@@ -5,11 +5,11 @@ namespace PostsModule.Tests.Helper;
 internal class PostsRequestBuilder
 {
 	private PostRequest postRequest;
-	public PostsRequestBuilder Create()
+	public PostsRequestBuilder Create(Guid? userID = null)
 	{
 		postRequest = new PostRequest
 		{
-			CreatorId ="mikelong",
+			CreatorId = (userID == null) ? Guid.NewGuid().ToString() : userID.ToString(),
 		};
 		return this;
 	}

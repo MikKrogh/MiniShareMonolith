@@ -10,6 +10,7 @@ public static class ServiceExtensions
 	{
         serviceCollection.AddDbContext<PostsContext>();
 		serviceCollection.AddScoped<IPostsRepository, PostsRepository>();
+		serviceCollection.AddScoped<IUserRepository, UserRepository>();
 
 
 		serviceCollection.AddMassTransit(x =>

@@ -16,20 +16,32 @@ public class MessageBrokerTestFacade
 
     public async Task Publish<T>(T message) where T : class => await _bus.Publish(message);
 
-    public async Task AssertExactlyOneMessageMatch<MessageType>(Predicate<MessageType> predicate) where MessageType : class
+    public async Task<bool> AssertExactlyOneMessageMatch<MessageType>(Predicate<MessageType> predicate) where MessageType : class
     {
         FilterDelegate<IPublishedMessage<MessageType>> filter = (msg) => msg.MessageType == typeof(MessageType);
-        var messagesMatchingMessageType = _harness.Published.SelectAsync(filter);
+        var messagesMatchingMessageType = _harness.Published.Select(filter);
 
         int foundMatches = 0;
-        await foreach (var message in messagesMatchingMessageType)
+         foreach (var message in messagesMatchingMessageType)
         {
             bool hasFailures = predicate.Invoke(message.MessageObject as MessageType);
             if (!hasFailures) 
                 foundMatches++;
             
         }
-        int one = 1;
-        Assert.Equal(foundMatches, one);
+        
+        return foundMatches == 1 ? true : false;
+    }
+
+    public async Task WaitUntillEventHasBeenConsumed<T>() where T : class
+    {
+        var t =  _harness.Consumed.SelectAsync<T>();
+        await foreach (var message in t) 
+        {
+            if(message.MessageType == typeof(T))
+            {
+                return;
+            }
+        }
     }
 }

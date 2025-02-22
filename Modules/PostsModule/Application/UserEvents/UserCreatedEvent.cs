@@ -1,18 +1,36 @@
 ﻿using MassTransit;
+using PostsModule.Domain;
 
-namespace PostsModule.Application.UserEvents
+namespace PostsModule.Application.UserEvents;
+
+public class UserCreatedEvent(Guid userId, string userName)
 {
-    public class UserCreatedEvent
+    public string UserName { get;  } = userName;
+    public Guid UserId { get; } = userId;
+}
+
+public class UserCreatedEventHandler : IConsumer<UserCreatedEvent>
+{
+    private readonly IUserRepository _userRepository;
+    public UserCreatedEventHandler(IUserRepository userRepository)
     {
-        public string UserName { get; init; }
-        public Guid UserId { get; init; }
+        _userRepository = userRepository;
     }
 
-    public class UserCreatedEventHandler : IConsumer<UserCreatedEvent>
+
+    public async Task Consume(ConsumeContext<UserCreatedEvent> context)
     {
-        public Task Consume(ConsumeContext<UserCreatedEvent> context)
+        try
         {
-            return Task.CompletedTask;
+            var user = User.Create(context.Message.UserId);
+            user.SetName(context.Message.UserName);
+            await _userRepository.Create(user);
+        }
+        catch (Exception e)
+        {
+
+            throw;
         }
     }
 }
+

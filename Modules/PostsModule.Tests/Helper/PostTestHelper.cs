@@ -20,9 +20,9 @@ internal static class PostTestHelper
         return formFile;
     }
 
-    public static PostRequest GetValidDefaultRequest()
+    public static PostRequest GetValidDefaultRequest(Guid? userId = null)
 	{
-		return new PostsRequestBuilder().Create()
+		return new PostsRequestBuilder().Create(userId)
 		.WithTitle("title")
 		.WithFactionName("deathguard")
 		.WithDescription("hello There")
