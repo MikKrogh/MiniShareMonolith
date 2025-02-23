@@ -15,8 +15,8 @@ internal class Create
 				FactionName = body.FactionName,
 				Description = body.Description,
 				CreatorId = body.CreatorId,
-				PrimaryColor = body.PrimaryColour,
-				SecondaryColor = body.SecondaryColour,
+				PrimaryColor = body.PrimaryColor,
+				SecondaryColor = body.SecondaryColor,
 			};
 
 			var clientResponse = await client.GetResponse<CreatePostResult>(command);

@@ -22,13 +22,13 @@ public class Post
     }
 
 
-    public static Post CreateNew(string title, string creatorId, string factionName)
+    public static Post CreateNew(string title, string creatorId, string factionName, Guid? id = null)
 	{
 		if (string.IsNullOrEmpty(title) || string.IsNullOrEmpty(creatorId) || string.IsNullOrEmpty(factionName)) throw new ArgumentNullException("cant create posts with empty title or creatorId");
 
 		var post = new Post(title, creatorId, factionName) 
 		{
-            Id = Guid.NewGuid(),
+            Id = id ?? Guid.NewGuid(),
             CreationDate = DateTime.UtcNow
         };
         return post;

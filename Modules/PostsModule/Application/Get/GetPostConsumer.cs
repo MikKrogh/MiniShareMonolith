@@ -20,15 +20,16 @@ public class GetPostConsumer : IConsumer<GetPostCommand>
             return;
         }
 
-        var response = new GetPostResult() 
+        var response = new GetPostResult()
         {
             Id = post.Id.ToString(),
+            Faction = post.FactionName,
             Title = post.Title,
             Description = post.Description,
             CreatorName = post.CreatorName,
             CreatorId = post.CreatorId,
-            PrimaryColour = post.PrimaryColour,
-            SecondaryColour = post.SecondaryColour,
+            PrimaryColor = post.PrimaryColour,
+            SecondaryColor = post.SecondaryColour,
             CreationDate = post.CreationDate
         };
 		await context.RespondAsync(response);

@@ -55,7 +55,7 @@ internal class PostsRepository : IPostsRepository
 
     public async Task<Post?> Get(string id)
     {
-         var entity = await context.FindAsync<PostEntity>(id);       
+         var entity = await context.Posts.Include(post => post.Creator).FirstOrDefaultAsync<PostEntity>(x => x.Id == id);       
         if (entity == null) return null;
 
         var post =  Post.CreateNew(entity.Title, entity.CreatorId, entity.Faction);

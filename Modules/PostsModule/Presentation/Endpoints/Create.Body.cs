@@ -5,6 +5,6 @@ internal class CreateBody
     public string CreatorId { get; set; } = string.Empty;
     public string? Description { get; set; }
 	public string FactionName { get; set; } = string.Empty;
-    public string? PrimaryColour { get; set; }
-	public string? SecondaryColour { get; set; }
+    public string? PrimaryColor { get; set; }
+	public string? SecondaryColor { get; set; }
 }

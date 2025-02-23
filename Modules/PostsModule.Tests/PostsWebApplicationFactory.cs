@@ -40,8 +40,17 @@ public class PostsWebApplicationFactory: WebApplicationFactory<Program>
                 var harness = sp.GetRequiredService<ITestHarness>();
                 return new MessageBrokerTestFacade(ibus, harness);
             });
-
         });
+
+
+    }
+
+    protected override IHost CreateHost(IHostBuilder builder)
+    {
+        var baseHost =  base.CreateHost(builder);
+        var sp = baseHost.Services.GetService<MessageBrokerTestFacade>();
+        MessageBrokerTestFacade = sp;
+        return baseHost;    
     }
 
 

@@ -20,10 +20,10 @@ internal class Get
 				Description = clientResponse.Message.Description,
 				CreatorId = clientResponse.Message.CreatorId,
 				CreatorName = clientResponse.Message.CreatorName,
-				PrimaryColor = clientResponse.Message.PrimaryColour,
-				SecondaryColor = clientResponse.Message.SecondaryColour,
+				PrimaryColor = clientResponse.Message.PrimaryColor,
+				SecondaryColor = clientResponse.Message.SecondaryColor,
 			};
-			return Results.Ok(clientResponse);
+			return Results.Ok(dto);
 		}
 		catch (Exception)
 		{

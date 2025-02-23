@@ -1,5 +1,6 @@
 ﻿using MassTransit;
 using MassTransit.Testing;
+using PostsModule.Application.UserEvents;
 
 namespace PostsModule.Tests;
 
@@ -13,7 +14,12 @@ public class MessageBrokerTestFacade
         _bus = bus;
         _harness = harnes;
     }
-
+    public async Task<UserCreatedEvent> SendUserCreatedEvent(Guid userId, string? username = null)
+    {
+        var userCreateEvent = new UserCreatedEvent(userId, username ?? "some random Name");
+        await _bus.Publish(userCreateEvent);
+        return userCreateEvent;
+    }
     public async Task Publish<T>(T message) where T : class => await _bus.Publish(message);
 
     public async Task<bool> AssertExactlyOneMessageMatch<MessageType>(Predicate<MessageType> predicate) where MessageType : class
@@ -33,13 +39,20 @@ public class MessageBrokerTestFacade
         return foundMatches == 1 ? true : false;
     }
 
-    public async Task WaitUntillEventHasBeenConsumed<T>() where T : class
+    public async Task WaitUntillEventHasBeenConsumed<T>(Predicate<T>? predicate = null) where T : class
     {
         var t =  _harness.Consumed.SelectAsync<T>();
         await foreach (var message in t) 
         {
             if(message.MessageType == typeof(T))
             {
+                if (predicate is not null)
+                {
+                    var isValid = predicate.Invoke(message.MessageObject as T);
+                    if (isValid)                    
+                        return;                    
+                    continue;
+                }
                 return;
             }
         }
