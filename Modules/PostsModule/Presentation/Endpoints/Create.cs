@@ -7,25 +7,28 @@ internal class Create
 {
 	internal static async Task<IResult> Process([FromServices] IRequestClient<CreatePostCommand> client, [FromBody] CreateBody body)
 	{
+		var command = new CreatePostCommand()
+		{
+			Title = body.Title,
+			FactionName = body.FactionName,
+			Description = body.Description,
+			CreatorId = body.CreatorId,
+			PrimaryColor = string.IsNullOrEmpty(body.PrimaryColor) ? string.Empty : body.PrimaryColor,
+			SecondaryColor = string.IsNullOrEmpty(body.SecondaryColor) ? string.Empty : body.SecondaryColor,
+        };
+
 		try
 		{
-			var command = new CreatePostCommand()
-			{
-				Title = body.Title,
-				FactionName = body.FactionName,
-				Description = body.Description,
-				CreatorId = body.CreatorId,
-				PrimaryColor = body.PrimaryColor,
-				SecondaryColor = body.SecondaryColor,
-			};
+            var clientResponse = await client.GetResponse<CreatePostResult>(command);
 
-			var clientResponse = await client.GetResponse<CreatePostResult>(command);
-
-			return Results.Ok(clientResponse.Message);
-		}
-		catch (Exception ex)
+			if (clientResponse.Message.IsSuccess)
+				return Results.Ok(new {PostId = clientResponse.Message.PostId });
+            return Results.StatusCode(clientResponse.Message.ResultStatus);
+        }
+		catch (Exception)
 		{
 			return Results.Problem();
-		}
+        }
+
 	}
 }

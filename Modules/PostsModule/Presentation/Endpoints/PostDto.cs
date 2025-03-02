@@ -10,7 +10,7 @@ public record PostDto
 	public string CreatorId { get; init; } = string.Empty ;
 	public string? CreatorName { get; init; } = string.Empty ;
 	public string FactionName { get; init; } = string.Empty;
-    public Colours PrimaryColor { get; init; } 
-	public Colours SecondaryColor { get; init; }
+    public Colors PrimaryColor { get; init; } 
+	public Colors SecondaryColor { get; init; }
 	public IFormFileCollection? Images { get; init; }
 }

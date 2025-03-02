@@ -40,7 +40,23 @@ internal class PostsRequestBuilder
 		return this;
 	}
 
-	public PostsRequestBuilder WithFile(IFormFile file)
+	public PostsRequestBuilder WithJpgImage(string fileName)
+	{
+		if (postRequest.Images is null)		
+			postRequest.Images = new FormFileCollection();
+
+        var bytes = new byte[] { 1, 2, 3, 4, 5 }; // Simple byte array
+        var stream = new MemoryStream(bytes);
+        var formFile = new FormFile(stream, 0, stream.Length, "file", "fileName.jpg")
+        {
+            ContentType = "image/jpeg"
+        };
+		postRequest.Images.Append(formFile);
+        return this;
+
+    }
+
+    public PostsRequestBuilder WithFile(IFormFile file)
 	{
 		if (postRequest.Images is null)
 		{

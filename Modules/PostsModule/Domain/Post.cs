@@ -10,8 +10,8 @@ public class Post
 	public string CreatorId { get; private set; } = "";
 	public string FactionName { get; private set; } = "";
     public string? FigureName { get; private set; }
-    public Colours PrimaryColour {  get; private set; } = Colours.Unknown;
-	public Colours SecondaryColour { get; private set; } = Colours.Unknown;
+    public Colors PrimaryColour {  get; private set; } = Colors.Unknown;
+	public Colors SecondaryColour { get; private set; } = Colors.Unknown;
 	public DateTime CreationDate { get; private set; } = default;
 
     private Post(string title, string creatorId, string factionName)
@@ -68,13 +68,13 @@ public class Post
 
 	public void SetPrimaryColour(string? colour)
 	{
-		var result = Colours.Unknown;
+		var result = Colors.Unknown;
 		Enum.TryParse(colour, true, out result);
 		PrimaryColour = result;
 	}
 	public void SetSecondaryColour(string? colour)
 	{
-		var result = Colours.Unknown;
+		var result = Colors.Unknown;
 		Enum.TryParse(colour, true, out result);
 		SecondaryColour = result;
 	}

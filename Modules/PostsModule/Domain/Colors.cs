@@ -1,6 +1,6 @@
 ﻿namespace PostsModule.Domain
 {
-	public enum Colours
+	public enum Colors
 	{
 		Unknown = 0,
 		Red = 1,

@@ -14,9 +14,9 @@ public class MessageBrokerTestFacade
         _bus = bus;
         _harness = harnes;
     }
-    public async Task<UserCreatedEvent> SendUserCreatedEvent(Guid userId, string? username = null)
+    public async Task<UserCreatedEvent> SendUserCreatedEvent(Guid? userId = null, string? username = null)
     {
-        var userCreateEvent = new UserCreatedEvent(userId, username ?? "some random Name");
+        var userCreateEvent = new UserCreatedEvent(userId ?? Guid.NewGuid(), username ?? "some random Name");
         await _bus.Publish(userCreateEvent);
         return userCreateEvent;
     }
