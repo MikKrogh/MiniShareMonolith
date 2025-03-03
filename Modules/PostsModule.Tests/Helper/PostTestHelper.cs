@@ -5,7 +5,7 @@ namespace PostsModule.Tests.Helper;
 
 internal static class PostTestHelper
 {
-    public static IFormFile CreateFormFile(string fileName)
+    public static FormFile CreateFormFile(string fileName)
     {
         byte[] imageBytes = Encoding.UTF8.GetBytes("fake image content");
         string contentType = "image/jpeg";

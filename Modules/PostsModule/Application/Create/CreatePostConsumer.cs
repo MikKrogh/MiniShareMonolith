@@ -5,10 +5,12 @@ namespace PostsModule.Application.Create;
 public class CreatePostConsumer : IConsumer<CreatePostCommand>
 {
     private readonly IPostsRepository repository;
+    private readonly IImageStorageService imageService;
 
-    public CreatePostConsumer(IPostsRepository repository)
+    public CreatePostConsumer(IPostsRepository repository, IImageStorageService imageService)
     {
         this.repository = repository;
+        this.imageService = imageService;
     }
     public async Task Consume(ConsumeContext<CreatePostCommand> context)
 	{
@@ -18,12 +20,25 @@ public class CreatePostConsumer : IConsumer<CreatePostCommand>
             await context.RespondAsync(result);            
         }
 
-            Post post = CreateDomainEntity(context.Message);
+        Post post = CreateDomainEntity(context.Message);
 
-            await repository.Save(post);
+        List<Task>uploadTasks = new();
+        foreach (var image in context.Message.Images)
+        {
+            uploadTasks.Add(imageService.UploadImage(image.OpenReadStream(), post.Id.ToString(), Guid.NewGuid().ToString()));
+        }
+        try
+        {
+            await Task.WhenAll(uploadTasks);
+        }
+        catch (Exception)
+        {
+            throw;
+        }
+        await repository.Save(post);
 
-            var response = CreatePostResult.Success(post.Id.ToString());
-            await context.RespondAsync(CreatePostResult.Success(post.Id.ToString()));
+        var response = CreatePostResult.Success(post.Id.ToString());
+        await context.RespondAsync(CreatePostResult.Success(post.Id.ToString()));
         
     }
 

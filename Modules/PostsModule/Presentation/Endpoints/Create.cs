@@ -1,6 +1,7 @@
 ﻿using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using PostsModule.Application.Create;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace PostsModule.Presentation.Endpoints;
 internal class Create
@@ -15,6 +16,7 @@ internal class Create
 			CreatorId = body.CreatorId,
 			PrimaryColor = string.IsNullOrEmpty(body.PrimaryColor) ? string.Empty : body.PrimaryColor,
 			SecondaryColor = string.IsNullOrEmpty(body.SecondaryColor) ? string.Empty : body.SecondaryColor,
+			Images = body.Images ?? new FormFileCollection()
         };
 
 		try

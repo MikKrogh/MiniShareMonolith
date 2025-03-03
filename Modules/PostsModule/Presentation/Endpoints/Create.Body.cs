@@ -1,6 +1,4 @@
-﻿using System.Text.RegularExpressions;
-
-namespace PostsModule.Presentation.Endpoints;
+﻿namespace PostsModule.Presentation.Endpoints;
 internal class CreateBody
 {
 	public string Title {  get; set; } = string.Empty;
@@ -8,5 +6,6 @@ internal class CreateBody
     public string? Description { get; set; }
 	public string FactionName { get; set; } = string.Empty;
     public string? PrimaryColor { get; set; }
-	public string? SecondaryColor { get; set; }    
+	public string? SecondaryColor { get; set; }
+    public FormFileCollection? Images { get; set; }
 }

@@ -1,4 +1,5 @@
-﻿using PostsModule.Presentation.Endpoints;
+﻿using Microsoft.AspNetCore.Mvc;
+using PostsModule.Presentation.Endpoints;
 
 namespace PostsModule.Presentation;
 
@@ -8,19 +9,27 @@ public static class EndpointsExtensions
 	{
 		var api = routeBuilder.MapGroup("/Posts");
 
-		api.MapPost(string.Empty, Create.Process)
-			.WithDescription("This endpoint expects a jsonbody with a post and images")
-			.WithSummary("create a post with content")
-			.WithTags("Command")
-			.Produces(200)
-			.Produces(400)
-			.Produces(500)
-			.DisableAntiforgery(); // should not be disabled?
+		api.MapPost(string.Empty, () => 
+		{
+            Console.WriteLine();
 
-		api.MapGet("/{postId}", Get.Process).WithDescription("This endpoint returns a jsonbody for a post")
+        }).DisableAntiforgery();
+
+
+        //api.MapPost(string.Empty, Create.Process)
+        //	.WithDescription("This endpoint expects a jsonbody with a post and images")
+        //	.WithSummary("create a post with content")
+        //	.WithTags("Command")
+        //	.Produces(200)
+        //	.Produces(400)
+        //	.Produces(500)
+        //	.DisableAntiforgery(); // should not be disabled?
+
+        api.MapGet("/{postId}", Get.Process).WithDescription("This endpoint returns a jsonbody for a post")
 			.WithSummary("Gets a single post")
 			.WithTags("Query")
 			.Produces<PostDto>(200)
 			.Produces(500);
 	}
+
 }

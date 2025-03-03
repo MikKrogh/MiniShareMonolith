@@ -10,5 +10,5 @@ internal class PostRequest
     public string FactionName { get; set; }
     public string PrimaryColor { get; set; }
     public string SecondaryColor { get; set; }
-    public IFormFileCollection Images { get; set; }
+    public FormFileCollection Images { get; set; }
 }

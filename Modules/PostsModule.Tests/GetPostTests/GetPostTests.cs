@@ -5,6 +5,7 @@ using PostsModule.Presentation.Endpoints;
 using PostsModule.Tests.CreatePostTests;
 using PostsModule.Tests.Helper;
 using System.Net.Http.Json;
+using System.Text;
 
 namespace PostsModule.Tests.GetPostTests;
 
@@ -20,7 +21,6 @@ public class GetPostTests : IClassFixture<PostsWebApplicationFactory>
         _messageBroker = _factory.Services.GetRequiredService<MessageBrokerTestFacade>();
     }
 
-    //GivenPostExists_WhenUserAsksForThePost_ThenResponseIs200
     [Fact]
     public async Task GivenPostExists_WhenUserAsksForThePost_ThenResponseIs200()
     {
@@ -70,13 +70,24 @@ public class GetPostTests : IClassFixture<PostsWebApplicationFactory>
         var existingUser = await _messageBroker.SendUserCreatedEvent(Guid.NewGuid(), "John Does");
         await _messageBroker.WaitUntillEventHasBeenConsumed<UserCreatedEvent>(x => x.UserId == existingUser.UserId);
 
+        var formdata = new MultipartFormDataContent();
+
         var body = PostTestHelper.GetValidDefaultRequest(existingUser.UserId);
+        var jsonbody = System.Text.Json.JsonSerializer.Serialize(body);
+        formdata.Add(new StringContent(jsonbody, Encoding.UTF8, "application/json"), "jsonData"); // "jsonData" is the key name
+
         var formFiles = Enumerable.Range(1, 2).Select(i => PostTestHelper.CreateFormFile($"file{i}.txt"));
+        foreach (var formFile in formFiles)
+        {
+            formdata.Add(ConvertToHttpContent(formFile), "images", formFile.FileName); // "images" is the key name
+        }
         var collection = new FormFileCollection();
+
+        
         collection.AddRange(formFiles);
         body.Images = collection;
-
-        var response = await _client.PostAsJsonAsync("/Posts", body);
+       
+        var response = await _client.PostAsync("/Posts", formdata);
         var responseContent = await response.Content.ReadFromJsonAsync<CreatePostResponse>();
 
         //When
@@ -84,9 +95,25 @@ public class GetPostTests : IClassFixture<PostsWebApplicationFactory>
 
         //Then
         Assert.Equal(formFiles.Count(), getResponse.Images.Count());
-
-        //var collection = _factory.FakeImageBlobStorage.GetDirectory(responseContent.PostId);
-        //Assert.Equal(collection.Count(), body.Images.Count());
     }
 
+    //VaildationOnFormFiles i create, filesize,  file type etc etc. check with gtp what other checks should be done
+    public static HttpContent ConvertToHttpContent(IFormFile formFile)
+    {
+        // Read the file's content into a byte array
+        using (var memoryStream = new MemoryStream())
+        {
+            // Copy the file content to the memory stream
+            formFile.CopyTo(memoryStream);
+
+            // Create a ByteArrayContent instance with the byte array
+            var byteArrayContent = new ByteArrayContent(memoryStream.ToArray());
+
+            // Set the content type (optional, but should be done based on your file type)
+            byteArrayContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(formFile.ContentType);
+
+            // Return the ByteArrayContent
+            return byteArrayContent;
+        }
+    }
 }
