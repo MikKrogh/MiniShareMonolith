@@ -126,7 +126,7 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
     [InlineData("red")]
     [InlineData("BLue")]
     [InlineData("BluE")]
-    public async Task GivenUserExists_WhenUserCreatedPostWithWierdCasingForPrimaryColor_ThenSuccessIsReturnedAndColorIsSavedWithNormalName(string primaryColor)
+    public async Task GivenUserExists_WhenUserCreatesPostWithWierdCasingForPrimaryColor_ThenSuccessIsReturnedAndColorIsSavedWithNormalName(string primaryColor)
     {
         //Given 
         var existingUser = await _messageBroker.SendUserCreatedEvent(Guid.NewGuid(), "John Does");
@@ -153,7 +153,7 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
     [InlineData("red")]
     [InlineData("BLue")]
     [InlineData("BluE")]
-    public async Task GivenUserExists_WhenUserCreatedPostWithWierdCasingForSecondaryColor_ThenSuccessIsReturnedAndColorIsSavedWithNormalName(string secondaryColor)
+    public async Task GivenUserExists_WhenUserCreatesPostWithWierdCasingForSecondaryColor_ThenSuccessIsReturnedAndColorIsSavedWithNormalName(string secondaryColor)
     {
         //Given 
         var existingUser = await _messageBroker.SendUserCreatedEvent(Guid.NewGuid(), "John Does");
@@ -219,5 +219,5 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
     }
 
 
-
+    
 }

@@ -80,10 +80,10 @@ public class GetPostTests : IClassFixture<PostsWebApplicationFactory>
         var responseContent = await response.Content.ReadFromJsonAsync<CreatePostResponse>();
 
         //When
-
+        var getResponse = await _client.GetFromJsonAsync<PostDto>($"/Posts/{responseContent.PostId}");
 
         //Then
-        Assert.True(false);
+        Assert.Equal(formFiles.Count(), getResponse.Images.Count());
 
         //var collection = _factory.FakeImageBlobStorage.GetDirectory(responseContent.PostId);
         //Assert.Equal(collection.Count(), body.Images.Count());

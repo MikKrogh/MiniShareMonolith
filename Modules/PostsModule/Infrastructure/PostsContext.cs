@@ -9,6 +9,7 @@ internal class PostsContext : DbContext
 
     public DbSet<PostEntity> Posts { get; set; }
     public DbSet<UserEntity> Users { get; set; }
+    public DbSet<ImageEntity> Images { get; set; }
     public string DbPath { get; }
 
     public PostsContext(DbContextOptions<PostsContext> options, IConfiguration config) : base(options)
@@ -25,10 +26,18 @@ internal class PostsContext : DbContext
     {
         modelBuilder.Entity<UserEntity>().ToTable("Users", "StoreSchema");
         modelBuilder.Entity<PostEntity>().ToTable("Posts", "StoreSchema");
+        modelBuilder.Entity<ImageEntity>().ToTable("Images", "StoreSchema");
 
         modelBuilder.Entity<PostEntity>()
             .HasOne(p => p.Creator)
             .WithMany(u => u.Posts)
             .HasForeignKey(p => p.CreatorId);
+
+        modelBuilder.Entity<ImageEntity>()
+            .HasOne(i => i.Post)
+            .WithMany(p => p.Images)
+            .HasForeignKey(i => i.PostId);
+
+
     }
 }
