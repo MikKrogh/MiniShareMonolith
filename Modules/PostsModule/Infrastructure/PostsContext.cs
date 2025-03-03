@@ -26,7 +26,7 @@ internal class PostsContext : DbContext
     {
         modelBuilder.Entity<UserEntity>().ToTable("Users", "StoreSchema");
         modelBuilder.Entity<PostEntity>().ToTable("Posts", "StoreSchema");
-        modelBuilder.Entity<ImageEntity>().ToTable("Images", "StoreSchema");
+        modelBuilder.Entity<ImageEntity>().ToTable("Image", "StoreSchema");
 
         modelBuilder.Entity<PostEntity>()
             .HasOne(p => p.Creator)

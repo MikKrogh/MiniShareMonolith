@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PostsModule.Infrastructure;
 
@@ -11,9 +12,11 @@ using PostsModule.Infrastructure;
 namespace PostsModule.Migrations
 {
     [DbContext(typeof(PostsContext))]
-    partial class PostsContextModelSnapshot : ModelSnapshot
+    [Migration("20250303182430_2025-03-03-revert4")]
+    partial class _20250303revert4
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,22 +24,6 @@ namespace PostsModule.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("PostsModule.Infrastructure.ImageEntity", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("PostId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PostId");
-
-                    b.ToTable("Image", "StoreSchema");
-                });
 
             modelBuilder.Entity("PostsModule.Infrastructure.PostEntity", b =>
                 {
@@ -89,17 +76,6 @@ namespace PostsModule.Migrations
                     b.ToTable("Users", "StoreSchema");
                 });
 
-            modelBuilder.Entity("PostsModule.Infrastructure.ImageEntity", b =>
-                {
-                    b.HasOne("PostsModule.Infrastructure.PostEntity", "Post")
-                        .WithMany("Images")
-                        .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Post");
-                });
-
             modelBuilder.Entity("PostsModule.Infrastructure.PostEntity", b =>
                 {
                     b.HasOne("PostsModule.Infrastructure.UserEntity", "Creator")
@@ -109,11 +85,6 @@ namespace PostsModule.Migrations
                         .IsRequired();
 
                     b.Navigation("Creator");
-                });
-
-            modelBuilder.Entity("PostsModule.Infrastructure.PostEntity", b =>
-                {
-                    b.Navigation("Images");
                 });
 
             modelBuilder.Entity("PostsModule.Infrastructure.UserEntity", b =>

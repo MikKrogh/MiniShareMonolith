@@ -1,8 +1,8 @@
 ﻿namespace PostsModule.Infrastructure;
 
-internal record ImageEntity
+internal class ImageEntity
 {
-    public string Id { get; init; } = string.Empty;
-    public string PostId { get; init; } = string.Empty;
-    public PostEntity Post { get; init; } = new();
+    public string Id { get; set; }
+    public string PostId { get; set; }
+    public PostEntity? Post { get; set; } 
 }
