@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using PostsModule.Presentation.Endpoints;
 
 namespace PostsModule.Presentation;
@@ -9,8 +10,13 @@ public static class EndpointsExtensions
 	{
 		var api = routeBuilder.MapGroup("/Posts");
 
-		api.MapPost(string.Empty, () => 
-		{
+		//api.MapPost(string.Empty, async (HttpRequest request) => 
+		api.MapPost(string.Empty,  (HttpRequest request) => 
+        {
+            var form = await request.ReadFormAsync(); // Read only the form fields, not the streams
+
+            UploadRequest? title = System.Text.Json.JsonSerializer.Deserialize< UploadRequest>(form["entity"]);
+            var fileCollection = form.Files;
             Console.WriteLine();
 
         }).DisableAntiforgery();
@@ -31,5 +37,11 @@ public static class EndpointsExtensions
 			.Produces<PostDto>(200)
 			.Produces(500);
 	}
+
+}
+
+public class UploadRequest
+{
+    public string Title { get; set; }
 
 }

@@ -1,7 +1,6 @@
 ﻿using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using PostsModule.Application.Create;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace PostsModule.Presentation.Endpoints;
 internal class Create

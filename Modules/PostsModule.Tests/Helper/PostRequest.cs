@@ -11,4 +11,5 @@ internal class PostRequest
     public string PrimaryColor { get; set; }
     public string SecondaryColor { get; set; }
     public FormFileCollection Images { get; set; }
+    public MultipartFormDataContent Test { get; set; }
 }

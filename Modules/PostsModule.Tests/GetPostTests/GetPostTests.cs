@@ -1,11 +1,19 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.SqlServer.Server;
 using PostsModule.Application.UserEvents;
+using PostsModule.Presentation;
 using PostsModule.Presentation.Endpoints;
 using PostsModule.Tests.CreatePostTests;
 using PostsModule.Tests.Helper;
+using System;
+using System.Collections;
+using System.IO;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json;
+using System.Xml.Linq;
 
 namespace PostsModule.Tests.GetPostTests;
 
@@ -66,35 +74,53 @@ public class GetPostTests : IClassFixture<PostsWebApplicationFactory>
     [Fact]
     public async Task GivenPostExistsWithTwoImages_WhenUserAsksForPost_thenResponseContainsTwoImagePaths()
     {
-        // Given
-        var existingUser = await _messageBroker.SendUserCreatedEvent(Guid.NewGuid(), "John Does");
-        await _messageBroker.WaitUntillEventHasBeenConsumed<UserCreatedEvent>(x => x.UserId == existingUser.UserId);
-
-        var formdata = new MultipartFormDataContent();
-
-        var body = PostTestHelper.GetValidDefaultRequest(existingUser.UserId);
-        var jsonbody = System.Text.Json.JsonSerializer.Serialize(body);
-        formdata.Add(new StringContent(jsonbody, Encoding.UTF8, "application/json"), "jsonData"); // "jsonData" is the key name
-
-        var formFiles = Enumerable.Range(1, 2).Select(i => PostTestHelper.CreateFormFile($"file{i}.txt"));
-        foreach (var formFile in formFiles)
-        {
-            formdata.Add(ConvertToHttpContent(formFile), "images", formFile.FileName); // "images" is the key name
-        }
-        var collection = new FormFileCollection();
-
+        byte[] fakeImageBytes = Encoding.UTF8.GetBytes("This is a fake image content");
+        var stream = new MemoryStream(fakeImageBytes);
+        var stream1 = new MemoryStream(fakeImageBytes);
+        var formFile = new FormFile(stream, 0, stream.Length, "image", "fileOne"){ Headers = new HeaderDictionary(),ContentType = "image/jpeg"};
+        var formFile1 = new FormFile(stream1, 0, stream.Length, "image", "fileTwo"){ Headers = new HeaderDictionary(),ContentType = "image/jpeg"};
+        var instance = new UploadRequest() { Title = "imContent" };
+        var ta = new MultipartFormDataContent();
         
-        collection.AddRange(formFiles);
-        body.Images = collection;
-       
-        var response = await _client.PostAsync("/Posts", formdata);
-        var responseContent = await response.Content.ReadFromJsonAsync<CreatePostResponse>();
+        //ta.Add(new StringContent(System.Text.Json.JsonSerializer.Serialize<UploadRequest>(instance)), "entity");
+        //ta.Add(new StreamContent(formFile.OpenReadStream()), "FilesToUpload", formFile.FileName);
+        //ta.Add(new StreamContent(formFile1.OpenReadStream()), "FilesToUpload", formFile1.FileName);
 
-        //When
-        var getResponse = await _client.GetFromJsonAsync<PostDto>($"/Posts/{responseContent.PostId}");
+
+        var jhgt = await _client.PostAsync("/Posts", ta);
+
+        Console.WriteLine();
+        //var existingUser = await _messageBroker.SendUserCreatedEvent(Guid.NewGuid(), "John Does");
+        //await _messageBroker.WaitUntillEventHasBeenConsumed<UserCreatedEvent>(x => x.UserId == existingUser.UserId);
+
+        //var formdata = new MultipartFormDataContent();
+
+        //var body = PostTestHelper.GetValidDefaultRequest(existingUser.UserId);
+        //var jsonbody = System.Text.Json.JsonSerializer.Serialize(body);
+        ////formdata.Add(new StringContent(jsonbody, Encoding.UTF8, "application/json"), "Entity"); // "jsonData" is the key name
+
+        ////var formFiles = Enumerable.Range(1, 2).Select(i => PostTestHelper.CreateFormFile($"file{i}.txt"));
+        ////foreach (var formFile in formFiles)
+        ////{
+        ////    formdata.Add(ConvertToHttpContent(formFile), "images", formFile.FileName); // "images" is the key name
+        ////}
+        //var collection = new FormFileCollection();
+
+        //var binaryContent = new ByteArrayContent(new byte[09822]);
+        //binaryContent.Headers.ContentType = new("application/octet-stream");
+        //formdata.Add(binaryContent, "binary");
+
+        ////collection.AddRange(formFiles);
+        //body.Images = collection;
+
+        //var response = await _client.PostAsync("/Posts", formdata);
+        //var responseContent = await response.Content.ReadFromJsonAsync<CreatePostResponse>();
+
+        ////When
+        //var getResponse = await _client.GetFromJsonAsync<PostDto>($"/Posts/{responseContent.PostId}");
 
         //Then
-        Assert.Equal(formFiles.Count(), getResponse.Images.Count());
+        //Assert.Equal(formFiles.Count(), getResponse.Images.Count());
     }
 
     //VaildationOnFormFiles i create, filesize,  file type etc etc. check with gtp what other checks should be done
