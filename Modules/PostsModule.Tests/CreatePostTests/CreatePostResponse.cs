@@ -3,4 +3,6 @@
 public class CreatePostResponse
 {
     public string PostId { get; set; }
+    public string Token { get; set; }
+
 }

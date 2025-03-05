@@ -7,5 +7,5 @@ internal class CreateBody
 	public string FactionName { get; set; } = string.Empty;
     public string? PrimaryColor { get; set; }
 	public string? SecondaryColor { get; set; }
-    public FormFileCollection? Images { get; set; }
+    //public IFormFileCollection? Images { get; set; }
 }

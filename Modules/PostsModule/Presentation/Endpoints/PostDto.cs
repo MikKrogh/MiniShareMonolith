@@ -12,5 +12,4 @@ public record PostDto
 	public string FactionName { get; init; } = string.Empty;
     public Colors PrimaryColor { get; init; } 
 	public Colors SecondaryColor { get; init; }
-	public IFormFileCollection? Images { get; init; }
 }

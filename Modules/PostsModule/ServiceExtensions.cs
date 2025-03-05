@@ -1,6 +1,6 @@
-﻿
-using MassTransit;
+﻿using MassTransit;
 using PostsModule.Domain;
+using PostsModule.Domain.Auth;
 using PostsModule.Infrastructure;
 namespace PostsModule;
 
@@ -11,6 +11,7 @@ public static class ServiceExtensions
         serviceCollection.AddDbContext<PostsContext>();
 		serviceCollection.AddScoped<IPostsRepository, PostsRepository>();
 		serviceCollection.AddScoped<IUserRepository, UserRepository>();
+		serviceCollection.AddSingleton<IAuthHelper, JwtHandler>();
 
 
 		serviceCollection.AddMassTransit(x =>
