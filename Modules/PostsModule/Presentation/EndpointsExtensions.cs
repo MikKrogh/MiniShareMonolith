@@ -1,4 +1,5 @@
-﻿using PostsModule.Presentation.Endpoints;
+﻿using Microsoft.AspNetCore.Mvc;
+using PostsModule.Presentation.Endpoints;
 
 namespace PostsModule.Presentation;
 
@@ -6,7 +7,11 @@ public static class EndpointsExtensions
 {
 	public static void AddPostsEndpoints(this IEndpointRouteBuilder routeBuilder)
 	{
-		var api = routeBuilder.MapGroup("/Posts");
+
+        var test = routeBuilder.MapGroup("/test");
+        test.MapPost(string.Empty, async ([FromForm]IFormFile file) => Results.Ok()).DisableAntiforgery();
+
+        var api = routeBuilder.MapGroup("/Posts");
 
         api.MapPost(string.Empty, Create.Process)
             .WithDescription("This endpoint expects a jsonbody with a post and images")
@@ -22,6 +27,12 @@ public static class EndpointsExtensions
 			.WithTags("Query")
 			.Produces<PostDto>(200)
 			.Produces(500);
+
+        api.MapPost("{postId}/Image", Put.ProcessAddImage)
+            .Produces(200)
+            .WithSummary("takes an image to blob storage, and updates the postEntity to know about the image")
+            .Produces(500).DisableAntiforgery();
+
 	}
 
 }

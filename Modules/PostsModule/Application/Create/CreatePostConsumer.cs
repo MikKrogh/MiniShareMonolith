@@ -16,7 +16,7 @@ public class CreatePostConsumer : IConsumer<CreatePostCommand>
 	{
         if (!IsValid(context.Message))
         {
-            var result = CreatePostResult.FailedToValidate();
+            var result = CommandResult<string>.FailedToValidate();
             await context.RespondAsync(result);            
         }
 
@@ -37,9 +37,7 @@ public class CreatePostConsumer : IConsumer<CreatePostCommand>
         }
         await repository.Save(post);
 
-        var response = CreatePostResult.Success(post.Id.ToString());
-        await context.RespondAsync(CreatePostResult.Success(post.Id.ToString()));
-        
+        await context.RespondAsync(CommandResult<string>.Success(post.Id.ToString()));
     }
 
     private static Post CreateDomainEntity(CreatePostCommand context)

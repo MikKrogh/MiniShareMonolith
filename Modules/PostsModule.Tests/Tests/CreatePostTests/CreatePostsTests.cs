@@ -217,28 +217,4 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
         var getResponse = await _client.GetFromJsonAsync<PostDto>($"/Posts/{responseContent.PostId}");
         Assert.True(Domain.Colors.Unknown == getResponse.SecondaryColor, $"assertation against primary color with value: {secondaryColor}");
     }
-
-    [Fact]
-    public async Task GivenSomeoneHasCreatedNewPost_WhenUserSubmitsImage_ThenSuccessIsReturned()
-    {
-        //Given 
-        var existingUser = await _messageBroker.SendUserCreatedEvent(Guid.NewGuid(), "John Does");
-        await _messageBroker.WaitUntillEventHasBeenConsumed<UserCreatedEvent>(x => x.UserId == existingUser.UserId);
-        var body = PostTestHelper.GetValidDefaultRequest(existingUser.UserId);
-        var createPostResponse = await _client.PostAsJsonAsync("/Posts", body);
-        var createResponseContent = await createPostResponse.Content.ReadFromJsonAsync<CreatePostResponse>();
-        //When
-        var byes = new byte[987324];
-        var stream = new MemoryStream(byes);
-        var form = new MultipartFormDataContent();
-        form.Add(new StreamContent(stream), "file", "filename.jpeg");
-
-        var response = await _client.PostAsync($"/Posts/Image?token={createResponseContent.PostId}", form);
-
-
-        //Then
-        Assert.True(false);
-
-
-    }
-    }
+}

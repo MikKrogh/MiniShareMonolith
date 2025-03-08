@@ -17,7 +17,7 @@ public sealed class JwtHandler : IAuthHelper
         securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
     }
 
-    public string GenerateToken(DateTime? expirationDate = null, params ClaimValueHolder[] desiredClaims)
+    public string CreateToken(DateTime? expirationDate = null, params ClaimValueHolder[] desiredClaims)
     {
         List<Claim> claims = new();
         foreach (var item in desiredClaims)

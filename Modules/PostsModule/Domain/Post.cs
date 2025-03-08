@@ -13,6 +13,7 @@ public class Post
     public Colors PrimaryColour {  get; private set; } = Colors.Unknown;
 	public Colors SecondaryColour { get; private set; } = Colors.Unknown;
 	public DateTime CreationDate { get; private set; } = default;
+    public HashSet<string> Images { get; private set; } = new();
 
     private Post(string title, string creatorId, string factionName)
     {
@@ -84,6 +85,12 @@ public class Post
             CreationDate = creationDate;
     }
 
+    public void SetImages(string filename)
+    {
+        if (Images is null)
+            Images = new();
+        Images.Add(filename);
+    }
 
 }
 

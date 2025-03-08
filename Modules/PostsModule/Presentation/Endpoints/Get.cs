@@ -20,6 +20,7 @@ internal class Get
 				Description = clientResponse.Message.Description,
 				CreatorId = clientResponse.Message.CreatorId,
 				CreatorName = clientResponse.Message.CreatorName,
+				Images = clientResponse.Message.Images,
 				PrimaryColor = clientResponse.Message.PrimaryColor,
 				SecondaryColor = clientResponse.Message.SecondaryColor,
 			};

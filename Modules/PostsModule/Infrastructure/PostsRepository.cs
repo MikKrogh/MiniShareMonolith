@@ -4,39 +4,6 @@ using PostsModule.Domain;
 
 namespace PostsModule.Infrastructure;
 
-internal class UserRepository : IUserRepository
-{
-    private readonly ILogger<UserRepository> logger;
-    private readonly PostsContext context;
-
-    public UserRepository(ILogger<UserRepository> logger, PostsContext context)
-    {
-        this.logger = logger;
-        this.context = context;
-    }
-
-    public async Task Create(User user)
-    {
-        var userEntity = new UserEntity
-        {
-            Id = user.Id.ToString(),
-            UserName = user.Name,
-        };        
-        await context.Users.AddAsync(userEntity);
-        await context.SaveChangesAsync();
-    }
-
-    public Task Delete(string userId)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Task Update(User user)
-    {
-        throw new NotImplementedException();
-    }
-}
-
 internal class PostsRepository : IPostsRepository
 {
     private readonly ILogger<PostsRepository> logger;
@@ -55,7 +22,7 @@ internal class PostsRepository : IPostsRepository
 
     public async Task<Post?> Get(string id)
     {
-         var entity = await context.Posts.Include(post => post.Creator).FirstOrDefaultAsync<PostEntity>(x => x.Id == id);       
+         var entity = await context.Posts.Include(post => post.Creator).Include(post => post.Images).FirstOrDefaultAsync<PostEntity>(x => x.Id == id);       
         if (entity == null) return null;
 
         var post =  Post.CreateNew(entity.Title, entity.CreatorId, entity.Faction);
@@ -65,10 +32,11 @@ internal class PostsRepository : IPostsRepository
         post.SetDescription(entity.Description);
         post.SetPrimaryColour(entity.PrimaryColour);
         post.SetSecondaryColour(entity.SecondaryColour);
-
+        foreach (var image in entity.Images)
+        {
+            post.SetImages(image.Id);
+        }
         return post;
-
-
     }
 
     public async Task Save(Post post)

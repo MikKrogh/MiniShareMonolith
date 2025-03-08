@@ -11,6 +11,7 @@ public static class ServiceExtensions
         serviceCollection.AddDbContext<PostsContext>();
 		serviceCollection.AddScoped<IPostsRepository, PostsRepository>();
 		serviceCollection.AddScoped<IUserRepository, UserRepository>();
+		serviceCollection.AddScoped<IImageRepository, ImageRepository>();
 		serviceCollection.AddSingleton<IAuthHelper, JwtHandler>();
 
 

@@ -28,9 +28,11 @@ public class GetPostConsumer : IConsumer<GetPostCommand>
             Description = post.Description,
             CreatorName = post.CreatorName,
             CreatorId = post.CreatorId,
+            Images = post.Images,
             PrimaryColor = post.PrimaryColour,
             SecondaryColor = post.SecondaryColour,
             CreationDate = post.CreationDate
+            
         };
 		await context.RespondAsync(response);
     }

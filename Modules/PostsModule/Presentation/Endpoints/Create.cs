@@ -1,5 +1,6 @@
 ﻿using MassTransit;
 using Microsoft.AspNetCore.Mvc;
+using PostsModule.Application;
 using PostsModule.Application.Create;
 using PostsModule.Domain.Auth;
 
@@ -20,15 +21,15 @@ internal class Create
 
 		try
 		{
-            var clientResponse = await client.GetResponse<CreatePostResult>(command);					
+            var clientResponse = await client.GetResponse<CommandResult<string>>(command);					
 
             if (clientResponse.Message.IsSuccess)
 			{
-				var token = auth.GenerateToken(
+				var token = auth.CreateToken(
                     DateTime.UtcNow.AddMinutes(5),
-                    ClaimValueHolder.Create<string>("postId", clientResponse.Message.PostId)
+                    ClaimValueHolder.Create<string>("postId", clientResponse.Message.Result)
                     );
-            return Results.Ok(new SuccessRonse { PostId = clientResponse.Message.PostId, Token = token });
+            return Results.Ok(new SuccessRespnse { PostId = clientResponse.Message.Result, Token = token });
 			}
 
             return Results.StatusCode(clientResponse.Message.ResultStatus);
@@ -39,7 +40,7 @@ internal class Create
         }
 	}
 }
-public class SuccessRonse
+public class SuccessRespnse
 {
 	public string PostId { get; set; }
 	public string Token { get; set; }
