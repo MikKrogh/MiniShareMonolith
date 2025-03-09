@@ -1,4 +1,5 @@
-﻿using MassTransit;
+﻿using Azure.Identity;
+using MassTransit;
 using PostsModule.Domain;
 using PostsModule.Domain.Auth;
 using PostsModule.Infrastructure;
@@ -12,6 +13,7 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IPostsRepository, PostsRepository>();
         serviceCollection.AddScoped<IUserRepository, UserRepository>();
         serviceCollection.AddScoped<IImageRepository, ImageRepository>();
+        serviceCollection.AddScoped<IImageStorageService, AzureBlobService>();
         serviceCollection.AddSingleton<IAuthHelper, JwtHandler>();
 
 
@@ -24,5 +26,17 @@ public static class ServiceExtensions
             });
         });
     }
+
+    public static void AppConfiguration(this IConfigurationBuilder configBuilder)
+    {
+        var config = configBuilder.Build();
+        configBuilder.AddAzureAppConfiguration(options =>
+        {
+            options.Connect(new Uri(config["AppConfigEndpoint"]), new DefaultAzureCredential())
+            .Select("PostService*").TrimKeyPrefix("PostService:");
+        });
+    }
+
+
 
 }

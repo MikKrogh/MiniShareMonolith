@@ -45,4 +45,21 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
         Assert.NotEmpty(getResponse.Images);
         Assert.Single(getResponse.Images);
     }
+
+    [Fact]
+    public async Task GivenUserHasCreatedPost_WhenUserUploadsImages_ThenImagesAreStoredInBlob()
+    {
+        //Given 
+        var user = await testFacade.SendCreateUserEvent();
+        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        var create = await testFacade.SendCreatePost(createBody);
+        
+        //When
+        await testFacade.UploadImage(create.Result.PostId, create.Result.Token);
+        await testFacade.UploadImage(create.Result.PostId, create.Result.Token);
+        
+        //Then
+        var filesInBlob = testFacade.FilesInDirecory(create.Result.PostId);
+        Assert.Equal(2, filesInBlob.Count());
+    }
 }

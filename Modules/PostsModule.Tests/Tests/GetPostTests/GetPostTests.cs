@@ -1,5 +1,4 @@
 ﻿using PostsModule.Tests.Helper;
-using PostsModule.Tests.Tests;
 
 
 namespace PostsModule.Tests.GetPostTests;

@@ -19,7 +19,7 @@ internal class PostsContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer(config.GetConnectionString("AzurePostSql"));
+        optionsBuilder.UseSqlServer(config.GetConnectionString("sql"));
         base.OnConfiguring(optionsBuilder);
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -37,7 +37,5 @@ internal class PostsContext : DbContext
             .HasOne(i => i.Post)
             .WithMany(p => p.Images)
             .HasForeignKey(i => i.PostId);
-
-
     }
 }

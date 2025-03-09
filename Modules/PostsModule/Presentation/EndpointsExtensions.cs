@@ -8,9 +8,6 @@ public static class EndpointsExtensions
     public static void AddPostsEndpoints(this IEndpointRouteBuilder routeBuilder)
     {
 
-        var test = routeBuilder.MapGroup("/test");
-        test.MapPost(string.Empty, async ([FromForm] IFormFile file) => Results.Ok()).DisableAntiforgery();
-
         var api = routeBuilder.MapGroup("/Posts");
 
         api.MapPost(string.Empty, Create.Process)
@@ -28,7 +25,7 @@ public static class EndpointsExtensions
             .Produces<PostDto>(200)
             .Produces(500);
 
-        api.MapPost("{postId}/Image", Put.ProcessAddImage)
+        api.MapPut("{postId}/Image", Put.ProcessAddImage)
             .Produces(200)
             .WithSummary("takes an image to blob storage, and updates the postEntity to know about the image")
             .Produces(500).DisableAntiforgery();

@@ -2,7 +2,7 @@
 using MassTransit.Testing;
 using PostsModule.Application.UserEvents;
 
-namespace PostsModule.Tests;
+namespace PostsModule.Tests.Helper;
 
 public class MessageBrokerTestFacade
 {
