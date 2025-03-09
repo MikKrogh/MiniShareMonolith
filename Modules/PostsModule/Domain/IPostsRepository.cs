@@ -2,7 +2,7 @@
 
 public interface IPostsRepository
 {
-	Task<Post?> Get(string id);
+    Task<Post?> Get(string id);
     Task Save(Post post);
-	Task Delete(string id);
+    Task Delete(string id);
 }

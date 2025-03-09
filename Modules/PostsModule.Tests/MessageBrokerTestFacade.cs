@@ -28,29 +28,29 @@ public class MessageBrokerTestFacade
         var messagesMatchingMessageType = _harness.Published.Select(filter);
 
         int foundMatches = 0;
-         foreach (var message in messagesMatchingMessageType)
+        foreach (var message in messagesMatchingMessageType)
         {
             bool hasFailures = predicate.Invoke(message.MessageObject as MessageType);
-            if (!hasFailures) 
+            if (!hasFailures)
                 foundMatches++;
-            
+
         }
-        
+
         return foundMatches == 1 ? true : false;
     }
 
     public async Task WaitUntillEventHasBeenConsumed<T>(Predicate<T>? predicate = null) where T : class
     {
-        var t =  _harness.Consumed.SelectAsync<T>();
-        await foreach (var message in t) 
+        var t = _harness.Consumed.SelectAsync<T>();
+        await foreach (var message in t)
         {
-            if(message.MessageType == typeof(T))
+            if (message.MessageType == typeof(T))
             {
                 if (predicate is not null)
                 {
                     var isValid = predicate.Invoke(message.MessageObject as T);
-                    if (isValid)                    
-                        return;                    
+                    if (isValid)
+                        return;
                     continue;
                 }
                 return;

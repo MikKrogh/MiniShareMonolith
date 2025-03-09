@@ -3,16 +3,16 @@ namespace PostsModule.Domain;
 
 public class Post
 {
-	public Guid Id { get; private set; } 
-	public string Title { get; private set; } = "";
-	public string? Description { get; private set; }
-	public string CreatorName { get; private set; } = "";
-	public string CreatorId { get; private set; } = "";
-	public string FactionName { get; private set; } = "";
+    public Guid Id { get; private set; }
+    public string Title { get; private set; } = "";
+    public string? Description { get; private set; }
+    public string CreatorName { get; private set; } = "";
+    public string CreatorId { get; private set; } = "";
+    public string FactionName { get; private set; } = "";
     public string? FigureName { get; private set; }
-    public Colors PrimaryColour {  get; private set; } = Colors.Unknown;
-	public Colors SecondaryColour { get; private set; } = Colors.Unknown;
-	public DateTime CreationDate { get; private set; } = default;
+    public Colors PrimaryColour { get; private set; } = Colors.Unknown;
+    public Colors SecondaryColour { get; private set; } = Colors.Unknown;
+    public DateTime CreationDate { get; private set; } = default;
     public HashSet<string> Images { get; private set; } = new();
 
     private Post(string title, string creatorId, string factionName)
@@ -24,11 +24,11 @@ public class Post
 
 
     public static Post CreateNew(string title, string creatorId, string factionName, Guid? id = null)
-	{
-		if (string.IsNullOrEmpty(title) || string.IsNullOrEmpty(creatorId) || string.IsNullOrEmpty(factionName)) throw new ArgumentNullException("cant create posts with empty title or creatorId");
+    {
+        if (string.IsNullOrEmpty(title) || string.IsNullOrEmpty(creatorId) || string.IsNullOrEmpty(factionName)) throw new ArgumentNullException("cant create posts with empty title or creatorId");
 
-		var post = new Post(title, creatorId, factionName) 
-		{
+        var post = new Post(title, creatorId, factionName)
+        {
             Id = id ?? Guid.NewGuid(),
             CreationDate = DateTime.UtcNow
         };
@@ -58,28 +58,28 @@ public class Post
     }
 
     public void SetDescription(string? description)
-	{
-		Description = description;
-	}	
+    {
+        Description = description;
+    }
     public void SetDisplayName(string displayName)
-	{
-		if (!string.IsNullOrEmpty(displayName))		
-			CreatorName = displayName;		
-	}
+    {
+        if (!string.IsNullOrEmpty(displayName))
+            CreatorName = displayName;
+    }
 
-	public void SetPrimaryColour(string? colour)
-	{
-		var result = Colors.Unknown;
-		Enum.TryParse(colour, true, out result);
-		PrimaryColour = result;
-	}
-	public void SetSecondaryColour(string? colour)
-	{
-		var result = Colors.Unknown;
-		Enum.TryParse(colour, true, out result);
-		SecondaryColour = result;
-	}
-	public void SetCreationDate(DateTime creationDate)
+    public void SetPrimaryColour(string? colour)
+    {
+        var result = Colors.Unknown;
+        Enum.TryParse(colour, true, out result);
+        PrimaryColour = result;
+    }
+    public void SetSecondaryColour(string? colour)
+    {
+        var result = Colors.Unknown;
+        Enum.TryParse(colour, true, out result);
+        SecondaryColour = result;
+    }
+    public void SetCreationDate(DateTime creationDate)
     {
         if (creationDate != default)
             CreationDate = creationDate;

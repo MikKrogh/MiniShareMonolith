@@ -13,16 +13,16 @@ public class CreatePostConsumer : IConsumer<CreatePostCommand>
         this.imageService = imageService;
     }
     public async Task Consume(ConsumeContext<CreatePostCommand> context)
-	{
+    {
         if (!IsValid(context.Message))
         {
             var result = CommandResult<string>.FailedToValidate();
-            await context.RespondAsync(result);            
+            await context.RespondAsync(result);
         }
 
         Post post = CreateDomainEntity(context.Message);
 
-        List<Task>uploadTasks = new();
+        List<Task> uploadTasks = new();
         foreach (var image in context.Message.Images)
         {
             uploadTasks.Add(imageService.UploadImage(image.OpenReadStream(), post.Id.ToString(), Guid.NewGuid().ToString()));
@@ -75,28 +75,28 @@ public abstract class Validator<T> where T : class
 {
     private List<Func<T, bool>> rules = new();
     //public void MustBeHigher(Func<T,int> target, int limit) => rules.Add(x => (target.Invoke(x)  > limit));
-    public void MustBeHigher(Func<T, int?> target, int limit) => rules.Add(x => 
+    public void MustBeHigher(Func<T, int?> target, int limit) => rules.Add(x =>
     {
         int? value = target.Invoke(x);
         return value.HasValue && value.Value > limit;
 
-    }); 
-    public void MustBeLower(Func<T,int?> target, int limit) => rules.Add(x => 
+    });
+    public void MustBeLower(Func<T, int?> target, int limit) => rules.Add(x =>
     {
         var value = target.Invoke(x);
         return value.HasValue && value.Value < limit;
-    });    
-    public void MustNotContainsNumerics(Func<T, string?> target) => rules.Add(x => 
+    });
+    public void MustNotContainsNumerics(Func<T, string?> target) => rules.Add(x =>
     {
         var value = target.Invoke(x);
         return !string.IsNullOrEmpty(value) && !value.Any(char.IsDigit);
     });
-    public void MustNotBeEmptyGuid(Func<T, string> target) => rules.Add(x => 
+    public void MustNotBeEmptyGuid(Func<T, string> target) => rules.Add(x =>
     {
         string guidString = target.Invoke(x);
         return Guid.TryParse(guidString, out Guid newGuid) && newGuid != Guid.Empty;
     });
-    
+
     public bool IsValid(T target)
     {
         return rules.All(x => x.Invoke(target));

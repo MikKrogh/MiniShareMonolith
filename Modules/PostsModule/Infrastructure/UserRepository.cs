@@ -19,7 +19,7 @@ internal class UserRepository : IUserRepository
         {
             Id = user.Id.ToString(),
             UserName = user.Name,
-        };        
+        };
         await context.Users.AddAsync(userEntity);
         await context.SaveChangesAsync();
     }

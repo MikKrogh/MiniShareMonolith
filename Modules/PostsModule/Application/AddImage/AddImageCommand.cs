@@ -1,6 +1,6 @@
 ﻿namespace PostsModule.Application.AddImage;
 
-public  class AddImageCommand
+public class AddImageCommand
 {
     //public FormFile Stream { get; init; }
     public string PostId { get; init; } = string.Empty;

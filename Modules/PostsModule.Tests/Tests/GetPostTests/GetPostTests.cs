@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using PostsModule.Tests.Helper;
+﻿using PostsModule.Tests.Helper;
 using PostsModule.Tests.Tests;
 
 

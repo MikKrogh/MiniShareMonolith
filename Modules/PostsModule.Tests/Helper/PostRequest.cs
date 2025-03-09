@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-
-namespace PostsModule.Tests.Helper;
+﻿namespace PostsModule.Tests.Helper;
 
 internal class PostRequest
 {

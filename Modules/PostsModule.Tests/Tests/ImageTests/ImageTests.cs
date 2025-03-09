@@ -18,13 +18,13 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
         var user = await testFacade.SendCreateUserEvent();
         var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
         var create = await testFacade.SendCreatePost(createBody);
-        
+
 
         //When
         var response = await testFacade.UploadImage(create.Result.PostId, create.Result.Token);
 
         //Then
-        Assert.True(response == HttpStatusCode.OK); 
+        Assert.True(response == HttpStatusCode.OK);
     }
 
     [Fact]

@@ -11,14 +11,14 @@ using PostsModule.Tests.Helper;
 
 namespace PostsModule.Tests;
 
-public class PostsWebApplicationFactory: WebApplicationFactory<Program>
+public class PostsWebApplicationFactory : WebApplicationFactory<Program>
 {
     public FakeImageBlobStorage FakeImageBlobStorage { get; private set; }
     public MessageBrokerTestFacade MessageBrokerTestFacade { get; private set; }
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Test");
- 
+
         builder.ConfigureServices(services =>
         {
             ConfigueTestDependencies(services);
@@ -32,7 +32,7 @@ public class PostsWebApplicationFactory: WebApplicationFactory<Program>
                 cfg.UsingInMemory((context, config) =>
                 {
                     config.ConfigureEndpoints(context);
-                });                
+                });
             });
             services.AddSingleton<MessageBrokerTestFacade>(sp =>
             {
@@ -47,10 +47,10 @@ public class PostsWebApplicationFactory: WebApplicationFactory<Program>
 
     protected override IHost CreateHost(IHostBuilder builder)
     {
-        var baseHost =  base.CreateHost(builder);
+        var baseHost = base.CreateHost(builder);
         var sp = baseHost.Services.GetService<MessageBrokerTestFacade>();
         MessageBrokerTestFacade = sp;
-        return baseHost;    
+        return baseHost;
     }
 
 

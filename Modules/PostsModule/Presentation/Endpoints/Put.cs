@@ -6,8 +6,8 @@ using System.Collections.Concurrent;
 namespace PostsModule.Presentation.Endpoints;
 
 internal class Put
-{    
-    internal static async Task<IResult> ProcessAddImage([FromForm] IFormFile file,[FromServices] IRequestClient<AddImageCommand> client,[FromRoute]string postId, [FromQuery]string token)
+{
+    internal static async Task<IResult> ProcessAddImage([FromForm] IFormFile file, [FromServices] IRequestClient<AddImageCommand> client, [FromRoute] string postId, [FromQuery] string token)
     {
         var t = StreamBank.RegisterStream(file.OpenReadStream());
 
@@ -20,7 +20,7 @@ internal class Put
         };
 
         var result = await client.GetResponse<CommandResult>(command);
-        
+
         if (result.Message.IsSuccess)
             return Results.Ok();
         return Results.Problem();

@@ -6,7 +6,7 @@ internal sealed class ImageRepository : IImageRepository
 {
     private readonly PostsContext _context;
 
-    public ImageRepository(PostsContext context)   
+    public ImageRepository(PostsContext context)
     {
         _context = context;
     }

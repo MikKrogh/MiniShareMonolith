@@ -37,7 +37,8 @@ public sealed class CommandResult : AbstractCommandResult
         IsSuccess = false,
         ResultStatus = (int)HttpStatusCode.BadRequest
     };
-    public static CommandResult Success() => new CommandResult {            
+    public static CommandResult Success() => new CommandResult
+    {
         IsSuccess = true,
         ResultStatus = (int)HttpStatusCode.OK
     };

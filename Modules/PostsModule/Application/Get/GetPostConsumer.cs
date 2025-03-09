@@ -12,11 +12,11 @@ public class GetPostConsumer : IConsumer<GetPostCommand>
         this.repository = repository;
     }
     public async Task Consume(ConsumeContext<GetPostCommand> context)
-	{
+    {
         var post = await repository.Get(context.Message.PostId);
         if (post is null)
         {
-            await context.RespondAsync(default); 
+            await context.RespondAsync(default);
             return;
         }
 
@@ -32,8 +32,8 @@ public class GetPostConsumer : IConsumer<GetPostCommand>
             PrimaryColor = post.PrimaryColour,
             SecondaryColor = post.SecondaryColour,
             CreationDate = post.CreationDate
-            
+
         };
-		await context.RespondAsync(response);
+        await context.RespondAsync(response);
     }
 }

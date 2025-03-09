@@ -22,10 +22,10 @@ internal class PostsRepository : IPostsRepository
 
     public async Task<Post?> Get(string id)
     {
-         var entity = await context.Posts.Include(post => post.Creator).Include(post => post.Images).FirstOrDefaultAsync<PostEntity>(x => x.Id == id);       
+        var entity = await context.Posts.Include(post => post.Creator).Include(post => post.Images).FirstOrDefaultAsync<PostEntity>(x => x.Id == id);
         if (entity == null) return null;
 
-        var post =  Post.CreateNew(entity.Title, entity.CreatorId, entity.Faction);
+        var post = Post.CreateNew(entity.Title, entity.CreatorId, entity.Faction);
         post.SetId(entity.Id);
         post.SetCreatorName(entity.Creator.UserName);
         post.SetCreationDate(entity.CreationDate);

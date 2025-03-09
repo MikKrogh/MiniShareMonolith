@@ -6,23 +6,23 @@ namespace PostsModule;
 
 public static class ServiceExtensions
 {
-	public static void AddPostsServiceExtensions(this IServiceCollection serviceCollection, IConfiguration configuration)
-	{
+    public static void AddPostsServiceExtensions(this IServiceCollection serviceCollection, IConfiguration configuration)
+    {
         serviceCollection.AddDbContext<PostsContext>();
-		serviceCollection.AddScoped<IPostsRepository, PostsRepository>();
-		serviceCollection.AddScoped<IUserRepository, UserRepository>();
-		serviceCollection.AddScoped<IImageRepository, ImageRepository>();
-		serviceCollection.AddSingleton<IAuthHelper, JwtHandler>();
+        serviceCollection.AddScoped<IPostsRepository, PostsRepository>();
+        serviceCollection.AddScoped<IUserRepository, UserRepository>();
+        serviceCollection.AddScoped<IImageRepository, ImageRepository>();
+        serviceCollection.AddSingleton<IAuthHelper, JwtHandler>();
 
 
-		serviceCollection.AddMassTransit(x =>
-		{
-			x.AddConsumers(typeof(ServiceExtensions).Assembly);
-			x.UsingInMemory((context, cfg) =>
-			{
-				cfg.ConfigureEndpoints(context);
-			});
-		});
-	}	
+        serviceCollection.AddMassTransit(x =>
+        {
+            x.AddConsumers(typeof(ServiceExtensions).Assembly);
+            x.UsingInMemory((context, cfg) =>
+            {
+                cfg.ConfigureEndpoints(context);
+            });
+        });
+    }
 
 }

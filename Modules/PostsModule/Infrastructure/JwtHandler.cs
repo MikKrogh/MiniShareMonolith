@@ -35,4 +35,4 @@ public sealed class JwtHandler : IAuthHelper
             expires: expirationDate,
             signingCredentials: new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256)
         );
-} 
+}

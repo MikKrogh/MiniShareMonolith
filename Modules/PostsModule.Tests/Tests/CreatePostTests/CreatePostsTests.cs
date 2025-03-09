@@ -60,7 +60,7 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
     [InlineData("00000000-0000-0000-0000-000000000000")]
     [InlineData("ghfd777t-dfgh-987g-hgc6-gvjhg8976ygh")]
     [InlineData(null)]
-    
+
     public async Task WhenSomeoneCreatesPostWithNonValidCreatorId_ThenBadRequestIsReturned(string? creatorId)
     {
         //When
@@ -90,7 +90,7 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
         var response = await testFacade.SendCreatePost(createBody);
 
         //Then
-        Assert.True(response.StatusCode == HttpStatusCode.BadRequest, $"Status code was: {response.StatusCode}");        
+        Assert.True(response.StatusCode == HttpStatusCode.BadRequest, $"Status code was: {response.StatusCode}");
     }
 
     [Theory]
@@ -112,7 +112,7 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
 
         //Then
         Assert.True(response.StatusCode == HttpStatusCode.BadRequest, $"Status code was: {response.StatusCode}");
-        
+
     }
 
     [Theory]

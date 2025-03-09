@@ -3,41 +3,41 @@ namespace PostsModule.Tests.Helper;
 
 internal class PostRequestBuilder
 {
-	private PostRequest postRequest;
-	public PostRequestBuilder Create(Guid? userID = null)
-	{
-		postRequest = new PostRequest
-		{
-			CreatorId = (userID == null) ? Guid.NewGuid().ToString() : userID.ToString(),
-		};
-		return this;
-	}
+    private PostRequest postRequest;
+    public PostRequestBuilder Create(Guid? userID = null)
+    {
+        postRequest = new PostRequest
+        {
+            CreatorId = (userID == null) ? Guid.NewGuid().ToString() : userID.ToString(),
+        };
+        return this;
+    }
 
-	public PostRequestBuilder WithTitle(string title)
-	{
-		postRequest.Title = title;
-		return this;
-	}
-	public PostRequestBuilder WithFactionName(string faction)
-	{
-		postRequest.FactionName = faction;
-		return this;
-	}
-	public PostRequestBuilder WithDescription(string description)
-	{
-		postRequest.Description = description;
-		return this;
-	}
-	public PostRequestBuilder WithMainColor(string colour)
-	{
-		postRequest.PrimaryColor = colour;
-		return this;
-	}
-	public PostRequestBuilder WithSecondaryColor(string colour)
-	{
-		postRequest.SecondaryColor = colour;
-		return this;
-	}
+    public PostRequestBuilder WithTitle(string title)
+    {
+        postRequest.Title = title;
+        return this;
+    }
+    public PostRequestBuilder WithFactionName(string faction)
+    {
+        postRequest.FactionName = faction;
+        return this;
+    }
+    public PostRequestBuilder WithDescription(string description)
+    {
+        postRequest.Description = description;
+        return this;
+    }
+    public PostRequestBuilder WithMainColor(string colour)
+    {
+        postRequest.PrimaryColor = colour;
+        return this;
+    }
+    public PostRequestBuilder WithSecondaryColor(string colour)
+    {
+        postRequest.SecondaryColor = colour;
+        return this;
+    }
     public PostRequest Build() => postRequest;
     public static PostRequest GetValidDefaultRequest(Guid? userId = null)
     {

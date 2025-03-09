@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-
-namespace PostsModule.Infrastructure;
+﻿namespace PostsModule.Infrastructure;
 internal record PostEntity
 {
     public string Id { get; set; } = string.Empty;
