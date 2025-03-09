@@ -6,6 +6,7 @@ using PostsModule.Presentation;
 using PostsModule.Presentation.Endpoints;
 using PostsModule.Tests.CreatePostTests;
 using PostsModule.Tests.Helper;
+using PostsModule.Tests.Tests;
 using System;
 using System.Collections;
 using System.IO;
@@ -22,29 +23,30 @@ public class GetPostTests : IClassFixture<PostsWebApplicationFactory>
     private readonly MessageBrokerTestFacade _messageBroker;
     private readonly PostsWebApplicationFactory _factory;
     private readonly HttpClient _client;
+    private readonly TestFacade testFacade;
     public GetPostTests(PostsWebApplicationFactory factory)
     {
         _factory = factory;
         _client = factory.CreateClient();
         _messageBroker = _factory.Services.GetRequiredService<MessageBrokerTestFacade>();
+        testFacade = new TestFacade(factory);
     }
 
     [Fact]
     public async Task GivenPostExists_WhenUserAsksForThePost_ThenResponseIs200()
     {
-        //Given         
-        var existingUser = await _factory.MessageBrokerTestFacade.SendUserCreatedEvent(Guid.NewGuid(), "John Does");
-        await _messageBroker.WaitUntillEventHasBeenConsumed<UserCreatedEvent>(x => x.UserId == existingUser.UserId);
+        // Given
+        var user = await testFacade.SendCreateUserEvent();
 
-        var createBody = PostTestHelper.GetValidDefaultRequest(existingUser.UserId);        
-        var response = await _client.PostAsJsonAsync("/Posts", createBody);
-        var responseContent = await response.Content.ReadFromJsonAsync<CreatePostResponse>();
+
+        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);        
+        var create = await testFacade.SendCreatePost(createBody);
 
         // When
-        var getResponse = await _client.GetAsync($"/Posts/{responseContent.PostId}");
+        var post = await _client.GetAsync($"/Posts/{create.Result.PostId}");
 
         // Then
-        Assert.True(getResponse.IsSuccessStatusCode);
+        Assert.True(post.IsSuccessStatusCode);
     }
 
     [Fact]
@@ -54,7 +56,7 @@ public class GetPostTests : IClassFixture<PostsWebApplicationFactory>
         var existingUser = await _factory.MessageBrokerTestFacade.SendUserCreatedEvent(Guid.NewGuid(), "John Does");
         await _messageBroker.WaitUntillEventHasBeenConsumed<UserCreatedEvent>(x => x.UserId == existingUser.UserId);
 
-        var createBody = PostTestHelper.GetValidDefaultRequest(existingUser.UserId);
+        var createBody = PostRequestBuilder.GetValidDefaultRequest(existingUser.UserId);
         var response = await _client.PostAsJsonAsync("/Posts", createBody);
         var responseContent = await response.Content.ReadFromJsonAsync<CreatePostResponse>();
 

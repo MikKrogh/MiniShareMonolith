@@ -3,9 +3,8 @@ using PostsModule.Application.UserEvents;
 using PostsModule.Presentation.Endpoints;
 using PostsModule.Tests.CreatePostTests;
 using PostsModule.Tests.Helper;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text;
+
 
 namespace PostsModule.Tests.Tests.ImageTests;
 
@@ -28,7 +27,7 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
         var existingUser = await _messageBroker.SendUserCreatedEvent(Guid.NewGuid(), "John Does");
         await _messageBroker.WaitUntillEventHasBeenConsumed<UserCreatedEvent>(x => x.UserId == existingUser.UserId);
 
-        var body = PostTestHelper.GetValidDefaultRequest(existingUser.UserId);
+        var body = PostRequestBuilder.GetValidDefaultRequest(existingUser.UserId);
         var createPostResponse = await _client.PostAsJsonAsync("/Posts", body);
         var createResponseContent = await createPostResponse.Content.ReadFromJsonAsync<CreatePostResponse>();
 
@@ -46,7 +45,7 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
         var existingUser = await _messageBroker.SendUserCreatedEvent();
         await _messageBroker.WaitUntillEventHasBeenConsumed<UserCreatedEvent>(x => x.UserId == existingUser.UserId);
 
-        var body = PostTestHelper.GetValidDefaultRequest(existingUser.UserId);
+        var body = PostRequestBuilder.GetValidDefaultRequest(existingUser.UserId);
         var createPostResponse = await _client.PostAsJsonAsync("/Posts", body);
         var createResponseContent = await createPostResponse.Content.ReadFromJsonAsync<CreatePostResponse>();
         
