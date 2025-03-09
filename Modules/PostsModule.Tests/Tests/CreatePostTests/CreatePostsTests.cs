@@ -1,67 +1,55 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.DependencyInjection;
-using PostsModule.Application.UserEvents;
-using PostsModule.Presentation.Endpoints;
-using PostsModule.Tests.Helper;
+﻿using PostsModule.Tests.Helper;
+using PostsModule.Tests.Tests;
 using System.Net;
-using System.Net.Http.Json;
 
 namespace PostsModule.Tests.CreatePostTests;
 
 public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
 {
-    private readonly MessageBrokerTestFacade _messageBroker;
-    private readonly PostsWebApplicationFactory _factory;
-    private readonly HttpClient _client;
+    private readonly TestFacade testFacade;
     public CreatePostsTests(PostsWebApplicationFactory factory)
     {
-        _factory = factory;
-        _client = factory.CreateClient();
-        _messageBroker = _factory.Services.GetRequiredService<MessageBrokerTestFacade>();
+        testFacade = new TestFacade(factory);
     }
-
 
     [Fact]
     internal async Task GivenUserExists_WhenUserCreatesPost_ThenSuccessIsReturned()
     {
         // Given
-        var existingUser = await _messageBroker.SendUserCreatedEvent(Guid.NewGuid(), "John Doe");
-        await _messageBroker.WaitUntillEventHasBeenConsumed<UserCreatedEvent>(x => x.UserId == existingUser.UserId);
+        var user = await testFacade.SendCreateUserEvent();
 
         //When
-        var body = PostTestHelper.GetValidDefaultRequest();
-        body.CreatorId = existingUser.UserId.ToString();
-        var response = await _client.PostAsJsonAsync("/Posts", body);
+        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        var create = await testFacade.SendCreatePost(createBody);
+
 
         //Then
-        response.EnsureSuccessStatusCode();
+        Assert.True(create.StatusCode == HttpStatusCode.OK);
     }
 
     [Fact]
     internal async Task GivenUserExists_WhenUserCreatesPost_ThenNewPostIdIsReturned()
     {
-        //Given 
-        var existingUser = await _messageBroker.SendUserCreatedEvent(Guid.NewGuid(), "John Does");
-        await _messageBroker.WaitUntillEventHasBeenConsumed<UserCreatedEvent>(x => x.UserId == existingUser.UserId);
+        // Given
+        var user = await testFacade.SendCreateUserEvent();
 
         //When
-        var body = PostTestHelper.GetValidDefaultRequest(existingUser.UserId);        
-        var response = await _client.PostAsJsonAsync("/Posts", body);
+        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        var create = await testFacade.SendCreatePost(createBody);
 
         //Then
-        var id = await response.Content.ReadAsStringAsync();
-        Assert.False(string.IsNullOrEmpty(id));
+        Assert.True(create.Result?.PostId != null);
     }
 
     [Fact]
     public async Task GivenNoUserExist_WhenSomeoneCreatesPost_ThenInternalServerErrorIsReturned()
     {
         // When
-        var body = PostTestHelper.GetValidDefaultRequest(Guid.NewGuid());
-        var response = await _client.PostAsJsonAsync("/Posts", body);
+        var createBody = PostRequestBuilder.GetValidDefaultRequest(Guid.NewGuid());
+        var create = await testFacade.SendCreatePost(createBody);
 
         //Then
-        Assert.Equal(response.StatusCode, System.Net.HttpStatusCode.InternalServerError);
+        Assert.True(create.StatusCode == HttpStatusCode.InternalServerError);
     }
 
 
@@ -76,9 +64,9 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
     public async Task WhenSomeoneCreatesPostWithNonValidCreatorId_ThenBadRequestIsReturned(string? creatorId)
     {
         //When
-        var body = PostTestHelper.GetValidDefaultRequest();
-        body.CreatorId = creatorId;
-        var response = await _client.PostAsJsonAsync("/Posts", body);
+        var createBody = PostRequestBuilder.GetValidDefaultRequest();
+        createBody.CreatorId = creatorId;
+        var response = await testFacade.SendCreatePost(createBody);
 
         //Then
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -91,15 +79,18 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
     [InlineData("beyondMaxCharCountofThirtytwoXxXx")]
     [InlineData("stringWithNumeric5")]
     [InlineData("12365487654")]
-    public async Task WhenSomeoneCreatesPostWithNonValidTitle_ThenBadRequestIsReturned(string? title)
+    public async Task Given_UserExists_WhenSomeoneCreatesPostWithNonValidTitle_ThenBadRequestIsReturned(string? title)
     {
-        var body = PostTestHelper.GetValidDefaultRequest();
-        body.Title = title;        
-        var response = await _client.PostAsJsonAsync("/Posts", body);
+        // Given
+        var user = await testFacade.SendCreateUserEvent();
+
+        //When
+        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        createBody.Title = title;
+        var response = await testFacade.SendCreatePost(createBody);
 
         //Then
-        Assert.True(HttpStatusCode.BadRequest == response.StatusCode, $"assertation against title with value: {title}, response was satus code: {response.StatusCode}");
-        
+        Assert.True(response.StatusCode == HttpStatusCode.BadRequest, $"Status code was: {response.StatusCode}");        
     }
 
     [Theory]
@@ -109,14 +100,19 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
     [InlineData("stringWithNumeric5")]
     [InlineData("maxcountof25reachedXxXxXxX")]
 
-    public async Task WhenSomeoneCreatesPostWithNonValidFaction_ThenBadRequestIsReturned(string? factionName)
+    public async Task GivenUserExists_WhenSomeoneCreatesPostWithNonValidFaction_ThenBadRequestIsReturned(string? factionName)
     {
-        var body = PostTestHelper.GetValidDefaultRequest();
-        body.FactionName = factionName;
-        var response = await _client.PostAsJsonAsync("/Posts", body);
+        // Given
+        var user = await testFacade.SendCreateUserEvent();
+
+        //When
+        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        createBody.FactionName = factionName;
+        var response = await testFacade.SendCreatePost(createBody);
 
         //Then
-        Assert.True(HttpStatusCode.BadRequest == response.StatusCode, $"assertation against title with value: {factionName}, response was of type{response.StatusCode}");
+        Assert.True(response.StatusCode == HttpStatusCode.BadRequest, $"Status code was: {response.StatusCode}");
+        
     }
 
     [Theory]
@@ -128,20 +124,18 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
     [InlineData("BluE")]
     public async Task GivenUserExists_WhenUserCreatesPostWithWierdCasingForPrimaryColor_ThenSuccessIsReturnedAndColorIsSavedWithNormalName(string primaryColor)
     {
-        //Given 
-        var existingUser = await _messageBroker.SendUserCreatedEvent(Guid.NewGuid(), "John Does");
-        await _messageBroker.WaitUntillEventHasBeenConsumed<UserCreatedEvent>(x => x.UserId == existingUser.UserId);
+        // Given
+        var user = await testFacade.SendCreateUserEvent();
 
         //When
-        var body = PostTestHelper.GetValidDefaultRequest(existingUser.UserId);
-        body.PrimaryColor = primaryColor;
-        var response = await _client.PostAsJsonAsync("/Posts", body);
-        var responseContent = await response.Content.ReadFromJsonAsync<CreatePostResponse>();
+        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        createBody.PrimaryColor = primaryColor;
+        var response = await testFacade.SendCreatePost(createBody);
 
         //Then
-        var getResponse = await _client.GetFromJsonAsync<PostDto>($"/Posts/{responseContent.PostId}");
-        Assert.True(response.StatusCode == HttpStatusCode.OK);
+        var getResponse = await testFacade.GetPost(response.Result.PostId);
 
+        Assert.True(response.StatusCode == HttpStatusCode.OK);
         Assert.True(char.IsUpper(getResponse.PrimaryColor.ToString()[0]));
         Assert.True(getResponse.PrimaryColor.ToString().Skip(1).All(char.IsLower));
     }
@@ -155,20 +149,18 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
     [InlineData("BluE")]
     public async Task GivenUserExists_WhenUserCreatesPostWithWierdCasingForSecondaryColor_ThenSuccessIsReturnedAndColorIsSavedWithNormalName(string secondaryColor)
     {
-        //Given 
-        var existingUser = await _messageBroker.SendUserCreatedEvent(Guid.NewGuid(), "John Does");
-        await _messageBroker.WaitUntillEventHasBeenConsumed<UserCreatedEvent>(x => x.UserId == existingUser.UserId);
+        // Given
+        var user = await testFacade.SendCreateUserEvent();
 
         //When
-        var body = PostTestHelper.GetValidDefaultRequest(existingUser.UserId);
-        body.SecondaryColor = secondaryColor;
-        var response = await _client.PostAsJsonAsync("/Posts", body);
-        var responseContent = await response.Content.ReadFromJsonAsync<CreatePostResponse>();
+        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        createBody.SecondaryColor = secondaryColor;
+        var response = await testFacade.SendCreatePost(createBody);
 
         //Then
-        var getResponse = await _client.GetFromJsonAsync<PostDto>($"/Posts/{responseContent.PostId}");
-        Assert.True(response.StatusCode == HttpStatusCode.OK);
+        var getResponse = await testFacade.GetPost(response.Result.PostId);
 
+        Assert.True(response.StatusCode == HttpStatusCode.OK);
         Assert.True(char.IsUpper(getResponse.SecondaryColor.ToString()[0]));
         Assert.True(getResponse.SecondaryColor.ToString().Skip(1).All(char.IsLower));
     }
@@ -179,21 +171,20 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
     [InlineData("bogus")]
     [InlineData("r3d")]
 
-    public async Task WhenSomeoneCreatesPostWithNonValidPrimaryColor_ThenSuccessIsReturnedAndPostIsSavedWithUndefinedPrimaryColor(string? primaryColor)
+    public async Task GivenUserExists_WhenSomeoneCreatesPostWithNonValidPrimaryColor_ThenSuccessIsReturnedAndPostIsSavedWithUndefinedPrimaryColor(string? primaryColor)
     {
         // Given
-        var existingUser = await _messageBroker.SendUserCreatedEvent(Guid.NewGuid(), "John Doe");
-        await _messageBroker.WaitUntillEventHasBeenConsumed<UserCreatedEvent>(x => x.UserId == existingUser.UserId);
+        var user = await testFacade.SendCreateUserEvent();
 
         //When
-        var body = PostTestHelper.GetValidDefaultRequest(existingUser.UserId);
-        body.PrimaryColor = primaryColor;            
-        var response = await _client.PostAsJsonAsync("/Posts", body);
-        var responseContent = await response.Content.ReadFromJsonAsync<CreatePostResponse>();
+        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        createBody.PrimaryColor = primaryColor;
+        var response = await testFacade.SendCreatePost(createBody);
 
         //Then
-        var getResponse = await _client.GetFromJsonAsync<PostDto>($"/Posts/{responseContent.PostId}");
-        Assert.True(Domain.Colors.Unknown == getResponse.PrimaryColor, $"assertation against primary color with value: {primaryColor}");
+        var getResponse = await testFacade.GetPost(response.Result.PostId);
+
+        Assert.True(Domain.Colors.Unknown == getResponse.PrimaryColor);
     }
 
     [Theory]
@@ -201,20 +192,19 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
     [InlineData(null)]
     [InlineData("bogus")]
     [InlineData("r3d")]
-    public async Task WhenSomeoneCreatesPostWithNonValidSecondaryColor_ThenSuccessIsReturnedAndPostIsSavedWithUndefinedPrimaryColor(string? secondaryColor)
+    public async Task GivenUserExists_WhenSomeoneCreatesPostWithNonValidSecondaryColor_ThenSuccessIsReturnedAndPostIsSavedWithUndefinedPrimaryColor(string? secondaryColor)
     {
         // Given
-        var existingUser = await _messageBroker.SendUserCreatedEvent(Guid.NewGuid(), "John Doe");
-        await _messageBroker.WaitUntillEventHasBeenConsumed<UserCreatedEvent>(x => x.UserId == existingUser.UserId);
+        var user = await testFacade.SendCreateUserEvent();
 
         //When
-        var body = PostTestHelper.GetValidDefaultRequest(existingUser.UserId);
-        body.SecondaryColor = secondaryColor;
-        var response = await _client.PostAsJsonAsync("/Posts", body);
-        var responseContent = await response.Content.ReadFromJsonAsync<CreatePostResponse>();
+        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        createBody.SecondaryColor = secondaryColor;
+        var response = await testFacade.SendCreatePost(createBody);
 
         //Then
-        var getResponse = await _client.GetFromJsonAsync<PostDto>($"/Posts/{responseContent.PostId}");
-        Assert.True(Domain.Colors.Unknown == getResponse.SecondaryColor, $"assertation against primary color with value: {secondaryColor}");
+        var getResponse = await testFacade.GetPost(response.Result.PostId);
+
+        Assert.True(Domain.Colors.Unknown == getResponse.SecondaryColor);
     }
 }
