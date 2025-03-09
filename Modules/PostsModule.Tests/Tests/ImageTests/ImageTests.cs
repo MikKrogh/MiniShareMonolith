@@ -1,10 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using PostsModule.Application.UserEvents;
-using PostsModule.Presentation.Endpoints;
-using PostsModule.Tests.Helper;
+﻿using PostsModule.Tests.Helper;
 using System.Net;
-using System.Net.Http.Json;
-
 
 namespace PostsModule.Tests.Tests.ImageTests;
 
