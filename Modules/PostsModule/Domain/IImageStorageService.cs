@@ -2,5 +2,5 @@
 
 public interface IImageStorageService
 {
-    public Task<IResult> UploadImage(Stream stream, string directoryName, string fileName);
+    public Task UploadImage(Stream stream, string directoryName, string fileName, string fileExtension);
 }

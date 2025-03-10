@@ -7,6 +7,7 @@ namespace PostsModule.Presentation.Endpoints;
 
 internal class Put
 {
+    [RequestFormLimits(MultipartBodyLengthLimit = 9_250_000)]
     internal static async Task<IResult> ProcessAddImage( IFormFile file, [FromServices] IRequestClient<AddImageCommand> client, [FromRoute] string postId, [FromQuery] string token)    
     {
         var t = StreamBank.RegisterStream(file.OpenReadStream());
@@ -26,7 +27,7 @@ internal class Put
     }
 }
 
-
+//MassTransits message broker seralizes the messages between command creator and command handler, and the stream is not serializable.
 public static class StreamBank
 {
     private static readonly ConcurrentDictionary<Guid, Stream> Streams = new();

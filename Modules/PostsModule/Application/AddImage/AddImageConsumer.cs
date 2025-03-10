@@ -26,9 +26,9 @@ public class AddImageConsumer : IConsumer<AddImageCommand>
 
         try
         {
-            string newFileName = DateTime.Now.Ticks.ToString() + context.Message.FileExtension;
+            string newFileName = DateTime.Now.Ticks.ToString();
 
-            await _imageBlobService.UploadImage(stream, context.Message.PostId, newFileName);
+            await _imageBlobService.UploadImage(stream, context.Message.PostId, newFileName, context.Message.FileExtension);
             await _imageRepository.Create(Image.Create(newFileName, context.Message.PostId));
 
             await context.RespondAsync(CommandResult.Success());

@@ -14,30 +14,17 @@ public class CreatePostConsumer : IConsumer<CreatePostCommand>
     }
     public async Task Consume(ConsumeContext<CreatePostCommand> context)
     {
-        if (!IsValid(context.Message))
+        if (IsValid(context.Message))
+        {
+            Post post = CreateDomainEntity(context.Message);
+            await repository.Save(post);
+            await context.RespondAsync(CommandResult<string>.Success(post.Id.ToString()));
+        }
+        else
         {
             var result = CommandResult<string>.FailedToValidate();
             await context.RespondAsync(result);
         }
-
-        Post post = CreateDomainEntity(context.Message);
-
-        List<Task> uploadTasks = new();
-        foreach (var image in context.Message.Images)
-        {
-            uploadTasks.Add(imageService.UploadImage(image.OpenReadStream(), post.Id.ToString(), Guid.NewGuid().ToString()));
-        }
-        try
-        {
-            await Task.WhenAll(uploadTasks);
-        }
-        catch (Exception)
-        {
-            throw;
-        }
-        await repository.Save(post);
-
-        await context.RespondAsync(CommandResult<string>.Success(post.Id.ToString()));
     }
 
     private static Post CreateDomainEntity(CreatePostCommand context)

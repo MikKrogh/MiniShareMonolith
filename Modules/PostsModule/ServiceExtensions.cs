@@ -30,11 +30,16 @@ public static class ServiceExtensions
     public static void AppConfiguration(this IConfigurationBuilder configBuilder)
     {
         var config = configBuilder.Build();
-        configBuilder.AddAzureAppConfiguration(options =>
+        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
         {
-            options.Connect(new Uri(config["AppConfigEndpoint"]), new DefaultAzureCredential())
-            .Select("PostService*").TrimKeyPrefix("PostService:");
-        });
+            configBuilder.AddAzureAppConfiguration(options =>
+            {
+                options.Connect(new Uri(config["AppConfigEndpoint"]), new DefaultAzureCredential())
+                .Select("PostService*").TrimKeyPrefix("PostService:");
+            });
+        }
+
+
     }
 
 

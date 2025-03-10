@@ -19,7 +19,7 @@ internal class PostsContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer(config.GetConnectionString("sql"));
+        optionsBuilder.UseSqlServer(config.GetConnectionString("SQLConnectionString"));
         base.OnConfiguring(optionsBuilder);
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)

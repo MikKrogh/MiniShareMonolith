@@ -7,7 +7,7 @@ public class FakeImageBlobStorage : IImageStorageService
 {
     private Dictionary<string, IEnumerable<MockFile>> _blobStorage = new();
     private object _blobStorageLock = new object();
-    public async Task<IResult> UploadImage(Stream stream, string directoryName, string fileName)
+    public async Task UploadImage(Stream stream, string directoryName, string fileName, string extension)
     {
         try
         {
@@ -25,12 +25,11 @@ public class FakeImageBlobStorage : IImageStorageService
                 if (!_blobStorage.ContainsKey(directoryName))
                     _blobStorage.Add(directoryName, Enumerable.Empty<MockFile>());
                 _blobStorage[directoryName] = _blobStorage[directoryName].Append(mockfile);
-                return Results.Ok();
             }
         }
         catch (Exception ex)
         {
-            return Results.Problem();
+            throw;
         }
     }
 
