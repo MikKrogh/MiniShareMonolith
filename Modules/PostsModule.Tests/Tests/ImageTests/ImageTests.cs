@@ -62,4 +62,11 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
         var filesInBlob = testFacade.FilesInDirecory(create.Result.PostId);
         Assert.Equal(2, filesInBlob.Count());
     }
+
+    [Fact]
+    public async Task GivenUserExistsAndHasCreatedAPost_WhenUserUploadsImageBiggerThan9Mb_ThenBadRequrstIsReturned()
+    {
+        Assert.True(false);
+
+    }
 }
