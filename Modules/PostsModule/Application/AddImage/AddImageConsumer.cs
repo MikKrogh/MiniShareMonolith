@@ -22,20 +22,46 @@ public class AddImageConsumer : IConsumer<AddImageCommand>
 
     public async Task Consume(ConsumeContext<AddImageCommand> context)
     {
-        var stream = StreamBank.GetStream(context.Message.StreamId);
-
-        try
+        if (!IsValid(context.Message))
         {
-            string newFileName = DateTime.Now.Ticks.ToString();
-
-            await _imageBlobService.UploadImage(stream, context.Message.PostId, newFileName, context.Message.FileExtension);
-            await _imageRepository.Create(Image.Create(newFileName, context.Message.PostId));
-
-            await context.RespondAsync(CommandResult.Success());
+            var result = CommandResult.FailedToValidate();
+            await context.RespondAsync(result);
         }
-        catch (Exception ex)
+        else
         {
-            await context.RespondAsync(CommandResult.InternalError());
+            var stream = StreamBank.GetStream(context.Message.StreamId);
+
+            try
+            {
+                string newFileName = DateTime.Now.Ticks.ToString();
+
+                await _imageBlobService.UploadImage(stream, context.Message.PostId, newFileName, context.Message.FileExtension);
+                await _imageRepository.Create(Image.Create(newFileName, context.Message.PostId));
+
+                await context.RespondAsync(CommandResult.Success());
+            }
+            catch (Exception ex)
+            {
+                await context.RespondAsync(CommandResult.InternalError());
+            }
         }
+    }
+
+    private bool IsValid(AddImageCommand command)
+    {
+        bool isValidExtension = IsValidFileExtension(command.FileExtension);
+        bool postIdIsGuid = Guid.TryParse(command.PostId, out Guid _);
+        bool streamExists = StreamBank.ContainsStream(command.StreamId);
+
+        return isValidExtension && postIdIsGuid && streamExists;
+    }
+
+    private bool IsValidFileExtension(string fileExtension)
+    {
+        return fileExtension == ".jpg" ||
+               fileExtension == ".jpeg" ||
+               fileExtension == ".bmp" ||
+               fileExtension == ".png";
+
     }
 }

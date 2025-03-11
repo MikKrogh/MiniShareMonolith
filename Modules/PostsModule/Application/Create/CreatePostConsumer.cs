@@ -22,7 +22,7 @@ public class CreatePostConsumer : IConsumer<CreatePostCommand>
         }
         else
         {
-            var result = CommandResult<string>.FailedToValidate();
+            var result = CommandResult.FailedToValidate();
             await context.RespondAsync(result);
         }
     }

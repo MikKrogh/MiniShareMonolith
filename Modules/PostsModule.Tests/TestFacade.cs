@@ -7,6 +7,7 @@ using PostsModule.Presentation.Endpoints;
 using PostsModule.Tests.Helper;
 using System.Net;
 using System.Net.Http.Json;
+using Xunit.Sdk;
 
 namespace PostsModule.Tests;
 
@@ -41,12 +42,12 @@ internal class TestFacade
         };
     }
 
-    public async Task<HttpStatusCode> UploadImage(string postId, string token)
+    public async Task<HttpStatusCode> UploadImage(string postId, string token, long fileSize = 2000, string fileExtension = ".jpg")
     {
-        var bytes = new byte[1789];
+        var bytes = new byte[fileSize];
         var stream = new MemoryStream(bytes);
         var form = new MultipartFormDataContent();
-        form.Add(new StreamContent(stream), "file", $"filename.jpeg");
+        form.Add(new StreamContent(stream), "file", $"filename" + fileExtension);
 
         var response = await _client.PutAsync($"/Posts/{postId}/Image?token={token}", form);
         return response.StatusCode;
