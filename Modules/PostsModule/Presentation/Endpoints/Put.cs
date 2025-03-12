@@ -2,91 +2,70 @@
 using Microsoft.AspNetCore.Mvc;
 using PostsModule.Application;
 using PostsModule.Application.AddImage;
+using PostsModule.Domain.Auth;
+
 using System.Collections.Concurrent;
-using System.Collections.Specialized;
+using System.Linq;
+
 namespace PostsModule.Presentation.Endpoints;
 
 internal class Put
 {
     [RequestFormLimits(MultipartBodyLengthLimit = 9_000_000)]
-    internal static async Task<IResult> ProcessAddImage( IFormFile file, [FromServices] IRequestClient<AddImageCommand> client, [FromRoute] string postId, [FromQuery] string token)    
+    internal static async Task<IResult> ProcessAddImage( IFormFile file,[FromServices] IAuthHelper authHelper,[FromServices] IRequestClient<AddImageCommand> client, [FromRoute] Guid postId, [FromQuery] string token)    
     {
-        var imageId = StreamBank.RegisterStream(Guid.Parse(postId),file.OpenReadStream());
-        if (imageId == null)
-            return Results.BadRequest();
+        var claims = authHelper.ReadClaims(token);
+        if (claims == null || !claims.Any()) return Results.Problem();
 
         var command = new AddImageCommand()
         {
             FileExtension = Path.GetExtension(file.FileName),
             PostId = postId,
-            StreamId = imageId.Value
+            StreamId = Guid.NewGuid()
         };
 
-        var result = await client.GetResponse<CommandResult>(command);
+        StreamBank.RegisterStream(command.PostId,command.StreamId, file.OpenReadStream());
 
+        var result = await client.GetResponse<CommandResult<AddImageCommandResult>>(command);
+
+        
+        //Add a subscriber to clear the streambank by post, after the token has expired
         if (result.Message.IsSuccess)
             return Results.Ok();
         return Results.StatusCode(result.Message.ResultStatus);
     }
 }
 
-//MassTransits message broker seralizes the messages between command creator and command handler, and the stream is not serializable.
+//MassTransits message broker seralizes the messages between command-creator and command-handler, i dont want to read the streams byte twice, so instead well use this bank to parse the stream around.
+//look into better ways to handle this, maybe a better way to handle the streams, or a better way to handle the messages.
 public static class StreamBank
 {
-    private static readonly ConcurrentDictionary<Guid, ImageContainer> Streams = new(); // jwtToken is the Key
+    private const int MaxStreamsPerPost = 8;
+    private
+    
+    public static readonly ConcurrentDictionary<Guid, ConcurrentDictionary<Guid, Stream>> StreamsByPost = new();
 
-    public static Guid? RegisterStream(Guid postId,Stream stream)
+    public static bool RegisterStream(Guid postId, Guid streamId,Stream stream )
     {
-        if (!Streams.ContainsKey(postId))        
-            Streams.TryAdd(postId, new ImageContainer());        
+        var postStreams = StreamsByPost.GetOrAdd(postId, _ => new ConcurrentDictionary<Guid, Stream>());
 
-        try
-        {
-            Guid imageId = Guid.NewGuid();
-            var success = Streams[postId].TryAddStream(imageId,stream);
-            return success 
-                ? imageId 
-                : null;
-        }
-        catch (Exception ex)
-        {
-            return null;
-        }
+        if (MaxStreamsPerPost <= postStreams.Count ) return false;       
+        return postStreams.TryAdd(streamId, stream);
+    }
+    public static Stream? GetStream(Guid postId, Guid streamId)
+    {
+        return StreamsByPost.TryGetValue(postId, out var postStreams)
+            && postStreams.TryGetValue(streamId, out var stream)
+            ? stream
+            : null;
     }
 
-    public static Stream? GetStream(Guid postId, Guid ImageId)
+    public static void RemoveStream(Guid postId, Guid streamId)
     {
-        if (Streams.ContainsKey(postId))
+        if (StreamsByPost.TryGetValue(postId, out var postStreams))
         {
-            return Streams[postId].GetStream(ImageId);            
-        }
-        return null;
-    }
-
-    private class ImageContainer
-    {
-        private int MaxStreams = 8;
-        public int StreamsHandedOver { get; private set; } = 0;
-        private List<(Guid imageId ,Stream stream)> Streams { get; init; } = new();
-
-        public bool TryAddStream(Guid imageId, Stream stream)
-        {
-            if (StreamsHandedOver <= MaxStreams)
-            {
-                Streams.Add((imageId, stream));
-                StreamsHandedOver++;
-                return true;
-            }
-            return false;
-        }
-
-        public Stream GetStream(Guid imageId)
-        {
-            var stream = Streams.FirstOrDefault(x => x.imageId == imageId);
-            return stream.stream;
+            postStreams.TryRemove(streamId, out _);
 
         }
-        public void RemoveStream(Guid imageId) => Streams.Remove(Streams.First(x => x.imageId == imageId));      
-        
     }
 }

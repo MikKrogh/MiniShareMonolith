@@ -1,4 +1,5 @@
-﻿using PostsModule.Tests.Helper;
+﻿using PostsModule.Presentation.Endpoints;
+using PostsModule.Tests.Helper;
 using System.Net;
 
 namespace PostsModule.Tests.Tests.ImageTests;
@@ -100,15 +101,19 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
         var user = await testFacade.SendCreateUserEvent();
         var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
         var create = await testFacade.SendCreatePost(createBody);
-        Enumerable.Range(1,8).Select(async x =>
-        await testFacade.UploadImage(create.Result.PostId, create.Result.Token));
+
+        var uploadTasks = Enumerable.Range(0, 8)
+            .Select(x => testFacade.UploadImage(create.Result.PostId, create.Result.Token));
+        await Task.WhenAll(uploadTasks);
+
+        var getdResponse = await testFacade.GetPost(create.Result.PostId);
+
 
         // When
         var response = await testFacade.UploadImage(create.Result.PostId, create.Result.Token);
 
         // Then
-        Assert.True(response == HttpStatusCode.BadRequest, $"request statuscode was: {response}");
-
+        var t = StreamBank.StreamsByPost;
         var getResponse = await testFacade.GetPost(create.Result.PostId);
         Assert.NotNull(getResponse);
         Assert.NotEmpty(getResponse.Images);

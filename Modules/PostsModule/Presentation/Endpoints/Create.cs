@@ -21,17 +21,22 @@ internal class Create
 
         try
         {
-            var clientResponse = await client.GetResponse<CommandResult<string>>(command);
+            var clientResponse = await client.GetResponse<CommandResult<CreatePostCommandResult>>(command);
+            var commandResult = clientResponse.Message;
 
-            if (clientResponse.Message.IsSuccess)
+            if (clientResponse.Message.IsSuccess && commandResult is not null)
             {
                 var token = auth.CreateToken(
                     DateTime.UtcNow.AddMinutes(5),
-                    ClaimValueHolder.Create<string>("postId", clientResponse.Message.Result)
-                    );
-                return Results.Ok(new SuccessRespnse { PostId = clientResponse.Message.Result, Token = token });
-            }
+                    ClaimValueHolder.Create("postId", commandResult.ResultValue.PostId)
+                );
 
+                return Results.Ok(new SuccessRespnse 
+                {
+                    PostId = commandResult.ResultValue.PostId,
+                    Token = token
+                });
+            }
             return Results.StatusCode(clientResponse.Message.ResultStatus);
         }
         catch (Exception)

@@ -35,4 +35,32 @@ public sealed class JwtHandler : IAuthHelper
             expires: expirationDate,
             signingCredentials: new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256)
         );
+    public ClaimsPrincipal? ValidateToken(string token)
+    {
+        try
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var validationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = "MiniShare",
+                ValidateAudience = false, // Set to true if you have an audience
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = securityKey,
+                ClockSkew = TimeSpan.Zero // Optional: Set to zero to avoid allowing expired tokens due to clock drift
+            };
+
+            return tokenHandler.ValidateToken(token, validationParameters, out _);
+        }
+        catch
+        {
+            return null; // Invalid token
+        }
+    }
+    public Dictionary<string, string>? ReadClaims(string token)
+    {
+        var principal = ValidateToken(token);
+        return principal?.Claims.ToDictionary(c => c.Type, c => c.Value);
+    }
 }

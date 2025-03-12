@@ -9,6 +9,5 @@ public record CreatePostCommand
     public string PrimaryColor { get; init; } = string.Empty;
     public string SecondaryColor { get; init; } = string.Empty;
 
-    public IFormFileCollection Images = new FormFileCollection();
 
 }

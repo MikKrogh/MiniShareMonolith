@@ -112,6 +112,7 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
         //Then
         Assert.True(response.StatusCode == HttpStatusCode.BadRequest, $"Status code was: {response.StatusCode}");
 
+
     }
 
     [Theory]

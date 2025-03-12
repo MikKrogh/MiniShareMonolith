@@ -24,25 +24,31 @@ public class AddImageConsumer : IConsumer<AddImageCommand>
     {
         if (!IsValid(context.Message))
         {
-            var result = CommandResult.FailedToValidate();
+            var result = CommandResult<AddImageCommandResult>.FailedToValidate();
             await context.RespondAsync(result);
         }
         else
         {
-            var stream = StreamBank.GetStream(context.Message.StreamId);
+            Stream? stream = StreamBank.GetStream(context.Message.PostId,context.Message.StreamId);
+            if (stream is null)
+            {
+                var result = CommandResult<AddImageCommandResult>.InternalError();
+                await context.RespondAsync(result);
+                return;
+            }
 
             try
             {
-                string newFileName = DateTime.Now.Ticks.ToString();
+                string newFileName = context.Message.StreamId.ToString();
 
-                await _imageBlobService.UploadImage(stream, context.Message.PostId, newFileName, context.Message.FileExtension);
-                await _imageRepository.Create(Image.Create(newFileName, context.Message.PostId));
+                await _imageBlobService.UploadImage(stream, context.Message.PostId.ToString(), newFileName, context.Message.FileExtension);
+                await _imageRepository.Create(Image.Create(newFileName, context.Message.PostId.ToString()));
 
-                await context.RespondAsync(CommandResult.Success());
+                await context.RespondAsync(CommandResult<AddImageCommandResult>.Success(null));
             }
             catch (Exception ex)
             {
-                await context.RespondAsync(CommandResult.InternalError());
+                await context.RespondAsync(CommandResult<AddImageCommandResult>.InternalError());
             }
         }
     }
@@ -50,10 +56,8 @@ public class AddImageConsumer : IConsumer<AddImageCommand>
     private bool IsValid(AddImageCommand command)
     {
         bool isValidExtension = IsValidFileExtension(command.FileExtension);
-        bool postIdIsGuid = Guid.TryParse(command.PostId, out Guid _);
-        bool streamExists = StreamBank.ContainsStream(command.StreamId);
 
-        return isValidExtension && postIdIsGuid && streamExists;
+        return isValidExtension; 
     }
 
     private bool IsValidFileExtension(string fileExtension)

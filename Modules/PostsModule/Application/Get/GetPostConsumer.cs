@@ -20,7 +20,7 @@ public class GetPostConsumer : IConsumer<GetPostCommand>
             return;
         }
 
-        var response = new GetPostResult()
+        var result = new GetPostResult()
         {
             Id = post.Id.ToString(),
             Faction = post.FactionName,
@@ -32,8 +32,10 @@ public class GetPostConsumer : IConsumer<GetPostCommand>
             PrimaryColor = post.PrimaryColour,
             SecondaryColor = post.SecondaryColour,
             CreationDate = post.CreationDate
-
         };
-        await context.RespondAsync(response);
+
+        var commandResult = CommandResult<GetPostResult>.Success(result);
+
+        await context.RespondAsync(commandResult);
     }
 }

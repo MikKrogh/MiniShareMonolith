@@ -5,12 +5,10 @@ namespace PostsModule.Application.Create;
 public class CreatePostConsumer : IConsumer<CreatePostCommand>
 {
     private readonly IPostsRepository repository;
-    private readonly IImageStorageService imageService;
 
-    public CreatePostConsumer(IPostsRepository repository, IImageStorageService imageService)
+    public CreatePostConsumer(IPostsRepository repository )
     {
         this.repository = repository;
-        this.imageService = imageService;
     }
     public async Task Consume(ConsumeContext<CreatePostCommand> context)
     {
@@ -18,11 +16,11 @@ public class CreatePostConsumer : IConsumer<CreatePostCommand>
         {
             Post post = CreateDomainEntity(context.Message);
             await repository.Save(post);
-            await context.RespondAsync(CommandResult<string>.Success(post.Id.ToString()));
+            await context.RespondAsync(CommandResult<CreatePostCommandResult>.Success(new() { PostId = post.Id.ToString()}));
         }
         else
         {
-            var result = CommandResult.FailedToValidate();
+            var result = CommandResult<CreatePostCommandResult>.FailedToValidate();
             await context.RespondAsync(result);
         }
     }

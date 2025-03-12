@@ -14,7 +14,7 @@ public class ClaimValueHolder
         Value = value;
         ValueType = valueType;
     }
-    public static ClaimValueHolder? Create<T>(string keyName, T value)
+    public static ClaimValueHolder? Create<T>(string keyName, T value) where T : notnull
     {
         var valueString = value.ToString();
         if (string.IsNullOrEmpty(valueString))
