@@ -13,7 +13,7 @@ public sealed class JwtHandler : IAuthHelper
 
     public JwtHandler(IConfiguration configuration)
     {
-        string secret = configuration["JwtSecret"] ?? throw new Exception("Cannot generator jwt secret");
+        string secret = configuration["JwtSecret"] ?? throw new Exception("Cannot generate jwt secret");
         securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
     }
 
@@ -44,16 +44,16 @@ public sealed class JwtHandler : IAuthHelper
             {
                 ValidateIssuer = true,
                 ValidIssuer = "MiniShare",
-                ValidateAudience = false, // Set to true if you have an audience
+                ValidateAudience = false, 
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = securityKey,
-                ClockSkew = TimeSpan.Zero // Optional: Set to zero to avoid allowing expired tokens due to clock drift
+                ClockSkew = TimeSpan.Zero 
             };
 
             return tokenHandler.ValidateToken(token, validationParameters, out _);
         }
-        catch
+        catch(Exception ex)
         {
             return null; // Invalid token
         }

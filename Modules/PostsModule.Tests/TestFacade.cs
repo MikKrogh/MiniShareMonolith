@@ -1,28 +1,38 @@
 ﻿
 
 using Microsoft.Extensions.DependencyInjection;
+using PostsModule.Application;
 using PostsModule.Application.UserEvents;
 using PostsModule.Domain;
+using PostsModule.Domain.Auth;
 using PostsModule.Presentation.Endpoints;
 using PostsModule.Tests.Helper;
 using System.Net;
 using System.Net.Http.Json;
-using Xunit.Sdk;
 
 namespace PostsModule.Tests;
 
 internal class TestFacade
 {
-    private readonly MessageBrokerTestFacade _messageBroker;
+    private readonly MesageBrokerFacade _messageBroker;
     private readonly FakeImageBlobStorage _blobService;
+    private readonly IAuthHelper jwtHandler;
 
     private readonly HttpClient _client;
     public TestFacade(PostsWebApplicationFactory factory)
     {
         _client = factory.CreateClient();
-        _messageBroker = factory.Services.GetRequiredService<MessageBrokerTestFacade>();
+        _messageBroker = factory.Services.GetRequiredService<MesageBrokerFacade>();
         _blobService = (FakeImageBlobStorage)factory.Services.GetRequiredService<IImageStorageService>();
+        jwtHandler = factory.Services.GetRequiredService<IAuthHelper>();
     }
+
+    public string CreateToken(DateTime? expirationDate, string postId) 
+    {
+        var token = jwtHandler.CreateToken(expirationDate, ClaimValueHolder.Create("postId", postId));
+        return token;
+    }
+
 
     public async Task<UserCreatedEvent> SendCreateUserEvent(string? name = null)
     {

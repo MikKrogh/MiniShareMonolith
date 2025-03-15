@@ -15,7 +15,9 @@ internal class Put
     internal static async Task<IResult> ProcessAddImage( IFormFile file,[FromServices] IAuthHelper authHelper,[FromServices] IRequestClient<AddImageCommand> client, [FromRoute] Guid postId, [FromQuery] string token)    
     {
         var claims = authHelper.ReadClaims(token);
-        if (claims == null || !claims.Any()) return Results.Problem();
+        if (claims == null || !claims.Any() || claims["postId"] != postId.ToString()) return Results.Problem();
+
+        var t = claims["postId"];
 
         var command = new AddImageCommand()
         {
@@ -36,12 +38,12 @@ internal class Put
     }
 }
 
-//MassTransits message broker seralizes the messages between command-creator and command-handler, i dont want to read the streams byte twice, so instead well use this bank to parse the stream around.
-//look into better ways to handle this, maybe a better way to handle the streams, or a better way to handle the messages.
+//MassTransits messageBroker seralizes the messages between command-creator and command-handler,
+//To avoid reading the stream twice, i use this bank, and then parse an id around instead.
+//TODO:Look into better ways to handle this, maybe a better way to handle the streams, or a better way to handle the messages.
 public static class StreamBank
 {
-    private const int MaxStreamsPerPost = 8;
-    private
+    private const int MaxStreamsPerPost = 8;    
     
     public static readonly ConcurrentDictionary<Guid, ConcurrentDictionary<Guid, Stream>> StreamsByPost = new();
 

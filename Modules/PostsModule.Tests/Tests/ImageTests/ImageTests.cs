@@ -1,4 +1,5 @@
-﻿using PostsModule.Presentation.Endpoints;
+﻿using PostsModule.Infrastructure;
+using PostsModule.Presentation.Endpoints;
 using PostsModule.Tests.Helper;
 using System.Net;
 
@@ -120,11 +121,79 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
         Assert.Equal(8, getResponse.Images.Count());
     }
 
+    [Fact]
+    public async Task GivenUserHasCreatedNewPost_WhenNonValidTokenIsUsed_ThenInternalErrorIsReturnedAndNoImageIsAddedToPost()
+    {
+        //Given 
+        var user = await testFacade.SendCreateUserEvent();
+        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        var create = await testFacade.SendCreatePost(createBody);
+        
+        //When        
+        var response = await testFacade.UploadImage(create.Result.PostId, "nonValidToken");
 
+        //Then
+        Assert.True(response == HttpStatusCode.InternalServerError);
+        var getResponse = await testFacade.GetPost(create.Result.PostId);
+        Assert.NotNull(getResponse);
+        Assert.Empty(getResponse.Images);
+    }
 
+    [Fact]
+    public async Task GivenUserHasCreatedNewPost_WhenTamperedTokenIsUsed_ThenInternalErrorIsReturnedAndNoImageIsAddedToPost()
+    {
+        //Given 
+        var user = await testFacade.SendCreateUserEvent();
+        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        var create = await testFacade.SendCreatePost(createBody);
 
-    //tokenValidation
-    //PostExists
+        //When        
+        var response = await testFacade.UploadImage(create.Result.PostId, create.Result.Token + "tampered");
+
+        //Then
+        Assert.True(response == HttpStatusCode.InternalServerError);
+        var getResponse = await testFacade.GetPost(create.Result.PostId);
+        Assert.NotNull(getResponse);
+        Assert.Empty(getResponse.Images);
+    }
+
+    [Fact]
+    public async Task GivenUserHasCreatedPost_WhenExpiredTokenIsUsed_ThenInternalErrorIsReturnedAndNoImageIsAddedToPost()
+    {
+        //Given 
+        var user = await testFacade.SendCreateUserEvent();
+        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        var create = await testFacade.SendCreatePost(createBody);
+        //When        
+        var token = testFacade.CreateToken(DateTime.UtcNow.AddDays(-1), create.Result.PostId);
+        var response = await testFacade.UploadImage(create.Result.PostId, token);
+        //Then
+        Assert.True(response == HttpStatusCode.InternalServerError);
+        var getResponse = await testFacade.GetPost(create.Result.PostId);
+        Assert.NotNull(getResponse);
+        Assert.Empty(getResponse.Images);
+    }
+
+    [Fact]
+    public async Task GivenUserHasCreatedPost_WhenTokenIsValidForDifferentPost_ThenInternalErrorIsReturnedAndNoImageIsAddedToPost()
+    {
+        //Given 
+        var user = await testFacade.SendCreateUserEvent();
+        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        var create = await testFacade.SendCreatePost(createBody);
+        var create2 = await testFacade.SendCreatePost(createBody);
+
+        //When        
+        var response = await testFacade.UploadImage(create.Result.PostId, create2.Result.Token);
+        //Then
+        Assert.True(response == HttpStatusCode.InternalServerError);
+        var getResponse = await testFacade.GetPost(create.Result.PostId);
+        var getResponse2 = await testFacade.GetPost(create2.Result.PostId);
+        Assert.NotNull(getResponse2);
+        Assert.NotNull(getResponse);
+        Assert.Empty(getResponse.Images);
+        Assert.Empty(getResponse2.Images);
+    }
 
 
     public static IEnumerable<object[]> FileExtensions()

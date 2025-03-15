@@ -4,12 +4,12 @@ using PostsModule.Application.UserEvents;
 
 namespace PostsModule.Tests.Helper;
 
-public class MessageBrokerTestFacade
+public class MesageBrokerFacade
 {
     private readonly IBus _bus;
     private readonly ITestHarness _harness;
 
-    public MessageBrokerTestFacade(IBus bus, ITestHarness harnes)
+    public MesageBrokerFacade(IBus bus, ITestHarness harnes)
     {
         _bus = bus;
         _harness = harnes;

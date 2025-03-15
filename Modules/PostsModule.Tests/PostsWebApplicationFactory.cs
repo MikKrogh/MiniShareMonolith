@@ -14,7 +14,7 @@ namespace PostsModule.Tests;
 public class PostsWebApplicationFactory : WebApplicationFactory<Program>
 {
     public FakeImageBlobStorage FakeImageBlobStorage { get; private set; }
-    public MessageBrokerTestFacade MessageBrokerTestFacade { get; private set; }
+    public MesageBrokerFacade MessageBrokerTestFacade { get; private set; }
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Test");
@@ -34,11 +34,11 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>
                     config.ConfigureEndpoints(context);
                 });
             });
-            services.AddSingleton<MessageBrokerTestFacade>(sp =>
+            services.AddSingleton<MesageBrokerFacade>(sp =>
             {
                 var ibus = sp.GetRequiredService<IBus>();
                 var harness = sp.GetRequiredService<ITestHarness>();
-                return new MessageBrokerTestFacade(ibus, harness);
+                return new MesageBrokerFacade(ibus, harness);
             });
         });
 
@@ -48,7 +48,7 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>
     protected override IHost CreateHost(IHostBuilder builder)
     {
         var baseHost = base.CreateHost(builder);
-        var sp = baseHost.Services.GetService<MessageBrokerTestFacade>();
+        var sp = baseHost.Services.GetService<MesageBrokerFacade>();
         MessageBrokerTestFacade = sp;
         return baseHost;
     }
