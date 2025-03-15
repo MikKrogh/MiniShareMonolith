@@ -1,11 +1,8 @@
-using Microsoft.AspNetCore.Http.Features;
 using PostsModule;
 using PostsModule.Presentation;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AppConfiguration();
-
-
 
 builder.Services.AddPostsServiceExtensions(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
@@ -18,3 +15,6 @@ app.AddPostsEndpoints();
 
 
 app.Run();
+
+
+public partial class Program { }

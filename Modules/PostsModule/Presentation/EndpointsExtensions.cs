@@ -30,6 +30,12 @@ public static class EndpointsExtensions
             .WithSummary("takes an image to blob storage, and updates the postEntity to know about the image")
             .Produces(500).DisableAntiforgery();
 
+        api.MapGet("{postId}/Image/{ImageId}", GetImage.Process)
+            .Produces(200)
+            .Produces(404)
+            .Produces(500)
+            .WithSummary("Returns an image from blob storage");
+
     }
 
 }

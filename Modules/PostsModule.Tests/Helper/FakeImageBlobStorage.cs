@@ -42,6 +42,20 @@ public class FakeImageBlobStorage : IImageStorageService
         }
     }
 
+    public Task<Stream> GetImage(string directoryName, string fileName)
+    {
+        lock (_blobStorageLock)
+        {
+            if (_blobStorage.ContainsKey(directoryName))
+            {
+                var file = _blobStorage[directoryName].FirstOrDefault(x => x.Name == fileName);
+                if (file != null)
+                    return Task.FromResult<Stream>(new MemoryStream(file.File));
+            }
+        }
+        return Task.FromResult<Stream>(null);
+    }
+
     public IEnumerable<MockFile> GetDirectory(string key)
     {
         if (_blobStorage.ContainsKey(key))

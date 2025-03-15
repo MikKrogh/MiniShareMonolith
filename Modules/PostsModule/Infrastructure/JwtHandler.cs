@@ -13,6 +13,7 @@ public sealed class JwtHandler : IAuthHelper
 
     public JwtHandler(IConfiguration configuration)
     {
+        var t = configuration.GetConnectionString("SQLConnectionString");
         string secret = configuration["JwtSecret"] ?? throw new Exception("Cannot generate jwt secret");
         securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
     }

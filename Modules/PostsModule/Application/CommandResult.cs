@@ -26,6 +26,15 @@ public sealed class CommandResult<T> where T: class, new()
             ResultValue = null
         };
     }
+    public static CommandResult<T> NotFound()
+    {
+        return new CommandResult<T>()
+        {
+            IsSuccess = false,
+            ResultStatus = 404,
+            ResultValue = null
+        };
+    }
 
     public static CommandResult<T> Success(T result)
     {

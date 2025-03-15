@@ -1,7 +1,6 @@
 ﻿using Azure.Identity;
 using Azure.Storage.Blobs;
 using PostsModule.Domain;
-using System.Runtime.CompilerServices;
 
 namespace PostsModule.Infrastructure;
 
@@ -33,6 +32,11 @@ public class AzureBlobService : IImageStorageService
         {
             throw;
         }
+    }
+
+    public async Task<Stream> GetImage(string directoryName, string fileName)
+    {
+        throw new NotImplementedException();
 
     }
 

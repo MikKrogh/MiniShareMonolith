@@ -1,6 +1,6 @@
 ﻿using PostsModule.Domain;
 
-namespace PostsModule.Presentation.Endpoints;
+namespace PostsModule.Presentation;
 
 public record PostDto
 {

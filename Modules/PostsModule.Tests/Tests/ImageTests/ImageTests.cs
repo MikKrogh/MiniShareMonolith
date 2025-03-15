@@ -73,14 +73,14 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
         var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
         var create = await testFacade.SendCreatePost(createBody);
         //When
-        var response = await testFacade.UploadImage(create.Result.PostId, create.Result.Token, 9_000_001);
+        var response = await testFacade.UploadImage(create.Result.PostId, create.Result.Token, new byte[9_000_001]);
         //Then
         Assert.True(response == HttpStatusCode.BadRequest, $"request statuscode was: {response}");
     }
 
 
     [Theory]
-    [MemberData(nameof(FileExtensions))]
+    [MemberData(nameof(NonImageTypeFileExtensions))]
     public async Task GivenUserExistsAndHasCreatedAPost_WhenUserUploadsImageWithWrongExtension_ThenBadRequestIsReturned(string fileExtension)
     {
         //Given 
@@ -196,7 +196,61 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
     }
 
 
-    public static IEnumerable<object[]> FileExtensions()
+    [Fact]
+    public async Task GivenUserHasCreatedPostAndUploadedOneImage_WhenUserFetchesImage_ThenResponseIsSuccessImageIsReturned()
+    {
+        //Given 
+        var user = await testFacade.SendCreateUserEvent();
+        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        var create = await testFacade.SendCreatePost(createBody);
+        await testFacade.UploadImage(create.Result.PostId, create.Result.Token);
+
+        //When
+        var getResponse = await testFacade.GetPost(create.Result.PostId);
+        string imageId = getResponse.Images.Single();
+        var response = await testFacade.GetImage(create.Result.PostId, imageId);
+
+        //Then
+        Assert.True(response.StatusCode == HttpStatusCode.OK);
+        Assert.NotNull(response.Result);
+        Assert.NotEmpty(response.Result);
+    }
+
+
+    //GivenUserUploadedSpecificFile_WhenUserFetchesImage_ThenSpecificFileIsReturned
+    [Fact]
+    public async Task GivenUserUploadedSpecificFile_WhenUserFetchesImage_ThenSpecificFileIsReturned()
+    {
+        //Given 
+        byte[] file = new byte[65484];
+        var user = await testFacade.SendCreateUserEvent();
+        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        var create = await testFacade.SendCreatePost(createBody);
+        await testFacade.UploadImage(create.Result.PostId, create.Result.Token, file, fileExtension: ".png");
+        //When
+        var getResponse = await testFacade.GetPost(create.Result.PostId);
+        string imageId = getResponse.Images.Single();
+        var response = await testFacade.GetImage(create.Result.PostId, imageId);
+        //Then
+        Assert.True(response.StatusCode == HttpStatusCode.OK);
+        Assert.NotNull(response.Result);
+        Assert.NotEmpty(response.Result);
+        Assert.Equal(file, response.Result);
+
+    }
+
+
+
+    [Fact]
+    public async Task GivenUserHasCreatedPostAndUploadedOneImage_WhenUserFetchesImageWithWrongImageId_ThenNotFoundIsReturned()
+    {
+
+
+        Assert.True(false);
+    }
+
+
+    public static IEnumerable<object[]> NonImageTypeFileExtensions()
     {
         yield return new object[] { ".txt" };
         yield return new object[] { ".pdf" };

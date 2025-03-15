@@ -1,11 +1,10 @@
 ﻿
 
 using Microsoft.Extensions.DependencyInjection;
-using PostsModule.Application;
 using PostsModule.Application.UserEvents;
 using PostsModule.Domain;
 using PostsModule.Domain.Auth;
-using PostsModule.Presentation.Endpoints;
+using PostsModule.Presentation;
 using PostsModule.Tests.Helper;
 using System.Net;
 using System.Net.Http.Json;
@@ -27,7 +26,7 @@ internal class TestFacade
         jwtHandler = factory.Services.GetRequiredService<IAuthHelper>();
     }
 
-    public string CreateToken(DateTime? expirationDate, string postId) 
+    public string CreateToken(DateTime? expirationDate, string postId)
     {
         var token = jwtHandler.CreateToken(expirationDate, ClaimValueHolder.Create("postId", postId));
         return token;
@@ -52,22 +51,39 @@ internal class TestFacade
         };
     }
 
-    public async Task<HttpStatusCode> UploadImage(string postId, string token, long fileSize = 2000, string fileExtension = ".jpg")
+    public async Task<HttpStatusCode> UploadImage(string postId, string token, byte[]? file = null, string fileExtension = ".jpg")
     {
-        var bytes = new byte[fileSize];
+        var bytes = file ?? new byte[2000];
         var stream = new MemoryStream(bytes);
         var form = new MultipartFormDataContent();
         form.Add(new StreamContent(stream), "file", $"filename" + fileExtension);
 
         var response = await _client.PutAsync($"/Posts/{postId}/Image?token={token}", form);
         return response.StatusCode;
-
     }
 
     public async Task<PostDto?> GetPost(Guid id) => await _client.GetFromJsonAsync<PostDto>($"/Posts/{id.ToString()}");
     public async Task<PostDto?> GetPost(string id) => await _client.GetFromJsonAsync<PostDto>($"/Posts/{id}");
+    public async Task<TestFacadeResult<byte[]>> GetImage(string postId, string imageId)
+    {
+        var result = new TestFacadeResult<byte[]>();
+
+        var response = await _client.GetAsync($"/Posts/{postId}/image/{imageId}");
+        result.StatusCode = response.StatusCode;
+
+        if (!response.IsSuccessStatusCode)
+        {
+            result.Result = null;
+            return result;
+        }
+
+        var content = response.Content.ReadAsByteArrayAsync();
+        result.Result = await content;
+        return result;
+    }
+
     public IEnumerable<string> FilesInDirecory(string directory) => _blobService.GetDirectory(directory).Select(x => x.Name);
-    
+
 
 }
 public class TestFacadeResult<T>
