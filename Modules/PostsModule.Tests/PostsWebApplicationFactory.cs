@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PostsModule.Domain;
 using PostsModule.Infrastructure;
 using PostsModule.Tests.Helper;
 
@@ -14,6 +13,14 @@ namespace PostsModule.Tests;
 public class PostsWebApplicationFactory : WebApplicationFactory<Program>
 {
     public MesageBrokerFacade MessageBrokerTestFacade { get; private set; }
+    private PostsContext _postsContext;
+    public  void TruncateTables()
+    {
+        _postsContext.Database.ExecuteSqlRaw("DELETE FROM PostModule.Image;");
+        _postsContext.Database.ExecuteSqlRaw("DELETE FROM PostModule.Posts;");
+        _postsContext.Database.ExecuteSqlRaw("DELETE FROM PostModule.Users;");
+    }
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Test");
@@ -63,12 +70,9 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>
     private void InitialEntityFrameWorkSetup(IServiceCollection services)
     {
         var sp = services.BuildServiceProvider();
+        _postsContext = sp.GetRequiredService<PostsContext>();
 
-        using (var scope = sp.CreateScope())
-        {
-            var scopedServices = scope.ServiceProvider;
-            var db = scopedServices.GetRequiredService<PostsContext>();
-            db.Database.Migrate();
-        }
+        _postsContext.Database.Migrate();
+        TruncateTables();
     }
 }

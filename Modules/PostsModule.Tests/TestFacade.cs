@@ -1,5 +1,4 @@
 ﻿
-
 using Microsoft.Extensions.DependencyInjection;
 using PostsModule.Application;
 using PostsModule.Application.UserEvents;
@@ -13,22 +12,31 @@ namespace PostsModule.Tests;
 
 internal class TestFacade
 {
+    private readonly PostsWebApplicationFactory _factory;
     private readonly MesageBrokerFacade _messageBroker;
-    private readonly IAuthHelper jwtHandler;
+    private readonly IAuthHelper jwtHandler;    
 
     private readonly HttpClient _client;
     public TestFacade(PostsWebApplicationFactory factory)
     {
+        _factory = factory;
         _client = factory.CreateClient();
         _messageBroker = factory.Services.GetRequiredService<MesageBrokerFacade>();
         jwtHandler = factory.Services.GetRequiredService<IAuthHelper>();
+
     }
 
     public string CreateToken(DateTime? expirationDate, string postId)
     {
         var token = jwtHandler.CreateToken(expirationDate, ClaimValueHolder.Create("postId", postId));
+        
         return token;
     }
+    public void TruncateTables( )
+    {
+        _factory.TruncateTables();
+    }
+
 
 
     public async Task<UserCreatedEvent> SendCreateUserEvent(string? name = null)
@@ -82,6 +90,12 @@ internal class TestFacade
 
     public async Task<TestFacadeResult<List<PostDto>>> GetPosts(string? queryString = null)
     {
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        };
+
+
         var result = new TestFacadeResult<List<PostDto>>()
         {
             Result = new List<PostDto>()
@@ -93,8 +107,8 @@ internal class TestFacade
 
         var content = await response.Content.ReadAsStringAsync();
         var listofDto = string.IsNullOrEmpty(content)
-            ? JsonSerializer.Deserialize<List<PostDto>>(content)
-            : new List<PostDto>();
+            ? new List<PostDto>()
+            : JsonSerializer.Deserialize<List<PostDto>>(content, options);
 
         result.Result = listofDto;
         return result;

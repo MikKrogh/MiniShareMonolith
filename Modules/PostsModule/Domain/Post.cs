@@ -61,11 +61,6 @@ public class Post
     {
         Description = description;
     }
-    public void SetDisplayName(string displayName)
-    {
-        if (!string.IsNullOrEmpty(displayName))
-            CreatorName = displayName;
-    }
 
     public void SetPrimaryColour(string? colour)
     {

@@ -1,7 +1,7 @@
-﻿namespace PostsModule.Application.GetPosts
+﻿namespace PostsModule.Application.GetPosts;
+
+public class GetPostsCommandResult
 {
-    public class GetPostsCommandResult
-    {
-        public List<PostDto> Posts { get; private set; } = new List<PostDto>();
-    }
+    public int TotalCount { get; init; } = 0;
+    public List<PostDto> Posts { get; init; } = new List<PostDto>();
 }

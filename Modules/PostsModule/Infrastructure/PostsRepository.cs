@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
+using PostsModule.Application;
 using PostsModule.Domain;
 
 namespace PostsModule.Infrastructure;
@@ -37,6 +38,51 @@ internal class PostsRepository : IPostsRepository
             post.SetImages(image.Id);
         }
         return post;
+    }
+
+    public async Task<PaginationResult<Post>> GetAll(QueryModel query)
+    {
+        var postEntities =  context.Posts
+            .Include(post => post.Creator)
+            .Include(post => post.Images)
+            .AsQueryable();
+
+        if (postEntities?.Any() is not true) 
+            return new PaginationResult<Post>();
+
+        var totalCount = await postEntities.CountAsync(); 
+        var queriedEntities = await postEntities.Take(totalCount).ToListAsync();
+
+        List<Post> result = new();
+        foreach (var postEntity in queriedEntities)
+        {
+            try
+            {
+                var post = Post.CreateNew(postEntity.Title, postEntity.CreatorId, postEntity.Faction, Guid.Parse(postEntity.Id));
+                post.SetTitle(postEntity.Title);
+                post.SetDescription(postEntity.Description);
+                post.SetPrimaryColour(postEntity.PrimaryColour);
+                post.SetSecondaryColour(postEntity.SecondaryColour);
+                post.SetCreationDate(postEntity.CreationDate);
+                post.SetCreatorName(postEntity.Creator.UserName);
+                foreach (var image in postEntity.Images)
+                {
+                    post.SetImages(image.Id);
+                }
+                result.Add(post);
+            }
+            catch (Exception ex)
+            {
+                continue;
+            }
+
+        }
+        return new PaginationResult<Post>()
+        {
+            TotalCount = totalCount,
+            Items = result
+        };
+
     }
 
     public async Task Save(Post post)

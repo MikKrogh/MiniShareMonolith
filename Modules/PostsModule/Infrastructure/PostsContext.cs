@@ -24,9 +24,9 @@ internal class PostsContext : DbContext
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<UserEntity>().ToTable("Users", "StoreSchema");
-        modelBuilder.Entity<PostEntity>().ToTable("Posts", "StoreSchema");
-        modelBuilder.Entity<ImageEntity>().ToTable("Image", "StoreSchema");
+        modelBuilder.Entity<UserEntity>().ToTable("Users", "PostModule");
+        modelBuilder.Entity<PostEntity>().ToTable("Posts", "PostModule");
+        modelBuilder.Entity<ImageEntity>().ToTable("Image", "PostModule");
 
         modelBuilder.Entity<PostEntity>()
             .HasOne(p => p.Creator)
