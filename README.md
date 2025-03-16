@@ -16,4 +16,5 @@
   <li>
     look into DisableAntiforgery extension, read up on why/why not to use it    
   </li>
+  <li> rename folders and classes in the aplication directory, they should all follow the GetPosts way</li>
 </p>
