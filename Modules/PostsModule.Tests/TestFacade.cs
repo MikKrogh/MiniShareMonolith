@@ -14,7 +14,6 @@ namespace PostsModule.Tests;
 internal class TestFacade
 {
     private readonly MesageBrokerFacade _messageBroker;
-    private readonly FakeImageBlobStorage _blobService;
     private readonly IAuthHelper jwtHandler;
 
     private readonly HttpClient _client;
@@ -22,7 +21,6 @@ internal class TestFacade
     {
         _client = factory.CreateClient();
         _messageBroker = factory.Services.GetRequiredService<MesageBrokerFacade>();
-        _blobService = (FakeImageBlobStorage)factory.Services.GetRequiredService<IImageStorageService>();
         jwtHandler = factory.Services.GetRequiredService<IAuthHelper>();
     }
 
@@ -82,7 +80,7 @@ internal class TestFacade
         return result;
     }
 
-    public IEnumerable<string> FilesInDirecory(string directory) => _blobService.GetDirectory(directory).Select(x => x.Name);
+    
 
 
 }

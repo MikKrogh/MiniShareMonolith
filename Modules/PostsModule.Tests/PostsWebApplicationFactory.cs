@@ -13,7 +13,6 @@ namespace PostsModule.Tests;
 
 public class PostsWebApplicationFactory : WebApplicationFactory<Program>
 {
-    public FakeImageBlobStorage FakeImageBlobStorage { get; private set; }
     public MesageBrokerFacade MessageBrokerTestFacade { get; private set; }
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -56,8 +55,6 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>
 
     private void ConfigueTestDependencies(IServiceCollection services)
     {
-        FakeImageBlobStorage = new();
-        services.AddSingleton<IImageStorageService>(FakeImageBlobStorage);
     }
     private void InitialDatabaseSetup(IServiceCollection services)
     {

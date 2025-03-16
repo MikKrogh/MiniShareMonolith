@@ -1,5 +1,4 @@
-﻿using PostsModule.Infrastructure;
-using PostsModule.Presentation.Endpoints;
+﻿using PostsModule.Presentation.Endpoints;
 using PostsModule.Tests.Helper;
 using System.Net;
 
@@ -61,8 +60,17 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
         await testFacade.UploadImage(create.Result.PostId, create.Result.Token);
 
         //Then
-        var filesInBlob = testFacade.FilesInDirecory(create.Result.PostId);
-        Assert.Equal(2, filesInBlob.Count());
+        var getResponse = await testFacade.GetPost(create.Result.PostId);
+        var images1 = await testFacade.GetImage(create.Result.PostId, getResponse.Images.First());
+        var images2 = await testFacade.GetImage(create.Result.PostId, getResponse.Images.Last());
+
+        Assert.NotNull(images1.Result);
+        Assert.NotNull(images2.Result);
+
+        Assert.NotEmpty(images1.Result);
+        Assert.NotEmpty(images2.Result);
+
+
     }
 
     [Fact]
@@ -223,20 +231,20 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
     {
         //Given 
         byte[] file = new byte[65484];
-        var user = await testFacade.SendCreateUserEvent();
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
-        var create = await testFacade.SendCreatePost(createBody);
+        var user = await testFacade.SendCreateUserEvent();        
+        var create = await testFacade.SendCreatePost(PostRequestBuilder.GetValidDefaultRequest(user.UserId));
         await testFacade.UploadImage(create.Result.PostId, create.Result.Token, file, fileExtension: ".png");
+        
         //When
         var getResponse = await testFacade.GetPost(create.Result.PostId);
         string imageId = getResponse.Images.Single();
         var response = await testFacade.GetImage(create.Result.PostId, imageId);
+
         //Then
         Assert.True(response.StatusCode == HttpStatusCode.OK);
         Assert.NotNull(response.Result);
         Assert.NotEmpty(response.Result);
         Assert.Equal(file, response.Result);
-
     }
 
 
@@ -244,11 +252,32 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
     [Fact]
     public async Task GivenUserHasCreatedPostAndUploadedOneImage_WhenUserFetchesImageWithWrongImageId_ThenNotFoundIsReturned()
     {
+        //Given
+        var user = await testFacade.SendCreateUserEvent();
+        var create = await testFacade.SendCreatePost(PostRequestBuilder.GetValidDefaultRequest(user.UserId));
+        await testFacade.UploadImage(create.Result.PostId, create.Result.Token);
 
+        //When
+        var response = await testFacade.GetImage(create.Result.PostId, "wrongImageId");
 
-        Assert.True(false);
+        //Then
+        Assert.True(response.StatusCode == HttpStatusCode.NotFound);        
     }
 
+    [Fact]
+    public async Task GivenUserHasCreatedPostAndUploadedOneImage_WhenUserFetchesImageWithWrongPostId_ThenNotFoundIsReturned()
+    {
+        //Given
+        var user = await testFacade.SendCreateUserEvent();
+        var create = await testFacade.SendCreatePost(PostRequestBuilder.GetValidDefaultRequest(user.UserId));
+        await testFacade.UploadImage(create.Result.PostId, create.Result.Token);
+        
+        //When
+        var response = await testFacade.GetImage("wrongPostId", "wrongImageId");
+        
+        //Then
+        Assert.True(response.StatusCode == HttpStatusCode.NotFound);
+    }
 
     public static IEnumerable<object[]> NonImageTypeFileExtensions()
     {

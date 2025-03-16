@@ -1,5 +1,6 @@
 ﻿using Azure.Identity;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Specialized;
 using PostsModule.Domain;
 
 namespace PostsModule.Infrastructure;
@@ -15,17 +16,24 @@ public class AzureBlobService : IImageStorageService
             throw new Exception("Cant connect to blob storage without a storage account uri");
 
 
-        var blobServiceClient = new BlobServiceClient(
-            new Uri(storgeAccount),
-            new DefaultAzureCredential()
-        );
+        BlobServiceClient blobServiceClient;
+
+        if (storgeAccount == "UseDevelopmentStorage=true")
+        {
+            blobServiceClient = new(storgeAccount);
+        }
+        else
+        {
+            blobServiceClient = new(new Uri(storgeAccount), new DefaultAzureCredential());
+        }
+
         _blobClient = blobServiceClient.GetBlobContainerClient(containerName);
     }
-    public async Task UploadImage(Stream stream, string directoryName, string fileName, string fileExtension)
+    public async Task UploadImage(Stream stream, string directoryName, string fileName)
     {
         try
         {
-            var path = Path.Combine(directoryName, fileName + fileExtension);            
+            var path = Path.Combine(directoryName, fileName);            
             await _blobClient.UploadBlobAsync(path, stream);
         }
         catch (Exception e)
@@ -36,7 +44,18 @@ public class AzureBlobService : IImageStorageService
 
     public async Task<Stream> GetImage(string directoryName, string fileName)
     {
-        throw new NotImplementedException();
+        try
+        {
+            var path = Path.Combine(directoryName, fileName);
+            var blobClient = _blobClient.GetBlobClient(path);
+            var response = await blobClient.OpenReadAsync();
+            return response;
+        }
+        catch (Exception e)
+        {
+            return null;
+        }
+
 
     }
 
