@@ -1,13 +1,13 @@
 ﻿
 
 using Microsoft.Extensions.DependencyInjection;
+using PostsModule.Application;
 using PostsModule.Application.UserEvents;
-using PostsModule.Domain;
 using PostsModule.Domain.Auth;
-using PostsModule.Presentation;
 using PostsModule.Tests.Helper;
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace PostsModule.Tests;
 
@@ -77,6 +77,26 @@ internal class TestFacade
 
         var content = response.Content.ReadAsByteArrayAsync();
         result.Result = await content;
+        return result;
+    }
+
+    public async Task<TestFacadeResult<List<PostDto>>> GetPosts(string? queryString = null)
+    {
+        var result = new TestFacadeResult<List<PostDto>>()
+        {
+            Result = new List<PostDto>()
+        };
+
+        var response = await _client.GetAsync($"/Posts?{queryString}");
+        result.StatusCode = response.StatusCode;
+        if (!response.IsSuccessStatusCode) return result;
+
+        var content = await response.Content.ReadAsStringAsync();
+        var listofDto = string.IsNullOrEmpty(content)
+            ? JsonSerializer.Deserialize<List<PostDto>>(content)
+            : new List<PostDto>();
+
+        result.Result = listofDto;
         return result;
     }
 

@@ -224,8 +224,6 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
         Assert.NotEmpty(response.Result);
     }
 
-
-    //GivenUserUploadedSpecificFile_WhenUserFetchesImage_ThenSpecificFileIsReturned
     [Fact]
     public async Task GivenUserUploadedSpecificFile_WhenUserFetchesImage_ThenSpecificFileIsReturned()
     {
@@ -246,8 +244,6 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
         Assert.NotEmpty(response.Result);
         Assert.Equal(file, response.Result);
     }
-
-
 
     [Fact]
     public async Task GivenUserHasCreatedPostAndUploadedOneImage_WhenUserFetchesImageWithWrongImageId_ThenNotFoundIsReturned()
@@ -273,7 +269,8 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
         await testFacade.UploadImage(create.Result.PostId, create.Result.Token);
         
         //When
-        var response = await testFacade.GetImage("wrongPostId", "wrongImageId");
+        var getResponse = await testFacade.GetPost(create.Result.PostId);
+        var response = await testFacade.GetImage("wrongPostId", getResponse.Images.Single());
         
         //Then
         Assert.True(response.StatusCode == HttpStatusCode.NotFound);
