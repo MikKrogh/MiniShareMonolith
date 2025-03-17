@@ -1,4 +1,5 @@
 ﻿using PostsModule.Application;
+using PostsModule.Domain;
 using PostsModule.Tests.Helper;
 using System.Net;
 
@@ -136,7 +137,7 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
 
     // order by
     [Fact]
-    public async Task GivenFivePostExists_WhenUserQueriesWithOrderByNewest_ThenReturnedPostsAreOrderedByCreationDate()
+    public async Task GivenFivePostExists_WhenUserQueriesWithOrderByNewest_ThenReturnedPostsAreOrderedByNewestCreationDate()
     {
 
         // Given
@@ -150,12 +151,44 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
         Assert.NotNull(getPost.Result);
         Assert.True(getPost.Result.Items.SequenceEqual(getPost.Result.Items.OrderByDescending(i => i.CreationDate)),
         "Collection is not sorted in descending order.");
+    }
+    [Fact]
+    public async Task GivenFivePostExists_WhenUserQueriesWithOrderByOldest_ThenReturnedPostsAreOrderedByOldetCreationDate()
+    {
+        // Given
+        testFacade.TruncateTables();
+        await CreatePosts(5);
 
+        // When
+        var getPost = await testFacade.GetPosts("orderBy=CreationDate");
+
+        //Then
+        Assert.NotNull(getPost.Result);
+        Assert.True(getPost.Result.Items.SequenceEqual(getPost.Result.Items.OrderBy(i => i.CreationDate)),
+        "Collection is not sorted in descending order.");
     }
 
+    [Fact]
+    public async Task GivenThreePostsExists_WhenUserFiltersByRedPrimaryColor_ThenOnePostIsReturnedAndTotalCountIsOne()
+    {
+        // Given
+        testFacade.TruncateTables();
+        var user = await testFacade.SendCreateUserEvent();
+        var defaultPost = PostRequestBuilder.GetValidDefaultRequest(user.UserId); 
+        await testFacade.SendCreatePost(defaultPost);
+        await testFacade.SendCreatePost(defaultPost);
+        await testFacade.SendCreatePost(defaultPost with { PrimaryColor = "red" });
 
+        // When
+        var getPosts = await testFacade.GetPosts("filter=PrimaryColor eq 'red'");
 
-    //filter
+        // Then
+        Assert.NotNull(getPosts.Result);
+        Assert.Single(getPosts.Result.Items);
+        Assert.Equal(1, getPosts.Result.TotalCount);
+        Assert.Equal("red", getPosts.Result.Items.Single().PrimaryColor.ToString().ToLower());
+        
+    }
 
 
     //allTheAbove

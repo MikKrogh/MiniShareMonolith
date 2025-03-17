@@ -29,8 +29,8 @@ public class GetPostConsumer : IConsumer<GetPostCommand>
             CreatorName = post.CreatorName,
             CreatorId = post.CreatorId,
             Images = post.Images,
-            PrimaryColor = post.PrimaryColour,
-            SecondaryColor = post.SecondaryColour,
+            PrimaryColor = post.PrimaryColor,
+            SecondaryColor = post.SecondaryColor,
             CreationDate = post.CreationDate
         };
 

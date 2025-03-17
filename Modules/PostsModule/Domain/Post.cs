@@ -10,8 +10,8 @@ public class Post
     public string CreatorId { get; private set; } = "";
     public string FactionName { get; private set; } = "";
     public string? FigureName { get; private set; }
-    public Colors PrimaryColour { get; private set; } = Colors.Unknown;
-    public Colors SecondaryColour { get; private set; } = Colors.Unknown;
+    public Colors PrimaryColor { get; private set; } = Colors.Unknown;
+    public Colors SecondaryColor { get; private set; } = Colors.Unknown;
     public DateTime CreationDate { get; private set; } = default;
     public HashSet<string> Images { get; private set; } = new();
 
@@ -62,17 +62,17 @@ public class Post
         Description = description;
     }
 
-    public void SetPrimaryColour(string? colour)
+    public void SetPrimaryColor(string? color)
     {
         var result = Colors.Unknown;
-        Enum.TryParse(colour, true, out result);
-        PrimaryColour = result;
+        Enum.TryParse(color, true, out result);
+        PrimaryColor = result;
     }
-    public void SetSecondaryColour(string? colour)
+    public void SetSecondaryColor(string? color)
     {
         var result = Colors.Unknown;
-        Enum.TryParse(colour, true, out result);
-        SecondaryColour = result;
+        Enum.TryParse(color, true, out result);
+        SecondaryColor = result;
     }
     public void SetCreationDate(DateTime creationDate)
     {

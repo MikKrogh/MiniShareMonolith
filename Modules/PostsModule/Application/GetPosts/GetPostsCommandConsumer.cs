@@ -16,7 +16,8 @@ public class GetPostsCommandConsumer : IConsumer<GetPostsCommand>
         var posts = await repository.GetAll(
             context.Message.QueryModel.Take,
             context.Message.QueryModel.Descending,
-            context.Message.QueryModel.OrderBy
+            context.Message.QueryModel.OrderBy,
+            context.Message.QueryModel.Filter
         );
 
         var mappedPosts = posts.Items.Select(post => new PostDto()
@@ -26,8 +27,8 @@ public class GetPostsCommandConsumer : IConsumer<GetPostsCommand>
             FactionName = post.FactionName,
             CreatorId = post.CreatorId.ToString(),
             Description = post.Description,
-            PrimaryColor = post.PrimaryColour,
-            SecondaryColor = post.SecondaryColour,
+            PrimaryColor = post.PrimaryColor,
+            SecondaryColor = post.SecondaryColor,
             CreationDate = post.CreationDate,
             CreatorName = post.CreatorName,
             Images = post.Images

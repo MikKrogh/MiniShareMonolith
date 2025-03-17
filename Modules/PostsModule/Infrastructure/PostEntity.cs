@@ -10,7 +10,7 @@ internal record PostEntity
     public ICollection<ImageEntity>? Images { get; set; }
     public string Faction { get; set; } = string.Empty;
 
-    public string PrimaryColour { get; set; } = string.Empty;
-    public string? SecondaryColour { get; set; } = string.Empty;
+    public string PrimaryColor { get; set; } = string.Empty;
+    public string? SecondaryColor { get; set; } = string.Empty;
     public DateTime CreationDate { get; set; } = DateTime.Now;
 }

@@ -28,14 +28,14 @@ internal class PostRequestBuilder
         postRequest.Description = description;
         return this;
     }
-    public PostRequestBuilder WithMainColor(string colour)
+    public PostRequestBuilder WithMainColor(string color)
     {
-        postRequest.PrimaryColor = colour;
+        postRequest.PrimaryColor = color;
         return this;
     }
-    public PostRequestBuilder WithSecondaryColor(string colour)
+    public PostRequestBuilder WithSecondaryColor(string color)
     {
-        postRequest.SecondaryColor = colour;
+        postRequest.SecondaryColor = color;
         return this;
     }
     public PostRequest Build() => postRequest;
@@ -45,12 +45,12 @@ internal class PostRequestBuilder
         .WithTitle("title")
         .WithFactionName("deathguard")
         .WithDescription("hello There")
-        .WithMainColor("red")
-        .WithSecondaryColor("blue")
+        .WithMainColor("unknown")
+        .WithSecondaryColor("unknown")
         .Build();
     }
 }
-internal class PostRequest
+internal record PostRequest
 {
     public string CreatorId { get; set; }
     public string Title { get; set; }

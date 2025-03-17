@@ -2,9 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using PostsModule.Application;
 using PostsModule.Domain;
-using System.Linq;
 using System.Linq.Expressions;
-using static MassTransit.ValidationResultExtensions;
 
 namespace PostsModule.Infrastructure;
 
@@ -34,8 +32,8 @@ internal class PostsRepository : IPostsRepository
         post.SetCreatorName(entity.Creator.UserName);
         post.SetCreationDate(entity.CreationDate);
         post.SetDescription(entity.Description);
-        post.SetPrimaryColour(entity.PrimaryColour);
-        post.SetSecondaryColour(entity.SecondaryColour);
+        post.SetPrimaryColor(entity.PrimaryColor);
+        post.SetSecondaryColor(entity.SecondaryColor);
         foreach (var image in entity.Images)
         {
             post.SetImages(image.Id);
@@ -43,14 +41,72 @@ internal class PostsRepository : IPostsRepository
         return post;
     }
 
-    public async Task<PaginatedResult<Post>> GetAll(int take = 100, bool? descending = null, string? orderOnProperty = null)
+    public async Task<PaginatedResult<Post>> GetAll(int take = 100, bool? descending = null, string? orderOnProperty = null, string? filter = null)
     {
-        var postEntities =  context.Posts
+        IQueryable<PostEntity> postEntities = CreateQuery();
+        postEntities = ApplyFilter(filter, postEntities);
+        var totalCount = await postEntities.CountAsync();
+        postEntities = ApplyOrderBy(descending, orderOnProperty, postEntities);
+
+        try
+        {
+            var queriedEntities = await postEntities.Take(take).ToListAsync();
+
+            List<Post> result = MapToDomainEntities(queriedEntities);
+            return new PaginatedResult<Post>()
+            {
+                TotalCount = totalCount,
+                Items = result,
+                PageSize = take,
+            };
+        }
+        catch (Exception e)
+        {
+            throw;
+        }
+
+    }
+
+    private static List<Post> MapToDomainEntities(List<PostEntity> queriedEntities)
+    {
+        List<Post> result = new();
+        foreach (var postEntity in queriedEntities)
+        {
+            try
+            {
+                var post = Post.CreateNew(postEntity.Title, postEntity.CreatorId, postEntity.Faction, Guid.Parse(postEntity.Id));
+                post.SetTitle(postEntity.Title);
+                post.SetDescription(postEntity.Description);
+                post.SetPrimaryColor(postEntity.PrimaryColor);
+                post.SetSecondaryColor(postEntity.SecondaryColor);
+                post.SetCreationDate(postEntity.CreationDate);
+                post.SetCreatorName(postEntity.Creator.UserName);
+                foreach (var image in postEntity.Images)
+                {
+                    post.SetImages(image.Id);
+                }
+                result.Add(post);
+            }
+            catch (Exception ex)
+            {
+                continue;
+            }
+
+        }
+
+        return result;
+    }
+
+    private IQueryable<PostEntity> CreateQuery()
+    {
+        return context.Posts
             .Include(post => post.Creator)
             .Include(post => post.Images)
             .AsQueryable();
-        var totalCount = await postEntities.CountAsync();
+    }
 
+    private static IQueryable<PostEntity> ApplyOrderBy(bool? descending, string? orderOnProperty, IQueryable<PostEntity> postEntities)
+    {
         if (!string.IsNullOrEmpty(orderOnProperty))
         {
             try
@@ -74,57 +130,59 @@ internal class PostsRepository : IPostsRepository
                 postEntities = postEntities.Provider.CreateQuery<PostEntity>(resultExpression);
 
             }
-            catch (Exception e)
-            {
-
-            }
-
+            catch (Exception e) { }
         }
-        try
-        {
-            var queriedEntities = await postEntities.Take(take).ToListAsync();
 
-        List<Post> result = new();
-        foreach (var postEntity in queriedEntities)
+        return postEntities;
+    }
+
+    private static IQueryable<PostEntity> ApplyFilter(string? filter, IQueryable<PostEntity> postEntities)
+    {
+        if (!string.IsNullOrEmpty(filter))
         {
             try
             {
-                var post = Post.CreateNew(postEntity.Title, postEntity.CreatorId, postEntity.Faction, Guid.Parse(postEntity.Id));
-                post.SetTitle(postEntity.Title);
-                post.SetDescription(postEntity.Description);
-                post.SetPrimaryColour(postEntity.PrimaryColour);
-                post.SetSecondaryColour(postEntity.SecondaryColour);
-                post.SetCreationDate(postEntity.CreationDate);
-                post.SetCreatorName(postEntity.Creator.UserName);
-                foreach (var image in postEntity.Images)
+                var filters = OdataFilterReader.Read(filter);
+                if (filters?.Any() is true)
                 {
-                    post.SetImages(image.Id);
+                    var parameter = Expression.Parameter(typeof(PostEntity), "x");
+                    Expression combinedFilterExpression = null;
+                    foreach (var criteria in filters)
+                    {
+                        var property = typeof(PostEntity).GetProperty(criteria.PropertyName);
+                        if (property == null) continue;
+
+                        var propertyAccess = Expression.Property(parameter, property);
+                        var constantValue = Expression.Constant(Convert.ChangeType(criteria.Value, property.PropertyType));
+
+                        Expression? expression = criteria.Operator switch
+                        {
+                            "eq" => Expression.Equal(propertyAccess, constantValue),
+                            "gt" => Expression.GreaterThan(propertyAccess, constantValue),
+                            "lt" => Expression.LessThan(propertyAccess, constantValue),
+                            _ => null
+                        };
+                        if (expression != null)
+                        {
+                            combinedFilterExpression = combinedFilterExpression == null
+                                ? expression
+                                : Expression.AndAlso(combinedFilterExpression, expression);
+                        }
+                    }
+                    if (combinedFilterExpression != null)
+                    {
+                        var lambda = Expression.Lambda<Func<PostEntity, bool>>(combinedFilterExpression, parameter);
+                        postEntities = postEntities.Where(lambda);
+                    }
                 }
-                result.Add(post);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                continue;
+                throw;
             }
-
-        }
-        return new PaginatedResult<Post>()
-        {
-            TotalCount = totalCount,
-            Items = result,
-            PageSize = take,
-        };
-        }
-        catch (Exception e)
-        {
-            return new PaginatedResult<Post>()
-            {
-                TotalCount = 0,
-                Items = null,
-                PageSize = take,
-            };
         }
 
+        return postEntities;
     }
 
     public async Task Save(Post post)
@@ -138,13 +196,47 @@ internal class PostsRepository : IPostsRepository
             Description = post.Description,
             CreatorId = creator.Id,
             Faction = post.FactionName,
-            PrimaryColour = post.PrimaryColour.ToString(),
-            SecondaryColour = post.SecondaryColour.ToString(),
+            PrimaryColor = post.PrimaryColor.ToString().ToLower(),
+            SecondaryColor = post.SecondaryColor.ToString().ToLower(),
             CreationDate = post.CreationDate,
             Creator = creator
         };
         await context.Posts.AddAsync(tableEntity);
         await context.SaveChangesAsync();
 
+    }
+}
+
+public static class OdataFilterReader
+{
+    public static List<FilterCriteria>? Read(string odataString)
+    {
+        if (odataString[0] == '$')
+            odataString = odataString.Remove(0, 1);
+        if (odataString.StartsWith("filter="))
+            odataString = odataString.Remove(0, 7);
+        odataString = odataString.Replace(" And ", " and ");
+
+        var filterStrings = odataString.Split("and");
+
+        var filtermodels = new List<FilterCriteria>();
+        foreach (var filter in filterStrings)
+        {
+            var split = filter.Trim().Split(' ');
+            var t = new FilterCriteria
+            {
+                PropertyName = split[0],
+                Operator = split[1],
+                Value = split[2].Replace("'", "")
+            };
+            filtermodels.Add(t);
+        }
+        return filtermodels;
+    }
+    public class FilterCriteria
+    {
+        public string PropertyName { get; set; }
+        public string Operator { get; set; }
+        public string Value { get; set; }
     }
 }

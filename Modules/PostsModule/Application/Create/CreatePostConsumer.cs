@@ -29,8 +29,8 @@ public class CreatePostConsumer : IConsumer<CreatePostCommand>
     {
         var post = Post.CreateNew(context.Title, context.CreatorId, context.FactionName);
         post.SetDescription(context.Description);
-        post.SetPrimaryColour(context.PrimaryColor);
-        post.SetSecondaryColour(context.SecondaryColor);
+        post.SetPrimaryColor(context.PrimaryColor);
+        post.SetSecondaryColor(context.SecondaryColor);
         return post;
     }
 

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PostsModule.Infrastructure;
 
@@ -11,9 +12,11 @@ using PostsModule.Infrastructure;
 namespace PostsModule.Migrations
 {
     [DbContext(typeof(PostsContext))]
-    partial class PostsContextModelSnapshot : ModelSnapshot
+    [Migration("20250317172008_renamedclor")]
+    partial class renamedclor
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
