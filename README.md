@@ -20,4 +20,7 @@
   <li>
     make the test setup fail early, if azurite is not running
   </li>
+  <li>
+    creatre instrastructure tests, that assert cleancode is implemented
+  </li>
 </p>
