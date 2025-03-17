@@ -1,10 +1,6 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
-using PostsModule.Application;
-using PostsModule.Domain;
+﻿using PostsModule.Application;
 using PostsModule.Tests.Helper;
-using System.Diagnostics.Contracts;
 using System.Net;
-using static MassTransit.ValidationResultExtensions;
 
 namespace PostsModule.Tests.Tests.GetPostsTests;
 [Collection(nameof(SystemTestCollectionDefinition))]
@@ -181,9 +177,8 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
 
         for (int i = 0; i < count; i++)
         {
-            await Task.Delay(50); // This non-blocking delay will allow time between submissions
-
-            var firstCreation = await testFacade.SendCreatePost(createBody);
+            await Task.Delay(50); //make it easier to verify that order by date is readable
+            await testFacade.SendCreatePost(createBody);
 
         }
     }
