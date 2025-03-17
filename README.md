@@ -17,4 +17,7 @@
     look into DisableAntiforgery extension, read up on why/why not to use it    
   </li>
   <li> rename folders and classes in the aplication directory, they should all follow the GetPosts way</li>
+  <li>
+    make the test setup fail early, if azurite is not running
+  </li>
 </p>
