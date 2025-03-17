@@ -9,6 +9,7 @@ public class AzureBlobService : IImageStorageService
 {
     private const string containerName = "images";
     private readonly BlobContainerClient _blobClient;
+    private bool blobExists = false;
     public AzureBlobService(IConfiguration config)
     {
         string storgeAccount = config["StorageAccountUri"];
@@ -31,6 +32,11 @@ public class AzureBlobService : IImageStorageService
     }
     public async Task UploadImage(Stream stream, string directoryName, string fileName)
     {
+        if (!blobExists)
+        {
+            await _blobClient.CreateIfNotExistsAsync();
+            blobExists = true;
+        }
         try
         {
             var path = Path.Combine(directoryName, fileName);            
@@ -55,9 +61,5 @@ public class AzureBlobService : IImageStorageService
         {
             return null;
         }
-
-
     }
-
-
 }

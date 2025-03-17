@@ -1,4 +1,4 @@
-﻿namespace PostsModule.Application;
+﻿namespace PostsModule.Presentation;
 
 public class PaginationResult<T> where T : class
 {

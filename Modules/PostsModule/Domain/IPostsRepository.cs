@@ -1,11 +1,9 @@
-﻿using PostsModule.Application;
-namespace PostsModule.Domain;
+﻿namespace PostsModule.Domain;
 
 public interface IPostsRepository
 {
     Task<Post?> Get(string id);
-    Task<PaginationResult<Post>> GetAll(QueryModel query);
+    Task<PaginatedResult<Post>> GetAll(int take = 100, bool? descending = null, string? orderOnProperty = null);
     Task Save(Post post);
-    Task Delete(string id);
-    
+    Task Delete(string id);    
 }

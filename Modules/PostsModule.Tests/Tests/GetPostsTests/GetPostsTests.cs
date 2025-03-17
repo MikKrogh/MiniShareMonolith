@@ -1,7 +1,10 @@
-﻿using PostsModule.Application;
+﻿using Microsoft.AspNetCore.Components.Forms;
+using PostsModule.Application;
 using PostsModule.Domain;
 using PostsModule.Tests.Helper;
+using System.Diagnostics.Contracts;
 using System.Net;
+using static MassTransit.ValidationResultExtensions;
 
 namespace PostsModule.Tests.Tests.GetPostsTests;
 [Collection(nameof(SystemTestCollectionDefinition))]
@@ -60,11 +63,11 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
 
         // Then
         Assert.Equal(HttpStatusCode.OK, getPosts.StatusCode);
-        Assert.NotEmpty(getPosts.Result);
-        Assert.Equal(2, getPosts.Result.Count);
+        Assert.NotEmpty(getPosts.Result.Items);
+        Assert.Equal(2, getPosts.Result.Items.Count());
             
-        var firstDto = getPosts.Result.First(x => x.Title == firstPost.Title);
-        var secondDto = getPosts.Result.First(x => x.Title == secondPost.Title);         
+        var firstDto = getPosts.Result.Items.First(x => x.Title == firstPost.Title);
+        var secondDto = getPosts.Result.Items.First(x => x.Title == secondPost.Title);         
             
 
         Assert.True(RequestMatchesDto(firstDto, firstPost));
@@ -90,10 +93,10 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
 
 
         // Then 
-        Assert.Equal(2, getPosts.Result?.Count);
+        Assert.Equal(2, getPosts.Result?.Items.Count());
 
-        var firstPost = getPosts.Result.SingleOrDefault(x => x.Id == firstCreation.Result.PostId);
-        var secondPost = getPosts.Result.SingleOrDefault(x => x.Id == secondCreation.Result.PostId);
+        var firstPost = getPosts.Result.Items.SingleOrDefault(x => x.Id == firstCreation.Result.PostId);
+        var secondPost = getPosts.Result.Items.SingleOrDefault(x => x.Id == secondCreation.Result.PostId);
         Assert.Equal(1,firstPost?.Images?.Count());
         Assert.Equal(1, secondPost?.Images?.Count());
         Assert.NotEqual(firstPost?.Images?.Single(), secondPost?.Images?.Single());
@@ -116,18 +119,48 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
         // When
         var getPosts = await testFacade.GetPosts();
 
+        Assert.Equal(3, getPosts.Result.TotalCount);
+    }
 
+    [Fact]
+    public async Task GivenThreePostsExist_WhenUserQueriesWithATakeOfOne_ThenOnePostIsReturnedAndTotalCountIsThree()
+    {
+        // Given
+        testFacade.TruncateTables();
+        await CreatePosts(3);
 
+        // When
+        var getPosts = await testFacade.GetPosts("take=1");
 
+        // Then
+        Assert.NotNull(getPosts.Result);
+        Assert.Single(getPosts.Result.Items);
+        Assert.Equal(3, getPosts.Result.TotalCount);
+    }
+
+    // order by
+    [Fact]
+    public async Task GivenFivePostExists_WhenUserQueriesWithOrderByNewest_ThenReturnedPostsAreOrderedByCreationDate()
+    {
+
+        // Given
+        testFacade.TruncateTables();
+        await CreatePosts(5);
+
+        // When
+        var getPost = await testFacade.GetPosts("orderBy=CreationDate desc");
+
+        //Then
+        Assert.NotNull(getPost.Result);
+        Assert.True(getPost.Result.Items.SequenceEqual(getPost.Result.Items.OrderByDescending(i => i.CreationDate)),
+        "Collection is not sorted in descending order.");
 
     }
 
 
-    //take
 
     //filter
 
-    // order by
 
     //allTheAbove
     private bool RequestMatchesDto(PostDto dto, PostRequest request)
@@ -139,6 +172,20 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
             && dto.Description == request.Description
             && dto.PrimaryColor.ToString().ToLower() == request.PrimaryColor
             && dto.SecondaryColor.ToString().ToLower() == request.SecondaryColor;
+    }
+
+    private async Task CreatePosts(int count)
+    {
+        var user = await testFacade.SendCreateUserEvent();
+        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+
+        for (int i = 0; i < count; i++)
+        {
+            await Task.Delay(50); // This non-blocking delay will allow time between submissions
+
+            var firstCreation = await testFacade.SendCreatePost(createBody);
+
+        }
     }
 }
 

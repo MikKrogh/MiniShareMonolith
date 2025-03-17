@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using PostsModule.Application;
 using PostsModule.Application.UserEvents;
 using PostsModule.Domain.Auth;
+using PostsModule.Presentation;
 using PostsModule.Tests.Helper;
 using System.Net;
 using System.Net.Http.Json;
@@ -88,7 +89,7 @@ internal class TestFacade
         return result;
     }
 
-    public async Task<TestFacadeResult<List<PostDto>>> GetPosts(string? queryString = null)
+    public async Task<TestFacadeResult<PaginationResult<PostDto>>> GetPosts(string? queryString = null)
     {
         var options = new JsonSerializerOptions
         {
@@ -96,9 +97,9 @@ internal class TestFacade
         };
 
 
-        var result = new TestFacadeResult<List<PostDto>>()
+        var result = new TestFacadeResult<PaginationResult<PostDto>>()
         {
-            Result = new List<PostDto>()
+            Result = new PaginationResult<PostDto>()
         };
 
         var response = await _client.GetAsync($"/Posts?{queryString}");
@@ -107,8 +108,8 @@ internal class TestFacade
 
         var content = await response.Content.ReadAsStringAsync();
         var listofDto = string.IsNullOrEmpty(content)
-            ? new List<PostDto>()
-            : JsonSerializer.Deserialize<List<PostDto>>(content, options);
+            ? new PaginationResult<PostDto>()
+            : JsonSerializer.Deserialize<PaginationResult<PostDto>>(content, options);
 
         result.Result = listofDto;
         return result;

@@ -13,7 +13,11 @@ public class GetPostsCommandConsumer : IConsumer<GetPostsCommand>
     }
     public async Task Consume(ConsumeContext<GetPostsCommand> context)
     {
-        var posts = await repository.GetAll(context.Message.QueryModel);
+        var posts = await repository.GetAll(
+            context.Message.QueryModel.Take,
+            context.Message.QueryModel.Descending,
+            context.Message.QueryModel.OrderBy
+        );
 
         var mappedPosts = posts.Items.Select(post => new PostDto()
         {

@@ -7,13 +7,24 @@ namespace PostsModule.Presentation.Endpoints;
 
 public class GetPosts
 {
-    internal static async Task<IResult> Process([FromServices] IRequestClient<GetPostsCommand> client, [FromQuery]int? take)
+    //orderby should follow oData specicitaion. Example "orderBy=propertyName Desc" or "orderBy=propertyName"
+    internal static async Task<IResult> Process([FromServices] IRequestClient<GetPostsCommand> client, [FromQuery]int? take, string? orderBy)
     {
-        var command = new GetPostsCommand();
         var queryModel = new QueryModel()
         {
-            Take = take ?? 100
+            Take = take ?? 100,            
         };
+
+        if (!string.IsNullOrEmpty(orderBy))
+        {
+            queryModel.Descending = orderBy.EndsWith("desc");
+            queryModel.OrderBy = orderBy.Split(' ')[0];
+        }
+        var command = new GetPostsCommand() 
+        {
+            QueryModel = queryModel
+        };
+
         var commandResult = await client.GetResponse<CommandResult<GetPostsCommandResult>>(command);
         var result = commandResult.Message;
 
