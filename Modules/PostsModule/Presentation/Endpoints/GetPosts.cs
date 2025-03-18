@@ -12,7 +12,7 @@ public class GetPosts
     {
         var queryModel = new QueryModel()
         {
-            Take = take ?? 100,  
+            Take = SetTake(take),  
             Filter = filter
         };
 
@@ -39,5 +39,11 @@ public class GetPosts
             return Results.Ok(paginationResult);  
         }     
         return Results.StatusCode(result.ResultStatus);
+    }
+    private static int SetTake(int? take)
+    {
+        if (take is null) return 100;
+        if (take > 100) return 100;
+        return take.Value;
     }
 }

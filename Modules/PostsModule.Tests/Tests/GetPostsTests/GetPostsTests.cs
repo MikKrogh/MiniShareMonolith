@@ -134,7 +134,23 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
         Assert.Equal(3, getPosts.Result.TotalCount);
     }
 
-    // order by
+    [Fact]
+    public async Task GivenOnehundredandTenPostsExists_WhenUserQuriesWithATakerMoreThanHundred_ThenOnlyAHundredAreReturned()
+    {
+        // Given
+        int totalPosts = 110;
+        testFacade.TruncateTables();
+        await CreatePosts(totalPosts);
+
+        // When
+        var getPosts = await testFacade.GetPosts("take=150");
+
+        // Then
+        Assert.NotNull(getPosts.Result);
+        Assert.Equal(100, getPosts.Result.Items.Count());
+        Assert.Equal(totalPosts, getPosts.Result.TotalCount);
+    }
+
     [Fact]
     public async Task GivenFivePostExists_WhenUserQueriesWithOrderByNewest_ThenReturnedPostsAreOrderedByNewestCreationDate()
     {
@@ -287,9 +303,17 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
         Assert.Equal(2, getPosts.Result.Items.Count());
         Assert.Equal(2, getPosts.Result.TotalCount);
         Assert.All(getPosts.Result.Items, x => Assert.Equal(updatedPost.SecondaryColor.ToLower(), x.SecondaryColor.ToString().ToLower()));
+    }
 
+    [Fact]
+    public async Task GivenThreePostsExistsAndOneHasAUniqueTitle_WhenUserQueriesWithASearchForThisTitle_ThenMatchingPostIsReturnedWithCorrectTotalCount()
+    {
 
     }
+
+
+
+    //pagination
 
     //allTheAbove
     private bool RequestMatchesDto(PostDto dto, PostRequest request)
