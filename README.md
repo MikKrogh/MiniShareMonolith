@@ -23,4 +23,10 @@
   <li>
     creatre instrastructure tests, that assert cleancode is implemented
   </li>
+  <li>
+    PostsRepository could use cleanup, and some benchmarking on the current filter solution.
+  </li>
+  <li>
+    is there a more correct way to split odata query from the presentation layer, into a command, into some filter artefact in the domain
+  </li>
 </p>
