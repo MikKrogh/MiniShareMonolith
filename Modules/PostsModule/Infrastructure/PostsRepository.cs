@@ -215,6 +215,7 @@ public static class OdataFilterReader
             odataString = odataString.Remove(0, 1);
         if (odataString.StartsWith("filter="))
             odataString = odataString.Remove(0, 7);
+        odataString = odataString.Replace(" And ", " and ", StringComparison.InvariantCultureIgnoreCase);
         odataString = odataString.Replace(" And ", " and ");
 
         var filterStrings = odataString.Split("and");

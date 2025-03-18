@@ -73,7 +73,7 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
     }
 
     [Fact]
-    internal async Task GivenOnlyTwoPostsExistsAndUserHasUploadedImageToEach_WhenUserAsksForPosts_ThenImagePathsAreSet()
+    public async Task GivenOnlyTwoPostsExistsAndUserHasUploadedImageToEach_WhenUserAsksForPosts_ThenImagePathsAreSet()
     {
         // Given
         testFacade.TruncateTables();
@@ -99,7 +99,6 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
         Assert.NotEqual(firstPost?.Images?.Single(), secondPost?.Images?.Single());
 
     }
-
 
     //pagination
     [Fact]
@@ -169,7 +168,7 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
     }
 
     [Fact]
-    public async Task GivenThreePostsExists_WhenUserFiltersByRedPrimaryColor_ThenOnePostIsReturnedAndTotalCountIsOne()
+    public async Task GivenThreePostsExistsAndOneHasRedPrimaryColor_WhenUserFiltersByRedPrimaryColor_ThenOnePostIsReturnedAndTotalCountIsOne()
     {
         // Given
         testFacade.TruncateTables();
@@ -190,6 +189,107 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
         
     }
 
+    [Fact]
+    public async Task GivenThreePostsExistsAndOneHasRedSecondaryColor_WhenUserFiltersByRedSecondaryColor_ThenOnePostIsReturnedAndTotalCountIsOne()
+    {
+        // Given
+        testFacade.TruncateTables();
+        var user = await testFacade.SendCreateUserEvent();
+        var defaultPost = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        await testFacade.SendCreatePost(defaultPost);
+        await testFacade.SendCreatePost(defaultPost);
+        await testFacade.SendCreatePost(defaultPost with { SecondaryColor = "red" });
+
+        // When
+        var getPosts = await testFacade.GetPosts("filter=SecondaryColor eq 'red'");
+
+        // Then
+        Assert.NotNull(getPosts.Result);
+        Assert.Single(getPosts.Result.Items);
+        Assert.Equal(1, getPosts.Result.TotalCount);
+        Assert.Equal("red", getPosts.Result.Items.Single().SecondaryColor.ToString().ToLower());
+    }
+
+    [Fact]
+    public async Task GivenThreePostsExistsAndTwoAreCreatedByTheSamePerson_WhenUserQueriesByThisPersonsId_ThenTwoPostsAreReturnedAndTotalCountIsTwo()
+    {
+        // Given
+        testFacade.TruncateTables();
+
+        var userOne = await testFacade.SendCreateUserEvent();
+        var postByUserOne = PostRequestBuilder.GetValidDefaultRequest(userOne.UserId);
+        await testFacade.SendCreatePost(postByUserOne);
+
+        var userTwo = await testFacade.SendCreateUserEvent();
+        var postByUserTwo = PostRequestBuilder.GetValidDefaultRequest(userTwo.UserId);        
+        await testFacade.SendCreatePost(postByUserTwo);
+        await testFacade.SendCreatePost(postByUserTwo);
+
+
+        // When
+        var getPosts = await testFacade.GetPosts($"filter=CreatorId eq '{userTwo.UserId}'");
+
+        // Then
+        Assert.NotNull(getPosts.Result);
+        Assert.Equal(2, getPosts.Result.Items.Count());
+        Assert.Equal(2, getPosts.Result.TotalCount);
+        Assert.All(getPosts.Result.Items, x => Assert.Equal(userTwo.UserId.ToString(), x.CreatorId));
+    }
+
+    [Fact]
+    public async Task GivenThreePostsExistsWhereTwoHaveTheSameFaction_WhenUserQueriesForThatFaction_ThenMatchingPostAreReturnedAndTotalCountIsTwo()
+    {
+        // Given
+        testFacade.TruncateTables();
+
+        var user = await testFacade.SendCreateUserEvent();
+        var post = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        post.FactionName = "default";
+        await testFacade.SendCreatePost(post);
+
+        var updatedPost = post with { FactionName = "spaceMarines" };
+        await testFacade.SendCreatePost(updatedPost);
+        await testFacade.SendCreatePost(updatedPost);
+
+        // When
+        var getPosts = await testFacade.GetPosts($"filter=Faction eq '{updatedPost.FactionName}'");
+
+
+        // Then
+        Assert.NotNull(getPosts.Result);
+        Assert.Equal(2, getPosts.Result.Items.Count());
+        Assert.Equal(2, getPosts.Result.TotalCount);
+        Assert.All(getPosts.Result.Items, x => Assert.Equal(updatedPost.FactionName, x.FactionName));
+    }
+
+
+    [Fact]
+    public async Task GivenThreePostsExistsAllWithTheSamePrimaryColorAndTwopostsShareSecondaryColor_WhenUserQueriesThePrimaryAndSecondaryColor_ThenTwoPostsAreTurnedWithTheSecondayColor()
+    {
+        // When
+        testFacade.TruncateTables();
+
+        var user = await testFacade.SendCreateUserEvent(); 
+        var post = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        post.PrimaryColor = "red";
+        post.SecondaryColor = "yellow";
+        await testFacade.SendCreatePost(post);
+
+        var updatedPost = post with { SecondaryColor = "blue" };
+        await testFacade.SendCreatePost(updatedPost);
+        await testFacade.SendCreatePost(updatedPost);
+
+        // When
+        var getPosts = await testFacade.GetPosts($"filter=PrimaryColor eq '{post.PrimaryColor}' AND SecondaryColor eq '{updatedPost.SecondaryColor}'");
+
+        // Then
+        Assert.NotNull(getPosts.Result);
+        Assert.Equal(2, getPosts.Result.Items.Count());
+        Assert.Equal(2, getPosts.Result.TotalCount);
+        Assert.All(getPosts.Result.Items, x => Assert.Equal(updatedPost.SecondaryColor.ToLower(), x.SecondaryColor.ToString().ToLower()));
+
+
+    }
 
     //allTheAbove
     private bool RequestMatchesDto(PostDto dto, PostRequest request)
