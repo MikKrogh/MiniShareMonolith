@@ -1,5 +1,4 @@
 ﻿using PostsModule.Application;
-using PostsModule.Domain;
 using PostsModule.Tests.Helper;
 using System.Net;
 
@@ -308,8 +307,46 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
     [Fact]
     public async Task GivenThreePostsExistsAndOneHasAUniqueTitle_WhenUserQueriesWithASearchForThisTitle_ThenMatchingPostIsReturnedWithCorrectTotalCount()
     {
+        // Given
+        var user = await testFacade.SendCreateUserEvent();
+        var post = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        await testFacade.SendCreatePost(post);
+        await testFacade.SendCreatePost(post);
+        var postWithUniqueTitle = post with { Title = "UniqueTitle" };
+        await testFacade.SendCreatePost(postWithUniqueTitle);
 
+        // When
+        var getPosts = await testFacade.GetPosts($"search={postWithUniqueTitle.Title}");
+
+        // Then
+        Assert.NotNull(getPosts.Result);
+        Assert.Single(getPosts.Result.Items);
+        Assert.Equal(1, getPosts.Result.TotalCount);
+        Assert.Equal(postWithUniqueTitle.Title, getPosts.Result.Items.Single().Title);
     }
+
+
+    [Fact]
+    public async Task GivenThreePostsExistsAndOneHasAUniqueDescription_WhenUserQueriesWithASearchForThisDescription_ThenMatchingPostIsReturnedWithCorrectTotalCount()
+    {
+        // Given
+        var user = await testFacade.SendCreateUserEvent();
+        var post = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        await testFacade.SendCreatePost(post);
+        await testFacade.SendCreatePost(post);
+        var postWithUniqueDescription = post with { Description = "UniqueDescription" };
+        await testFacade.SendCreatePost(postWithUniqueDescription);
+
+        // When
+        var getPosts = await testFacade.GetPosts($"search={postWithUniqueDescription.Description}");
+
+        // Then
+        Assert.NotNull(getPosts.Result);
+        Assert.Single(getPosts.Result.Items);
+        Assert.Equal(1, getPosts.Result.TotalCount);
+        Assert.Equal(postWithUniqueDescription.Description, getPosts.Result.Items.Single().Description);
+    }
+
 
 
 
@@ -318,7 +355,6 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
     //allTheAbove
     private bool RequestMatchesDto(PostDto dto, PostRequest request)
     {
-
         return dto.Title == request.Title
             && dto.CreatorId == request.CreatorId
             && dto.FactionName == request.FactionName
@@ -341,6 +377,6 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
     }
 }
 
-//becourse these test depend certain entites, its important not to run in paralel, and instead perform cleanup in the tables
+//becourse these test assert on collections of all items in the db, its important not to run in parralel with other tests.
 [CollectionDefinition(nameof(SystemTestCollectionDefinition), DisableParallelization = true)]
 public class SystemTestCollectionDefinition { }

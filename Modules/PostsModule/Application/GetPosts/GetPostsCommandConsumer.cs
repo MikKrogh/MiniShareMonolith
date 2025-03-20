@@ -17,7 +17,9 @@ public class GetPostsCommandConsumer : IConsumer<GetPostsCommand>
             context.Message.QueryModel.Take,
             context.Message.QueryModel.Descending,
             context.Message.QueryModel.OrderBy,
-            context.Message.QueryModel.Filter
+            context.Message.QueryModel.Filter,
+            context.Message.QueryModel.Search
+
         );
 
         var mappedPosts = posts.Items.Select(post => new PostDto()

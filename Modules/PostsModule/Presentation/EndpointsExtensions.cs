@@ -28,6 +28,7 @@ public static class EndpointsExtensions
 
         api.MapGet("", GetPosts.Process)
             .WithSummary("returns collection of posts")
+            .WithSummary("Follows Odata structure for search, filtering and ordering")
             .WithTags("Read")
             .Produces<List<PostDto>>()
             .Produces(500);

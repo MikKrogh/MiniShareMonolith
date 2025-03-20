@@ -41,13 +41,13 @@ internal class PostsRepository : IPostsRepository
         return post;
     }
 
-    public async Task<PaginatedResult<Post>> GetAll(int take = 100, bool? descending = null, string? orderOnProperty = null, string? filter = null)
+    public async Task<PaginatedResult<Post>> GetAll(int take = 100, bool? descending = null, string? orderOnProperty = null, string? filter = null, string? search = null)
     {
         IQueryable<PostEntity> postEntities = CreateQuery();
         postEntities = ApplyFilter(filter, postEntities);
+        postEntities = ApplySearch(search, postEntities);
         var totalCount = await postEntities.CountAsync();
         postEntities = ApplyOrderBy(descending, orderOnProperty, postEntities);
-
         try
         {
             var queriedEntities = await postEntities.Take(take).ToListAsync();
@@ -65,6 +65,17 @@ internal class PostsRepository : IPostsRepository
             throw;
         }
 
+    }
+
+    private static IQueryable<PostEntity> ApplySearch(string? search, IQueryable<PostEntity> postEntities)
+    {
+        if (!string.IsNullOrEmpty(search))
+        {
+            postEntities = postEntities.Where(x => x.Title.Contains(search) || x.Description.Contains(search));
+            //postEntities = postEntities.Where(x => x.Description.Contains(search));
+        }
+
+        return postEntities;
     }
 
     private static List<Post> MapToDomainEntities(List<PostEntity> queriedEntities)
