@@ -347,10 +347,16 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
         Assert.Equal(postWithUniqueDescription.Description, getPosts.Result.Items.Single().Description);
     }
 
+    public async Task WhenSearchOrderAndFilter_ThenTrue()
+    {
+        Assert.True(false);
+    }
 
 
-
-    //pagination
+    public async Task Pagination_Continuation_NextPointer()
+    {
+        Assert.True(false);
+    }
 
     //allTheAbove
     private bool RequestMatchesDto(PostDto dto, PostRequest request)
