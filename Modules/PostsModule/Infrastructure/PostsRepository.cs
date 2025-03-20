@@ -46,10 +46,13 @@ internal class PostsRepository : IPostsRepository
         IQueryable<PostEntity> postEntities = CreateQuery();
         postEntities = ApplyFilter(filter, postEntities);
         postEntities = ApplySearch(search, postEntities);
-        var totalCount = await postEntities.CountAsync();
+        var totalCount = await postEntities.AsNoTracking().CountAsync();
         postEntities = ApplyOrderBy(descending, orderOnProperty, postEntities);
 
+
         postEntities = postEntities.Skip(skip);
+
+        var qstring = postEntities.ToQueryString();
         try
         {
             var queriedEntities = await postEntities.Take(take).ToListAsync();
@@ -74,7 +77,6 @@ internal class PostsRepository : IPostsRepository
         if (!string.IsNullOrEmpty(search))
         {
             postEntities = postEntities.Where(x => x.Title.Contains(search) || x.Description.Contains(search));
-            //postEntities = postEntities.Where(x => x.Description.Contains(search));
         }
 
         return postEntities;
