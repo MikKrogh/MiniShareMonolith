@@ -1,6 +1,9 @@
 ﻿using PostsModule.Application;
+using PostsModule.Domain;
+using PostsModule.Presentation.Endpoints;
 using PostsModule.Tests.Helper;
 using System.Net;
+using Xunit.Abstractions;
 
 namespace PostsModule.Tests.Tests.GetPostsTests;
 [Collection(nameof(SystemTestCollectionDefinition))]
@@ -156,7 +159,7 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
 
         // Given
         testFacade.TruncateTables();
-        await CreatePosts(5);
+        await CreatePosts(5,true);
 
         // When
         var getPost = await testFacade.GetPosts("orderBy=CreationDate desc");
@@ -171,7 +174,7 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
     {
         // Given
         testFacade.TruncateTables();
-        await CreatePosts(5);
+        await CreatePosts(5,true);
 
         // When
         var getPost = await testFacade.GetPosts("orderBy=CreationDate");
@@ -347,16 +350,74 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
         Assert.Equal(postWithUniqueDescription.Description, getPosts.Result.Items.Single().Description);
     }
 
-    public async Task WhenSearchOrderAndFilter_ThenTrue()
+    [Fact]
+    public async Task Given150PostsExistsAnd110OfThemHaveMatchingTitleAndRedPrimaryColorWhenUserQueriesForRedPrimaryColor_Thern100PostsAreReturnedAndTotalCountIs110()
     {
-        Assert.True(false);
+        // Given
+        await CreatePosts(20);
+
+        var user = await testFacade.SendCreateUserEvent();
+        var post = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        post.PrimaryColor = "Red";
+        post.Title = "unique";
+        var postsMatchingQuery = Enumerable.Range(0, 110).Select(x => testFacade.SendCreatePost(post));
+        await Task.WhenAll(postsMatchingQuery);
+
+        await CreatePosts(20);
+
+        // When
+        var getPosts = await testFacade.GetPosts($"search={post.Title}&filter=PrimaryColor eq '{post.PrimaryColor}'&orderBy=CreationDate desc");
+
+        // Then
+        Assert.NotNull(getPosts.Result);
+        Assert.Equal(100, getPosts.Result.Items.Count());
+        Assert.Equal(110, getPosts.Result.TotalCount);
+        Assert.All(getPosts.Result.Items, x => Assert.Equal(post.PrimaryColor.ToLower(), x.PrimaryColor.ToString().ToLower()));
+        Assert.All(getPosts.Result.Items, x => Assert.Equal(post.Title, x.Title));
     }
 
 
-    public async Task Pagination_Continuation_NextPointer()
+    [Fact]
+    public async Task Given20PostsExistsAndUserHasAlreadyQueried10_WhenUserQueriesWithATakeOf10AndSkip10_Then10DifferentPostsAreReturned()
     {
-        Assert.True(false);
+        // Given
+        await CreatePosts(20);
+        var firstQuery = await testFacade.GetPosts("take=10");
+
+        //When
+        var secondQuery = await testFacade.GetPosts("take=10&skip=10");
+
+        // Then
+        Assert.NotNull(firstQuery.Result);
+        Assert.NotNull(secondQuery.Result);
+        var allPosts = firstQuery.Result.Items.ToList();
+        allPosts.AddRange(secondQuery.Result.Items.ToList());
+        Assert.True(allPosts.Select(x => x.Id).Distinct().Count() == allPosts.Count());
     }
+
+
+    [Fact]
+    public async Task Given20PostsExistsAndUserHasAlreadyQueried10WithOrderByCreationTime_WhenUserQueriesWithATakeOf10AndSkip10AndOrderByTime_AllPostsAreSortedCorrectly()
+    {
+        // Given
+        await CreatePosts(20,true);
+        var firstQuery = await testFacade.GetPosts("take=10&orderBy=CreationDate desc");
+
+        //When
+        var secondQuery = await testFacade.GetPosts("take=10&skip=10orderBy=CreationDate desc");
+
+        // Then
+        Assert.NotNull(firstQuery.Result);
+        Assert.NotNull(secondQuery.Result);
+        var allPosts = firstQuery.Result.Items.ToList();
+        allPosts.AddRange(secondQuery.Result.Items.ToList());
+        Assert.True(allPosts.Select(x => x.Id).Distinct().Count() == allPosts.Count());
+
+        var expetedSortOrder = allPosts.OrderByDescending(x => x.CreationDate);
+        Assert.Equal(expetedSortOrder, allPosts);
+
+    }
+
 
     //allTheAbove
     private bool RequestMatchesDto(PostDto dto, PostRequest request)
@@ -369,14 +430,15 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
             && dto.SecondaryColor.ToString().ToLower() == request.SecondaryColor;
     }
 
-    private async Task CreatePosts(int count)
+    private async Task CreatePosts(int count, bool introduceDelay = false)
     {
         var user = await testFacade.SendCreateUserEvent();
         var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
 
         for (int i = 0; i < count; i++)
         {
-            await Task.Delay(50); //make it easier to verify that order by date is readable
+            if (introduceDelay)            
+                await Task.Delay(50); //make it easier to verify that order by date is readable            
             await testFacade.SendCreatePost(createBody);
 
         }

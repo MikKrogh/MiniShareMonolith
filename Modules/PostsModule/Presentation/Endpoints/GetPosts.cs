@@ -7,13 +7,14 @@ namespace PostsModule.Presentation.Endpoints;
 
 public class GetPosts
 {
-    internal static async Task<IResult> Process([FromServices] IRequestClient<GetPostsCommand> client, [FromQuery]int? take, string? orderBy, string? filter, string? search)
+    internal static async Task<IResult> Process([FromServices] IRequestClient<GetPostsCommand> client, [FromQuery]int? take, string? orderBy, string? filter, string? search, int? skip)
     {
         var queryModel = new QueryModel()
         {
-            Take = SetTake(take),  
+            Take = SetTake(take),
             Filter = filter,
-            Search = search
+            Search = search,
+            Skip = skip ?? 0
         };
 
         if (!string.IsNullOrEmpty(orderBy))

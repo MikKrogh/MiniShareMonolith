@@ -41,13 +41,15 @@ internal class PostsRepository : IPostsRepository
         return post;
     }
 
-    public async Task<PaginatedResult<Post>> GetAll(int take = 100, bool? descending = null, string? orderOnProperty = null, string? filter = null, string? search = null)
+    public async Task<PaginatedResult<Post>> GetAll(int take = 100, bool? descending = null, string? orderOnProperty = null, string? filter = null, string? search = null, int skip = 0)
     {
         IQueryable<PostEntity> postEntities = CreateQuery();
         postEntities = ApplyFilter(filter, postEntities);
         postEntities = ApplySearch(search, postEntities);
         var totalCount = await postEntities.CountAsync();
         postEntities = ApplyOrderBy(descending, orderOnProperty, postEntities);
+
+        postEntities = postEntities.Skip(skip);
         try
         {
             var queriedEntities = await postEntities.Take(take).ToListAsync();

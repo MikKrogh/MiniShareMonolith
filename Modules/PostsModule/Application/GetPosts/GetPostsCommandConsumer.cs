@@ -18,7 +18,9 @@ public class GetPostsCommandConsumer : IConsumer<GetPostsCommand>
             context.Message.QueryModel.Descending,
             context.Message.QueryModel.OrderBy,
             context.Message.QueryModel.Filter,
-            context.Message.QueryModel.Search
+            context.Message.QueryModel.Search,
+            context.Message.QueryModel.Skip
+
 
         );
 
