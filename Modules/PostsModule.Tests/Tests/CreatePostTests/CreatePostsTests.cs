@@ -9,7 +9,7 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
     public CreatePostsTests(PostsWebApplicationFactory factory)
     {
         testFacade = new TestFacade(factory);
-        
+
     }
 
     [Fact]

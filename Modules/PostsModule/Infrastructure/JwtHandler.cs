@@ -44,16 +44,16 @@ public sealed class JwtHandler : IAuthHelper
             {
                 ValidateIssuer = true,
                 ValidIssuer = "MiniShare",
-                ValidateAudience = false, 
+                ValidateAudience = false,
                 ValidateLifetime = true,
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = securityKey,
-                ClockSkew = TimeSpan.Zero 
+                ClockSkew = TimeSpan.Zero
             };
 
             return tokenHandler.ValidateToken(token, validationParameters, out _);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             return null; // Invalid token
         }

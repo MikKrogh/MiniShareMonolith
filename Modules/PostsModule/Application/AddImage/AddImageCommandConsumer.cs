@@ -5,12 +5,12 @@ using PostsModule.Presentation.Endpoints;
 namespace PostsModule.Application.AddImage;
 
 public sealed class AddImageCommandConsumer : IConsumer<AddImageCommand>
-{    
+{
     private readonly IImageStorageService _imageBlobService;
     private readonly IImageRepository _imageRepository;
 
-    public AddImageCommandConsumer(IImageStorageService imageService, IImageRepository imageRepository )
-    {        
+    public AddImageCommandConsumer(IImageStorageService imageService, IImageRepository imageRepository)
+    {
         this._imageBlobService = imageService;
         this._imageRepository = imageRepository;
     }
@@ -24,7 +24,7 @@ public sealed class AddImageCommandConsumer : IConsumer<AddImageCommand>
         }
         else
         {
-            Stream? stream = StreamBank.GetStream(context.Message.PostId,context.Message.StreamId);
+            Stream? stream = StreamBank.GetStream(context.Message.PostId, context.Message.StreamId);
             if (stream is null)
             {
                 var result = CommandResult<AddImageCommandResult>.InternalError();
@@ -53,7 +53,7 @@ public sealed class AddImageCommandConsumer : IConsumer<AddImageCommand>
     {
         bool isValidExtension = IsValidFileExtension(command.FileExtension);
 
-        return isValidExtension; 
+        return isValidExtension;
     }
 
     private bool IsValidFileExtension(string fileExtension)

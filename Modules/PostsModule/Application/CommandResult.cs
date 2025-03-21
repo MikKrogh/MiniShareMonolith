@@ -1,13 +1,13 @@
 ﻿
 namespace PostsModule.Application;
 
-public sealed class CommandResult<T> where T: class, new()
+public sealed class CommandResult<T> where T : class, new()
 {
     public bool IsSuccess { get; init; } = false;
     public int ResultStatus { get; init; } = -1;
     public T? ResultValue { get; init; } = default;
 
-    public static CommandResult<T> FailedToValidate() 
+    public static CommandResult<T> FailedToValidate()
     {
         return new CommandResult<T>()
         {

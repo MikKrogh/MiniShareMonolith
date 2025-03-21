@@ -10,11 +10,11 @@ using PostsModule.Tests.Helper;
 
 namespace PostsModule.Tests;
 
-public class PostsWebApplicationFactory : WebApplicationFactory<Program> ,IAsyncLifetime
+public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     public MesageBrokerFacade MessageBrokerTestFacade { get; private set; }
     private PostsContext _postsContext;
-    public  void TruncateTables()
+    public void TruncateTables()
     {
         _postsContext.Database.ExecuteSqlRaw("DELETE FROM PostModule.Image;");
         _postsContext.Database.ExecuteSqlRaw("DELETE FROM PostModule.Posts;");

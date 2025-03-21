@@ -1,6 +1,5 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
-using PostsModule.Application;
 using PostsModule.Domain;
 using System.Linq.Expressions;
 

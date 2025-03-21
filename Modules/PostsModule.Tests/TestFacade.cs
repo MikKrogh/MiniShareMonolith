@@ -14,7 +14,7 @@ internal class TestFacade
 {
     private readonly PostsWebApplicationFactory _factory;
     private readonly MesageBrokerFacade _messageBroker;
-    private readonly IAuthHelper jwtHandler;    
+    private readonly IAuthHelper jwtHandler;
 
     private readonly HttpClient _client;
     public TestFacade(PostsWebApplicationFactory factory)
@@ -29,10 +29,10 @@ internal class TestFacade
     public string CreateToken(DateTime? expirationDate, string postId)
     {
         var token = jwtHandler.CreateToken(expirationDate, ClaimValueHolder.Create("postId", postId));
-        
+
         return token;
     }
-    public void TruncateTables( )
+    public void TruncateTables()
     {
         _factory.TruncateTables();
     }
@@ -114,7 +114,7 @@ internal class TestFacade
         return result;
     }
 
-    
+
 
 
 }

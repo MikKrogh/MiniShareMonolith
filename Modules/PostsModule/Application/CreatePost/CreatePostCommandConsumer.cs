@@ -6,7 +6,7 @@ public sealed class CreatePostCommandConsumer : IConsumer<CreatePostCommand>
 {
     private readonly IPostsRepository repository;
 
-    public CreatePostCommandConsumer(IPostsRepository repository )
+    public CreatePostCommandConsumer(IPostsRepository repository)
     {
         this.repository = repository;
     }
@@ -16,7 +16,7 @@ public sealed class CreatePostCommandConsumer : IConsumer<CreatePostCommand>
         {
             Post post = CreateDomainEntity(context.Message);
             await repository.Save(post);
-            await context.RespondAsync(CommandResult<CreatePostCommandResult>.Success(new() { PostId = post.Id.ToString()}));
+            await context.RespondAsync(CommandResult<CreatePostCommandResult>.Success(new() { PostId = post.Id.ToString() }));
         }
         else
         {

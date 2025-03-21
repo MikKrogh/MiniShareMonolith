@@ -7,7 +7,7 @@ namespace PostsModule.Presentation.Endpoints;
 
 public class GetPosts
 {
-    internal static async Task<IResult> Process([FromServices] IRequestClient<GetPostsCommand> client, [FromQuery]int? take, string? orderBy, string? filter, string? search, int? skip)
+    internal static async Task<IResult> Process([FromServices] IRequestClient<GetPostsCommand> client, [FromQuery] int? take, string? orderBy, string? filter, string? search, int? skip)
     {
         var queryModel = new QueryModel()
         {
@@ -26,7 +26,7 @@ public class GetPosts
             };
 
         }
-        var command = new GetPostsCommand() 
+        var command = new GetPostsCommand()
         {
             QueryModel = queryModel
         };
@@ -41,8 +41,8 @@ public class GetPosts
                 TotalCount = result.ResultValue.TotalCount,
                 Items = result.ResultValue.Posts
             };
-            return Results.Ok(paginationResult);  
-        }     
+            return Results.Ok(paginationResult);
+        }
         return Results.StatusCode(result.ResultStatus);
     }
     private static int SetTake(int? take)

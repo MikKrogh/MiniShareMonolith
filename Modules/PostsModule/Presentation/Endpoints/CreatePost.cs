@@ -31,7 +31,7 @@ internal class CreatePost
                     ClaimValueHolder.Create("postId", commandResult.ResultValue.PostId)
                 );
 
-                return Results.Ok(new SuccessRespnse 
+                return Results.Ok(new SuccessRespnse
                 {
                     PostId = commandResult.ResultValue.PostId,
                     Token = token

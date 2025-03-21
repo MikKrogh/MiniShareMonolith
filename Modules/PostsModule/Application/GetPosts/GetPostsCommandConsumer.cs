@@ -44,7 +44,7 @@ public class GetPostsCommandConsumer : IConsumer<GetPostsCommand>
             TotalCount = posts.TotalCount
         };
 
-        
+
         await context.RespondAsync(CommandResult<GetPostsCommandResult>.Success(result));
     }
 }

@@ -2,7 +2,7 @@
 namespace PostsModule.Application;
 public sealed record QueryModel
 {
-    public string? Search {  get; init; }
+    public string? Search { get; init; }
     public int Take { get; init; } = 100;
     public int Skip { get; init; } = 0;
     public string? Filter { get; init; } = null;

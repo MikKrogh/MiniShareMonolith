@@ -1,5 +1,4 @@
-﻿using PostsModule.Presentation.Endpoints;
-using PostsModule.Tests.Helper;
+﻿using PostsModule.Tests.Helper;
 using System.Net;
 
 namespace PostsModule.Tests.Tests.ImageTests;
@@ -135,7 +134,7 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
         var user = await testFacade.SendCreateUserEvent();
         var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
         var create = await testFacade.SendCreatePost(createBody);
-        
+
         //When        
         var response = await testFacade.UploadImage(create.Result.PostId, "nonValidToken");
 
@@ -228,10 +227,10 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
     {
         //Given 
         byte[] file = new byte[65484];
-        var user = await testFacade.SendCreateUserEvent();        
+        var user = await testFacade.SendCreateUserEvent();
         var create = await testFacade.SendCreatePost(PostRequestBuilder.GetValidDefaultRequest(user.UserId));
         await testFacade.UploadImage(create.Result.PostId, create.Result.Token, file, fileExtension: ".png");
-        
+
         //When
         var getResponse = await testFacade.GetPost(create.Result.PostId);
         string imageId = getResponse.Images.Single();
@@ -256,7 +255,7 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
         var response = await testFacade.GetImage(create.Result.PostId, "wrongImageId");
 
         //Then
-        Assert.True(response.StatusCode == HttpStatusCode.NotFound);        
+        Assert.True(response.StatusCode == HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -266,11 +265,11 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
         var user = await testFacade.SendCreateUserEvent();
         var create = await testFacade.SendCreatePost(PostRequestBuilder.GetValidDefaultRequest(user.UserId));
         await testFacade.UploadImage(create.Result.PostId, create.Result.Token);
-        
+
         //When
         var getResponse = await testFacade.GetPost(create.Result.PostId);
         var response = await testFacade.GetImage("wrongPostId", getResponse.Images.Single());
-        
+
         //Then
         Assert.True(response.StatusCode == HttpStatusCode.NotFound);
     }

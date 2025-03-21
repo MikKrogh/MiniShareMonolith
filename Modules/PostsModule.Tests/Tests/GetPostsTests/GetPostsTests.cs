@@ -1,21 +1,18 @@
 ﻿using PostsModule.Application;
-using PostsModule.Domain;
-using PostsModule.Presentation.Endpoints;
 using PostsModule.Tests.Helper;
 using System.Net;
-using Xunit.Abstractions;
 
 namespace PostsModule.Tests.Tests.GetPostsTests;
 [Collection(nameof(SystemTestCollectionDefinition))]
-public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
+public class GetPostsTests : IClassFixture<PostsWebApplicationFactory>
 {
     private readonly TestFacade testFacade;
     public GetPostsTests(PostsWebApplicationFactory factory)
-    {        
+    {
         testFacade = new TestFacade(factory);
     }
 
-    
+
     [Fact]
     internal async Task GivenMultiplePostsExists_WhenUserAsksForPosts_ThenSuccessIsReturned()
     {
@@ -24,7 +21,7 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
         var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
         var firstCreation = await testFacade.SendCreatePost(createBody);
         var secondCreation = await testFacade.SendCreatePost(createBody);
-        
+
         // When        
         var posts = await testFacade.GetPosts();
 
@@ -64,14 +61,14 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
         Assert.Equal(HttpStatusCode.OK, getPosts.StatusCode);
         Assert.NotEmpty(getPosts.Result.Items);
         Assert.Equal(2, getPosts.Result.Items.Count());
-            
+
         var firstDto = getPosts.Result.Items.First(x => x.Title == firstPost.Title);
-        var secondDto = getPosts.Result.Items.First(x => x.Title == secondPost.Title);         
-            
+        var secondDto = getPosts.Result.Items.First(x => x.Title == secondPost.Title);
+
 
         Assert.True(RequestMatchesDto(firstDto, firstPost));
         Assert.True(RequestMatchesDto(secondDto, secondPost));
-        
+
     }
 
     [Fact]
@@ -96,7 +93,7 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
 
         var firstPost = getPosts.Result.Items.SingleOrDefault(x => x.Id == firstCreation.Result.PostId);
         var secondPost = getPosts.Result.Items.SingleOrDefault(x => x.Id == secondCreation.Result.PostId);
-        Assert.Equal(1,firstPost?.Images?.Count());
+        Assert.Equal(1, firstPost?.Images?.Count());
         Assert.Equal(1, secondPost?.Images?.Count());
         Assert.NotEqual(firstPost?.Images?.Single(), secondPost?.Images?.Single());
 
@@ -159,7 +156,7 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
 
         // Given
         testFacade.TruncateTables();
-        await CreatePosts(5,true);
+        await CreatePosts(5, true);
 
         // When
         var getPost = await testFacade.GetPosts("orderBy=CreationDate desc");
@@ -174,7 +171,7 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
     {
         // Given
         testFacade.TruncateTables();
-        await CreatePosts(5,true);
+        await CreatePosts(5, true);
 
         // When
         var getPost = await testFacade.GetPosts("orderBy=CreationDate");
@@ -191,7 +188,7 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
         // Given
         testFacade.TruncateTables();
         var user = await testFacade.SendCreateUserEvent();
-        var defaultPost = PostRequestBuilder.GetValidDefaultRequest(user.UserId); 
+        var defaultPost = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
         await testFacade.SendCreatePost(defaultPost);
         await testFacade.SendCreatePost(defaultPost);
         await testFacade.SendCreatePost(defaultPost with { PrimaryColor = "red" });
@@ -204,7 +201,7 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
         Assert.Single(getPosts.Result.Items);
         Assert.Equal(1, getPosts.Result.TotalCount);
         Assert.Equal("red", getPosts.Result.Items.Single().PrimaryColor.ToString().ToLower());
-        
+
     }
 
     [Fact]
@@ -239,7 +236,7 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
         await testFacade.SendCreatePost(postByUserOne);
 
         var userTwo = await testFacade.SendCreateUserEvent();
-        var postByUserTwo = PostRequestBuilder.GetValidDefaultRequest(userTwo.UserId);        
+        var postByUserTwo = PostRequestBuilder.GetValidDefaultRequest(userTwo.UserId);
         await testFacade.SendCreatePost(postByUserTwo);
         await testFacade.SendCreatePost(postByUserTwo);
 
@@ -287,7 +284,7 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
         // When
         testFacade.TruncateTables();
 
-        var user = await testFacade.SendCreateUserEvent(); 
+        var user = await testFacade.SendCreateUserEvent();
         var post = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
         post.PrimaryColor = "red";
         post.SecondaryColor = "yellow";
@@ -400,7 +397,7 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
     public async Task Given20PostsExistsAndUserHasAlreadyQueried10WithOrderByCreationTime_WhenUserQueriesWithATakeOf10AndSkip10AndOrderByTime_AllPostsAreSortedCorrectly()
     {
         // Given
-        await CreatePosts(20,true);
+        await CreatePosts(20, true);
         var firstQuery = await testFacade.GetPosts("take=10&orderBy=CreationDate desc");
 
         //When
@@ -438,7 +435,7 @@ public class GetPostsTests: IClassFixture<PostsWebApplicationFactory>
 
         for (int i = 0; i < count; i++)
         {
-            if (introduceDelay)            
+            if (introduceDelay)
                 await Task.Delay(50); //make it easier to verify that order by date is readable            
             await testFacade.SendCreatePost(createBody);
 

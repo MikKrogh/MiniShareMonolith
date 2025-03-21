@@ -10,7 +10,7 @@ namespace PostsModule.Presentation.Endpoints;
 internal class AddImage
 {
     [RequestFormLimits(MultipartBodyLengthLimit = 9_000_000)]
-    internal static async Task<IResult> Process( IFormFile file,[FromServices] IAuthHelper authHelper,[FromServices] IRequestClient<AddImageCommand> client, [FromRoute] Guid postId, [FromQuery] string token)    
+    internal static async Task<IResult> Process(IFormFile file, [FromServices] IAuthHelper authHelper, [FromServices] IRequestClient<AddImageCommand> client, [FromRoute] Guid postId, [FromQuery] string token)
     {
         var claims = authHelper.ReadClaims(token);
         if (claims == null || !claims.Any() || claims["postId"] != postId.ToString()) return Results.Problem();
@@ -28,11 +28,11 @@ internal class AddImage
         long.TryParse(claims["exp"], out ticks);
         DateTime expiration = DateTimeOffset.FromUnixTimeSeconds(ticks).LocalDateTime;
 
-        StreamBank.RegisterStream(command.PostId,command.StreamId, file.OpenReadStream(), expiration);
+        StreamBank.RegisterStream(command.PostId, command.StreamId, file.OpenReadStream(), expiration);
 
         var result = await client.GetResponse<CommandResult<AddImageCommandResult>>(command);
 
-        
+
         //Add a subscriber to clear the streambank by post, after the token has expired
         if (result.Message.IsSuccess)
             return Results.Ok();
@@ -48,16 +48,16 @@ public static class StreamBank
     public static List<string> Cleanings = new();
     private static readonly ConcurrentDictionary<Guid, ImageState> StreamsByPost = new();
     private static readonly Timer CleanupTimer = new Timer(_ =>
-        RemoveExpiredStates(), 
-        null, 
+        RemoveExpiredStates(),
+        null,
         TimeSpan.FromMinutes(5),
         TimeSpan.FromMinutes(5));
 
 
 
-    public static bool RegisterStream(Guid postId, Guid streamId,Stream stream, DateTime ex )
+    public static bool RegisterStream(Guid postId, Guid streamId, Stream stream, DateTime ex)
     {
-        var postStreams = StreamsByPost.GetOrAdd(postId, _ => new(postId,ex));   
+        var postStreams = StreamsByPost.GetOrAdd(postId, _ => new(postId, ex));
         return postStreams.Add(streamId, stream);
     }
     public static Stream? GetStream(Guid postId, Guid streamId)
@@ -67,7 +67,7 @@ public static class StreamBank
     }
 
     public static void RemoveStream(Guid postId, Guid imageId)
-    {        
+    {
         if (StreamsByPost.TryGetValue(postId, out ImageState? postStreams))
         {
             postStreams.Remove(imageId);
@@ -102,7 +102,7 @@ public static class StreamBank
         }
         public Stream Get(Guid ImageId)
         {
-            var tuple =  Streams.FirstOrDefault(x => x.imageId == ImageId );
+            var tuple = Streams.FirstOrDefault(x => x.imageId == ImageId);
             return tuple.stream;
 
         }
@@ -113,7 +113,7 @@ public static class StreamBank
                 if (this.ImageUploadsAttempsCount < MaxUploads)
                 {
                     this.ImageUploadsAttempsCount++;
-                    this.Streams.Add((imageId,stream));
+                    this.Streams.Add((imageId, stream));
                     return true;
                 }
                 return false;
@@ -121,7 +121,7 @@ public static class StreamBank
         }
         public void Remove(Guid imageId)
         {
-            lock (_lock) 
+            lock (_lock)
             {
                 try
                 {

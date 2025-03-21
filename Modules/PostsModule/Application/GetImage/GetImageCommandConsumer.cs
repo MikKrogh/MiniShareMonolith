@@ -26,7 +26,7 @@ public sealed class GetImageCommandConsumer : IConsumer<GetImageCommand>
             MemoryStream memoryStream;
             using (memoryStream = new MemoryStream())
             {
-                image.CopyTo(memoryStream);            
+                image.CopyTo(memoryStream);
             }
             await context.RespondAsync(CommandResult<GetImageCommandResult>.Success(new() { File = memoryStream.ToArray() }));
 

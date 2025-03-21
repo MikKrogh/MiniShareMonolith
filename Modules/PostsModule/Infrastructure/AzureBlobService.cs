@@ -38,7 +38,7 @@ public class AzureBlobService : IImageStorageService
         }
         try
         {
-            var path = Path.Combine(directoryName, fileName);            
+            var path = Path.Combine(directoryName, fileName);
             await _blobClient.UploadBlobAsync(path, stream);
         }
         catch (Exception e)
