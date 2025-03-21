@@ -5,7 +5,7 @@ using PostsModule.Application.Create;
 using PostsModule.Domain.Auth;
 
 namespace PostsModule.Presentation.Endpoints;
-internal class Create
+internal class CreatePost
 {
     internal static async Task<IResult> Process([FromServices] IRequestClient<CreatePostCommand> client, IAuthHelper auth, [FromBody] CreateBody body)
     {

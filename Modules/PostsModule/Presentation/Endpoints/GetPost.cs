@@ -5,7 +5,7 @@ using PostsModule.Application.Get;
 
 namespace PostsModule.Presentation.Endpoints;
 
-internal class Get
+internal class GetPost
 {
     internal static async Task<IResult> Process([FromServices] IRequestClient<GetPostCommand> client, [FromRoute] string postId)
     {

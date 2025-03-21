@@ -9,10 +9,10 @@ using System.Linq;
 
 namespace PostsModule.Presentation.Endpoints;
 
-internal class Put
+internal class AddImage
 {
     [RequestFormLimits(MultipartBodyLengthLimit = 9_000_000)]
-    internal static async Task<IResult> ProcessAddImage( IFormFile file,[FromServices] IAuthHelper authHelper,[FromServices] IRequestClient<AddImageCommand> client, [FromRoute] Guid postId, [FromQuery] string token)    
+    internal static async Task<IResult> Process( IFormFile file,[FromServices] IAuthHelper authHelper,[FromServices] IRequestClient<AddImageCommand> client, [FromRoute] Guid postId, [FromQuery] string token)    
     {
         var claims = authHelper.ReadClaims(token);
         if (claims == null || !claims.Any() || claims["postId"] != postId.ToString()) return Results.Problem();
