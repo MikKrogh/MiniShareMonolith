@@ -1,5 +1,4 @@
-﻿
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using PostsModule.Application;
 using PostsModule.Application.UserEvents;
 using PostsModule.Domain.Auth;

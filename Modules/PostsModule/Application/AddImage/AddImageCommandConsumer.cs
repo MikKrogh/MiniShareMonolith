@@ -5,19 +5,15 @@ using PostsModule.Presentation.Endpoints;
 
 namespace PostsModule.Application.AddImage;
 
-public class AddImageCommandConsumer : IConsumer<AddImageCommand>
-{
-    private readonly IAuthHelper _authHelper;
+public sealed class AddImageCommandConsumer : IConsumer<AddImageCommand>
+{    
     private readonly IImageStorageService _imageBlobService;
     private readonly IImageRepository _imageRepository;
-    private readonly ILogger<AddImageCommandConsumer> _logger;
 
-    public AddImageCommandConsumer(IAuthHelper authHelper, IImageStorageService imageService, IImageRepository imageRepository, ILogger<AddImageCommandConsumer> logger)
-    {
-        this._authHelper = authHelper;
+    public AddImageCommandConsumer(IImageStorageService imageService, IImageRepository imageRepository )
+    {        
         this._imageBlobService = imageService;
         this._imageRepository = imageRepository;
-        this._logger = logger;
     }
 
     public async Task Consume(ConsumeContext<AddImageCommand> context)

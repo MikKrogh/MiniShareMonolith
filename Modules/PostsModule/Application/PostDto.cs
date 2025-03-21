@@ -1,9 +1,7 @@
 ﻿using PostsModule.Domain;
-using System.Text.Json.Serialization;
-
 namespace PostsModule.Application;
 
-public class PostDto
+public sealed class PostDto
 {
     public string Id { get; init; }
     public string Title { get; init; } = string.Empty;

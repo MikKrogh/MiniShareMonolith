@@ -1,6 +1,6 @@
 ﻿namespace PostsModule.Application.Create;
 
-public sealed class CreatePostCommandResult
+public sealed record CreatePostCommandResult
 {
     public string PostId { get; init; } = string.Empty;
 }

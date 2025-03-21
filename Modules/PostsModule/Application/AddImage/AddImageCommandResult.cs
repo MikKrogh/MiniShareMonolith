@@ -1,5 +1,5 @@
 ﻿namespace PostsModule.Application.AddImage;
 
-public sealed class AddImageCommandResult;
+public sealed record AddImageCommandResult;
 
 

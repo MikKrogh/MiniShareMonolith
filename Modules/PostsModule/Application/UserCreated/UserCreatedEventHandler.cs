@@ -3,14 +3,13 @@ using PostsModule.Domain;
 
 namespace PostsModule.Application.UserEvents;
 
-public class UserCreatedEventHandler : IConsumer<UserCreatedEvent>
+public sealed class UserCreatedEventHandler : IConsumer<UserCreatedEvent>
 {
     private readonly IUserRepository _userRepository;
     public UserCreatedEventHandler(IUserRepository userRepository)
     {
         _userRepository = userRepository;
     }
-
 
     public async Task Consume(ConsumeContext<UserCreatedEvent> context)
     {

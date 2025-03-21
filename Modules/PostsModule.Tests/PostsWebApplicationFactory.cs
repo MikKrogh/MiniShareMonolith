@@ -10,7 +10,7 @@ using PostsModule.Tests.Helper;
 
 namespace PostsModule.Tests;
 
-public class PostsWebApplicationFactory : WebApplicationFactory<Program>
+public class PostsWebApplicationFactory : WebApplicationFactory<Program> ,IAsyncLifetime
 {
     public MesageBrokerFacade MessageBrokerTestFacade { get; private set; }
     private PostsContext _postsContext;
@@ -47,8 +47,6 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>
                 return new MesageBrokerFacade(ibus, harness);
             });
         });
-
-
     }
 
     protected override IHost CreateHost(IHostBuilder builder)
@@ -75,4 +73,25 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>
         _postsContext.Database.Migrate();
         TruncateTables();
     }
+
+    private async Task ThrowIfAzuriteNotRunning()
+    {
+        try
+        {
+            var client = new HttpClient();
+            var response = await client.GetAsync("http://127.0.0.1:10000");
+        }
+        catch (Exception)
+        {
+            throw new Exception("Azurite is not running.");
+
+        }
+    }
+
+    public async Task InitializeAsync()
+    {
+        await ThrowIfAzuriteNotRunning();
+    }
+
+    Task IAsyncLifetime.DisposeAsync() => Task.CompletedTask; // No cleanup needed
 }

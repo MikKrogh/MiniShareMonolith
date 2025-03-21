@@ -1,10 +1,10 @@
 ﻿using MassTransit;
 using PostsModule.Domain;
-using System.IO;
+
 
 namespace PostsModule.Application.GetImage;
 
-public class GetImageCommandConsumer : IConsumer<GetImageCommand>
+public sealed class GetImageCommandConsumer : IConsumer<GetImageCommand>
 {
     private readonly IImageStorageService imageService;
 
@@ -23,7 +23,7 @@ public class GetImageCommandConsumer : IConsumer<GetImageCommand>
                 return;
             }
 
-            MemoryStream memoryStream = null;
+            MemoryStream memoryStream;
             using (memoryStream = new MemoryStream())
             {
                 image.CopyTo(memoryStream);            

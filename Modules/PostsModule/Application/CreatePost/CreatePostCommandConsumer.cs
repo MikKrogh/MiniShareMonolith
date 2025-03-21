@@ -2,7 +2,7 @@
 using PostsModule.Domain;
 namespace PostsModule.Application.Create;
 
-public class CreatePostCommandConsumer : IConsumer<CreatePostCommand>
+public sealed class CreatePostCommandConsumer : IConsumer<CreatePostCommand>
 {
     private readonly IPostsRepository repository;
 

@@ -1,6 +1,6 @@
 ﻿namespace PostsModule.Application.GetPosts;
 
-public class GetPostsCommandResult
+public sealed class GetPostsCommandResult
 {
     public int TotalCount { get; init; } = 0;
 

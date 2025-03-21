@@ -1,15 +1,13 @@
 ﻿
-namespace PostsModule.Application
+namespace PostsModule.Application;
+public sealed record QueryModel
 {
-    public class QueryModel
-    {
-        public string? Search {  get; set; }
-        public int Take { get; set; } = 100;
-        public int Skip { get; set; } = 0;
-        public string? Filter { get; set; } = null;
-        public string? OrderBy { get; set; } = string.Empty;
-        public bool Descending { get; set; } = false;
-    }
+    public string? Search {  get; init; }
+    public int Take { get; init; } = 100;
+    public int Skip { get; init; } = 0;
+    public string? Filter { get; init; } = null;
+    public string? OrderBy { get; init; } = string.Empty;
+    public bool Descending { get; init; } = false;
 }
 
 

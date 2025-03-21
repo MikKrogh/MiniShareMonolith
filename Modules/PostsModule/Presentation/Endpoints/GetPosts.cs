@@ -19,8 +19,12 @@ public class GetPosts
 
         if (!string.IsNullOrEmpty(orderBy))
         {
-            queryModel.Descending = orderBy.EndsWith("desc");
-            queryModel.OrderBy = orderBy.Split(' ')[0];
+            queryModel = queryModel with
+            {
+                Descending = orderBy.EndsWith("desc"),
+                OrderBy = orderBy.Split(' ')[0]
+            };
+
         }
         var command = new GetPostsCommand() 
         {

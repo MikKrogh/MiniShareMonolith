@@ -1,5 +1,3 @@
 ﻿namespace PostsModule.Application.Get;
 
-public record GetPostCommand(string PostId)
-{
-}
+public sealed record GetPostCommand(string PostId);

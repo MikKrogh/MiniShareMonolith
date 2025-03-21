@@ -3,7 +3,7 @@ using PostsModule.Domain;
 
 namespace PostsModule.Application.Get;
 
-public class GetPostCommandConsumer : IConsumer<GetPostCommand>
+public sealed class GetPostCommandConsumer : IConsumer<GetPostCommand>
 {
     private readonly IPostsRepository repository;
 

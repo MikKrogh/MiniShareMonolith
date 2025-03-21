@@ -1,6 +1,6 @@
 ﻿namespace PostsModule.Application.AddImage;
 
-public class AddImageCommand
+public sealed record AddImageCommand
 {
     public Guid PostId { get; init; } =  Guid.Empty;
     public string FileExtension { get; init; } = string.Empty;
