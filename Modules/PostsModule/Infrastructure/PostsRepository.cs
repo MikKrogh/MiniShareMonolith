@@ -44,9 +44,10 @@ internal class PostsRepository : IPostsRepository
     public async Task<PaginatedResult<Post>> GetAll(int take = 100, bool? descending = null, string? orderOnProperty = null, string? filter = null, string? search = null, int skip = 0)
     {
         IQueryable<PostEntity> postEntities = CreateQuery();
+        postEntities = postEntities.AsNoTracking();
         postEntities = ApplyFilter(filter, postEntities);
         postEntities = ApplySearch(search, postEntities);
-        var totalCount = await postEntities.AsNoTracking().CountAsync();
+        var totalCount = await postEntities.CountAsync();
         postEntities = ApplyOrderBy(descending, orderOnProperty, postEntities);
 
 

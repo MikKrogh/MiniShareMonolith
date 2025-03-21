@@ -2,11 +2,11 @@
 using PostsModule.Domain;
 namespace PostsModule.Application.Create;
 
-public class CreatePostConsumer : IConsumer<CreatePostCommand>
+public class CreatePostCommandConsumer : IConsumer<CreatePostCommand>
 {
     private readonly IPostsRepository repository;
 
-    public CreatePostConsumer(IPostsRepository repository )
+    public CreatePostCommandConsumer(IPostsRepository repository )
     {
         this.repository = repository;
     }

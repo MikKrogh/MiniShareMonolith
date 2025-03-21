@@ -12,7 +12,7 @@ internal class Get
         try
         {
             var command = new GetPostCommand(postId);
-            var clientResponse = await client.GetResponse<CommandResult<GetPostResult>>(command);
+            var clientResponse = await client.GetResponse<CommandResult<GetPostCommandResult>>(command);
 
             if (clientResponse.Message.IsSuccess && clientResponse.Message.ResultValue is not null)
             {

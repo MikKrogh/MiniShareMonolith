@@ -17,8 +17,7 @@ public static class EndpointsExtensions
             .WithTags("Write")
             .Produces(200)
             .Produces(400)
-            .Produces(500)
-            .DisableAntiforgery(); // should not be disabled?
+            .Produces(500);
 
         api.MapGet("/{postId}", Get.Process).WithDescription("This endpoint returns a jsonbody for a post")
             .WithSummary("Gets a single post")
@@ -37,7 +36,8 @@ public static class EndpointsExtensions
             .Produces(200)
             .WithTags("Write")
             .WithSummary("takes an image to blob storage, and updates the postEntity to know about the image")
-            .Produces(500).DisableAntiforgery();
+            .Produces(500)
+            .DisableAntiforgery();
 
         api.MapGet("{postId}/Image/{ImageId}", GetImage.Process)
             .Produces(200)
@@ -45,13 +45,6 @@ public static class EndpointsExtensions
             .Produces(500)
             .WithTags("Read")
             .WithSummary("Returns an image from blob storage");
-
     }
-
 }
 
-public class UploadRequest
-{
-    public string Title { get; set; }
-
-}

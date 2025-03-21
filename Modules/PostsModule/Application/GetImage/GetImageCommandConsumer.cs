@@ -4,11 +4,11 @@ using System.IO;
 
 namespace PostsModule.Application.GetImage;
 
-public class GetImageConsumer : IConsumer<GetImageCommand>
+public class GetImageCommandConsumer : IConsumer<GetImageCommand>
 {
     private readonly IImageStorageService imageService;
 
-    public GetImageConsumer(IImageStorageService imageService)
+    public GetImageCommandConsumer(IImageStorageService imageService)
     {
         this.imageService = imageService;
     }

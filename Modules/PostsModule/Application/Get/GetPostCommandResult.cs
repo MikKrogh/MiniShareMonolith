@@ -2,7 +2,7 @@
 
 namespace PostsModule.Application.Get;
 
-public sealed class GetPostResult
+public sealed class GetPostCommandResult
 {
     public string Id { get; init; } = string.Empty;
     public string Title { get; init; } = string.Empty;

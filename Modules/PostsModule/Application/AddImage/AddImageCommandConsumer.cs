@@ -5,14 +5,14 @@ using PostsModule.Presentation.Endpoints;
 
 namespace PostsModule.Application.AddImage;
 
-public class AddImageConsumer : IConsumer<AddImageCommand>
+public class AddImageCommandConsumer : IConsumer<AddImageCommand>
 {
     private readonly IAuthHelper _authHelper;
     private readonly IImageStorageService _imageBlobService;
     private readonly IImageRepository _imageRepository;
-    private readonly ILogger<AddImageConsumer> _logger;
+    private readonly ILogger<AddImageCommandConsumer> _logger;
 
-    public AddImageConsumer(IAuthHelper authHelper, IImageStorageService imageService, IImageRepository imageRepository, ILogger<AddImageConsumer> logger)
+    public AddImageCommandConsumer(IAuthHelper authHelper, IImageStorageService imageService, IImageRepository imageRepository, ILogger<AddImageCommandConsumer> logger)
     {
         this._authHelper = authHelper;
         this._imageBlobService = imageService;

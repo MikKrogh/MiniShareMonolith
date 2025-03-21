@@ -3,11 +3,11 @@ using PostsModule.Domain;
 
 namespace PostsModule.Application.Get;
 
-public class GetPostConsumer : IConsumer<GetPostCommand>
+public class GetPostCommandConsumer : IConsumer<GetPostCommand>
 {
     private readonly IPostsRepository repository;
 
-    public GetPostConsumer(IPostsRepository repository)
+    public GetPostCommandConsumer(IPostsRepository repository)
     {
         this.repository = repository;
     }
@@ -20,7 +20,7 @@ public class GetPostConsumer : IConsumer<GetPostCommand>
             return;
         }
 
-        var result = new GetPostResult()
+        var result = new GetPostCommandResult()
         {
             Id = post.Id.ToString(),
             Faction = post.FactionName,
@@ -34,7 +34,7 @@ public class GetPostConsumer : IConsumer<GetPostCommand>
             CreationDate = post.CreationDate
         };
 
-        var commandResult = CommandResult<GetPostResult>.Success(result);
+        var commandResult = CommandResult<GetPostCommandResult>.Success(result);
 
         await context.RespondAsync(commandResult);
     }
