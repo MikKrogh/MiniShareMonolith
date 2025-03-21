@@ -121,8 +121,7 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
         // When
         var response = await testFacade.UploadImage(create.Result.PostId, create.Result.Token);
 
-        // Then
-        var t = StreamBank.StreamsByPost;
+        // Then        
         var getResponse = await testFacade.GetPost(create.Result.PostId);
         Assert.NotNull(getResponse);
         Assert.NotEmpty(getResponse.Images);

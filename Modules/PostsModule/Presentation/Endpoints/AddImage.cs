@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using PostsModule.Application;
 using PostsModule.Application.AddImage;
 using PostsModule.Domain.Auth;
-
 using System.Collections.Concurrent;
-using System.Linq;
 
 namespace PostsModule.Presentation.Endpoints;
 
@@ -26,7 +24,11 @@ internal class AddImage
             StreamId = Guid.NewGuid()
         };
 
-        StreamBank.RegisterStream(command.PostId,command.StreamId, file.OpenReadStream());
+        long ticks;
+        long.TryParse(claims["exp"], out ticks);
+        DateTime expiration = DateTimeOffset.FromUnixTimeSeconds(ticks).LocalDateTime;
+
+        StreamBank.RegisterStream(command.PostId,command.StreamId, file.OpenReadStream(), expiration);
 
         var result = await client.GetResponse<CommandResult<AddImageCommandResult>>(command);
 
@@ -43,31 +45,93 @@ internal class AddImage
 //TODO:Look into better ways to handle this, maybe a better way to handle the streams, or a better way to handle the messages.
 public static class StreamBank
 {
-    private const int MaxStreamsPerPost = 8;    
-    
-    public static readonly ConcurrentDictionary<Guid, ConcurrentDictionary<Guid, Stream>> StreamsByPost = new();
+    public static List<string> Cleanings = new();
+    private static readonly ConcurrentDictionary<Guid, ImageState> StreamsByPost = new();
+    private static readonly Timer CleanupTimer = new Timer(_ =>
+        RemoveExpiredStates(), 
+        null, 
+        TimeSpan.FromMinutes(5),
+        TimeSpan.FromMinutes(5));
 
-    public static bool RegisterStream(Guid postId, Guid streamId,Stream stream )
+
+
+    public static bool RegisterStream(Guid postId, Guid streamId,Stream stream, DateTime ex )
     {
-        var postStreams = StreamsByPost.GetOrAdd(postId, _ => new ConcurrentDictionary<Guid, Stream>());
-
-        if (MaxStreamsPerPost <= postStreams.Count ) return false;       
-        return postStreams.TryAdd(streamId, stream);
+        var postStreams = StreamsByPost.GetOrAdd(postId, _ => new(postId,ex));   
+        return postStreams.Add(streamId, stream);
     }
     public static Stream? GetStream(Guid postId, Guid streamId)
     {
-        return StreamsByPost.TryGetValue(postId, out var postStreams)
-            && postStreams.TryGetValue(streamId, out var stream)
-            ? stream
-            : null;
+        return StreamsByPost.FirstOrDefault(x => x.Key == postId).Value.Get(streamId);
+
     }
 
-    public static void RemoveStream(Guid postId, Guid streamId)
-    {
-        if (StreamsByPost.TryGetValue(postId, out var postStreams))
+    public static void RemoveStream(Guid postId, Guid imageId)
+    {        
+        if (StreamsByPost.TryGetValue(postId, out ImageState? postStreams))
         {
-            postStreams.TryRemove(streamId, out _);
+            postStreams.Remove(imageId);
+        }
+    }
+
+    private static void RemoveExpiredStates()
+    {
+        DateTime currentTime = DateTime.UtcNow;
+        var pairs = StreamsByPost.Select(x => (x.Value.PostId, x.Value.ExpirationDate)).ToList();
+        foreach (var item in pairs)
+        {
+            if (item.ExpirationDate.AddMinutes(1) > currentTime)
+            {
+                StreamsByPost.Remove(item.PostId, out _);
+            }
+        }
+    }
+
+    private class ImageState
+    {
+        private const int MaxUploads = 8;
+        public int ImageUploadsAttempsCount { get; set; } = 0;
+        public Guid PostId { get; set; }
+        public DateTime ExpirationDate { get; set; } = new();
+        public List<(Guid imageId, Stream stream)> Streams { get; } = new();
+        private object _lock = new();
+        public ImageState(Guid postId, DateTime expiraiton)
+        {
+            PostId = postId;
+            ExpirationDate = expiraiton;
+        }
+        public Stream Get(Guid ImageId)
+        {
+            var tuple =  Streams.FirstOrDefault(x => x.imageId == ImageId );
+            return tuple.stream;
 
         }
+        public bool Add(Guid imageId, Stream stream)
+        {
+            lock (_lock)
+            {
+                if (this.ImageUploadsAttempsCount < MaxUploads)
+                {
+                    this.ImageUploadsAttempsCount++;
+                    this.Streams.Add((imageId,stream));
+                    return true;
+                }
+                return false;
+            }
+        }
+        public void Remove(Guid imageId)
+        {
+            lock (_lock) 
+            {
+                try
+                {
+                    Streams.Remove(Streams.First(x => x.imageId == imageId));
+                }
+                catch (Exception)
+                {
+                }
+            }
+        }
+
     }
 }

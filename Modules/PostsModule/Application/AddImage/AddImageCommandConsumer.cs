@@ -1,6 +1,5 @@
 ﻿using MassTransit;
 using PostsModule.Domain;
-using PostsModule.Domain.Auth;
 using PostsModule.Presentation.Endpoints;
 
 namespace PostsModule.Application.AddImage;
@@ -41,6 +40,7 @@ public sealed class AddImageCommandConsumer : IConsumer<AddImageCommand>
                 await _imageRepository.Create(Image.Create(newFileName, context.Message.PostId.ToString()));
 
                 await context.RespondAsync(CommandResult<AddImageCommandResult>.Success(null));
+                StreamBank.RemoveStream(context.Message.PostId, context.Message.StreamId);
             }
             catch (Exception ex)
             {

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using PostsModule.Application;
+﻿using PostsModule.Application;
 using PostsModule.Presentation.Endpoints;
 
 namespace PostsModule.Presentation;
