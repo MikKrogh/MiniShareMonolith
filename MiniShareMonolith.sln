@@ -11,9 +11,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostsModule", "Modules\Post
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostsModule.Tests", "Modules\PostsModule.Tests\PostsModule.Tests.csproj", "{E9356226-0AE6-40DB-B416-8AA691CE4171}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserModule", "UserModule\UserModule.csproj", "{0F92F89A-0C70-4F29-B85E-CFCF5F370A59}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserSignupModule", "UserModule\UserSignupModule.csproj", "{0F92F89A-0C70-4F29-B85E-CFCF5F370A59}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserModule.Tests", "UserModule.Tests\UserModule.Tests.csproj", "{0AAD55E5-525B-4274-A123-94A7DEA19875}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserSignupModule.Tests", "UserModule.Tests\UserSignupModule.Tests.csproj", "{0AAD55E5-525B-4274-A123-94A7DEA19875}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
