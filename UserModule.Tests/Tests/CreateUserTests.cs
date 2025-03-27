@@ -1,10 +1,7 @@
 ﻿using EventMessages;
-using MassTransit;
 using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
-using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities.ObjectModel;
-using Microsoft.VisualStudio.TestPlatform.Utilities;
+using System.Net;
 using System.Net.Http.Json;
 using Xunit.Abstractions;
 
@@ -53,14 +50,49 @@ public class CreateUserTests : IClassFixture<UserWebApplicationFactory>
         var eventRecieved =  await messageBrokerTestHarness.Published.Any<UserCreatedEvent>(filter, cts.Token);
 
         Assert.True(eventRecieved, "Expected event was not published in time");
-
     }
 
     [Fact]
     public async Task GivenOneUserExists_WhenSomeoneSignsupWithTheSameUserName_ThenBadRequestIsReturnedAndNoEventIsSent()
     {
-        Assert.True(true);
-    } 
+        //Given 
+        var initialuser = UserBuilder.CreateValidUserBody();
+        await client.PostAsJsonAsync("User", initialuser);
+
+        // When
+        var userWithDublicateUserName = UserBuilder.CreateValidUserBody();
+        userWithDublicateUserName.UserName = initialuser.UserName;
+        var response = await client.PostAsJsonAsync("User", userWithDublicateUserName);
+
+        // Then
+        FilterDelegate<IPublishedMessage<UserCreatedEvent>> filter = (msg) => msg.MessageType == typeof(UserCreatedEvent);
+
+        using var cts = new CancellationTokenSource(200);
+        var eventsRecieved = messageBrokerTestHarness.Published.Select(filter, cts.Token);
+        Assert.Single(eventsRecieved);
+        Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+    }
+    
+    [Fact]
+    public async Task GivenOneUserExists_WhenSomeoneSignsupWithTheSameUserName_ThenNoNewUserIsCreated()
+    {
+        //Given 
+        var initialuser = UserBuilder.CreateValidUserBody();
+        await client.PostAsJsonAsync("User", initialuser);
+
+        // When
+        var requestWithDublicateName = UserBuilder.CreateValidUserBody();
+        requestWithDublicateName.UserName = initialuser.UserName;
+        await client.PostAsJsonAsync("User", requestWithDublicateName);
+
+        // Then
+        var response = await client.GetAsync($"User/{requestWithDublicateName.UserId}");
+
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+    }
+
+
+
     [Fact]
     public async Task GivenOneUserExists_WhenSomeoneSignsupWithTheSameEmail_ThenBadRequestIsReturnedAndNoEventIsSent()
     {

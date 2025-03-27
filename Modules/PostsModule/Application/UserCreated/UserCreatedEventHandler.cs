@@ -1,5 +1,6 @@
 ﻿using MassTransit;
 using PostsModule.Domain;
+using System.Globalization;
 
 namespace PostsModule.Application.UserEvents;
 
@@ -15,7 +16,13 @@ public sealed class UserCreatedEventHandler : IConsumer<UserCreatedEvent>
     {
         try
         {
-            var user = User.Create(context.Message.UserId);
+            Guid id;
+            var couldParse = Guid.TryParse(context.Message.UserId, out id);
+            if (!couldParse) throw new Exception("could not handle usercreatedevent becouse id is not guid");
+            
+
+           
+            var user = User.Create(id);
             user.SetName(context.Message.UserName);
             await _userRepository.Create(user);
         }

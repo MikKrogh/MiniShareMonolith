@@ -1,6 +1,4 @@
-﻿using MassTransit.Testing;
-using Microsoft.Extensions.DependencyInjection;
-using System.Net.Http.Json;
+﻿using System.Net.Http.Json;
 
 namespace UserModule.Tests.Tests;
 
