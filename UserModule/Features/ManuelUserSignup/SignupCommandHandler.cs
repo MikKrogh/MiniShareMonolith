@@ -2,27 +2,42 @@
 
 namespace UserModule.Features.ManuelUserSignup;
 
-public sealed class SignupCommandHandler : IConsumer<SignupCommand>
+internal sealed class SignupCommandHandler : IConsumer<SignupCommand>
 {
-    private readonly IUserIdentityProvider identityProvider;
+    private readonly IUserRepository repository;
+    private readonly IBus sender;
 
-    public SignupCommandHandler(IUserIdentityProvider identityProvider)
+    public SignupCommandHandler(IUserRepository repository, IBus sender)
     {
-        this.identityProvider = identityProvider;
+        this.repository = repository;
+        this.sender = sender;
     }
-
     public async Task Consume(ConsumeContext<SignupCommand> context)
     {
         try
         {
-            var createdUser = await identityProvider.CreateUserIdentity(context.Message.Email, context.Message.Password);
+            var user = new User
+            {
+                UserName = context.Message.UserName,
+                Id = context.Message.UserId,
+                CreationDate = DateTime.UtcNow
+            };
+            await repository.CreateUser(user);
+            await SendUserCreatedEvent(user);
             await context.RespondAsync(SignupCommandResult.Success());
-            //await context.RespondAsync(new SignupCommandResult());
-
         }
         catch (Exception)
         {
             await context.RespondAsync(SignupCommandResult.InternalError());
         }
+    }
+
+    private async Task SendUserCreatedEvent(User user)
+    {
+        await sender.Publish(new EventMessages.UserCreatedEvent()
+        {
+            UserId = user.Id,
+            UserName = user.UserName
+        });
     }
 }

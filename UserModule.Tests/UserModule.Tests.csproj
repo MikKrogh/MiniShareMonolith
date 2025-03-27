@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\UserModule\UserSignupModule.csproj" />
+    <ProjectReference Include="..\UserModule\UserModule.csproj" />
   </ItemGroup>
 
   <ItemGroup>

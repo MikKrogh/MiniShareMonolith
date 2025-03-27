@@ -38,8 +38,6 @@ public static class ServiceExtensions
                 .Select("PostService*").TrimKeyPrefix("PostService:");
             });
         }
-
-
     }
 
 

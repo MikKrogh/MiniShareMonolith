@@ -1,6 +1,4 @@
-
 using UserModule;
-using UserSignupModule;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();

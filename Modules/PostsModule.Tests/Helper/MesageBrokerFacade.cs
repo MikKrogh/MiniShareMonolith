@@ -16,7 +16,7 @@ public class MesageBrokerFacade
     }
     public async Task<UserCreatedEvent> SendUserCreatedEvent(Guid? userId = null, string? username = null)
     {
-        var userCreateEvent = new UserCreatedEvent(userId ?? Guid.NewGuid(), username ?? "some random Name");
+        var userCreateEvent = new UserCreatedEvent(userId.ToString() ?? Guid.NewGuid().ToString(), username ?? "some random Name");
         await _bus.Publish(userCreateEvent);
         return userCreateEvent;
     }

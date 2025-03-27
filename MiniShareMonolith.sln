@@ -11,9 +11,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostsModule", "Modules\Post
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostsModule.Tests", "Modules\PostsModule.Tests\PostsModule.Tests.csproj", "{E9356226-0AE6-40DB-B416-8AA691CE4171}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserSignupModule", "UserModule\UserSignupModule.csproj", "{0F92F89A-0C70-4F29-B85E-CFCF5F370A59}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserModule", "UserModule\UserModule.csproj", "{0F92F89A-0C70-4F29-B85E-CFCF5F370A59}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserSignupModule.Tests", "UserModule.Tests\UserSignupModule.Tests.csproj", "{0AAD55E5-525B-4274-A123-94A7DEA19875}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserModule.Tests", "UserModule.Tests\UserModule.Tests.csproj", "{0AAD55E5-525B-4274-A123-94A7DEA19875}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventMessages", "EventMessages\EventMessages.csproj", "{C007BB69-E736-4447-9771-40E1E069991C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,6 +43,10 @@ Global
 		{0AAD55E5-525B-4274-A123-94A7DEA19875}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0AAD55E5-525B-4274-A123-94A7DEA19875}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0AAD55E5-525B-4274-A123-94A7DEA19875}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C007BB69-E736-4447-9771-40E1E069991C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C007BB69-E736-4447-9771-40E1E069991C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C007BB69-E736-4447-9771-40E1E069991C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C007BB69-E736-4447-9771-40E1E069991C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
