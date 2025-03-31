@@ -13,6 +13,10 @@ public static class RoutesMapping
 
         api.MapPost(string.Empty, async ([FromServices] IRequestClient<SignupCommand> client, [FromBody] SignupCommand body) => 
         {
+            if (!Guid.TryParse(body.UserId, out _))
+            {
+                return Results.BadRequest();
+            }
             var response = await client.GetResponse<SignupCommandResult>(body);
 
             if (response.Message.WasSucces)            
@@ -21,6 +25,7 @@ public static class RoutesMapping
         })
         .WithSummary("Create a user")
         .Produces(200)
+        .Produces(400)
         .Produces(500);
 
         api.MapGet("{id}", async ([FromServices] IRequestClient<GetUserCommand> client, string id) => 

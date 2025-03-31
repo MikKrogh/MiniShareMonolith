@@ -52,6 +52,29 @@ public class CreateUserTests : IClassFixture<UserWebApplicationFactory>
         Assert.True(eventRecieved, "Expected event was not published in time");
     }
 
+    [Theory]
+    [InlineData("kjhgkjhgh")]
+    [InlineData("876587658765")]
+    [InlineData("")]
+    [InlineData(null)]   
+    public async Task WhenUserIsCreatedWithNonValidId_ThemBadRequestIsReturnedAndNoEventIsSent(string? invalidId)
+    {
+        // When
+        var requestBody = UserBuilder.CreateValidUserBody();
+        requestBody.UserId = invalidId;
+        var response =  await client.PostAsJsonAsync("User", requestBody);
+
+        // Then
+        FilterDelegate<IPublishedMessage<UserCreatedEvent>> filter = (msg) => msg.MessageType == typeof(UserCreatedEvent) &&
+        (msg.MessageObject as UserCreatedEvent).UserId == invalidId;
+
+        using var cts = new CancellationTokenSource(200);
+        var eventsRecieved = messageBrokerTestHarness.Published.Select(filter, cts.Token);
+
+        Assert.Empty(eventsRecieved);
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
     [Fact]
     public async Task GivenOneUserExists_WhenSomeoneSignsupWithTheSameUserName_ThenBadRequestIsReturnedAndNoEventIsSent()
     {

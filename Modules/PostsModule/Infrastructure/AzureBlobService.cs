@@ -11,14 +11,14 @@ public class AzureBlobService : IImageStorageService
     private bool blobExists = false;
     public AzureBlobService(IConfiguration config)
     {
-        string storgeAccount = config["StorageAccountUri"];
+        string storgeAccount = config["MiniShare_StorageAccount"];
         if (string.IsNullOrEmpty(storgeAccount))
             throw new Exception("Cant connect to blob storage without a storage account uri");
 
 
         BlobServiceClient blobServiceClient;
 
-        if (storgeAccount == "UseDevelopmentStorage=true")
+        if (storgeAccount == "UseDevelopmentStorage=true;")
         {
             blobServiceClient = new(storgeAccount);
         }

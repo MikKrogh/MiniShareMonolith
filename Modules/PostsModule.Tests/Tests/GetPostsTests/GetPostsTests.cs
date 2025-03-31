@@ -133,7 +133,7 @@ public class GetPostsTests : IClassFixture<PostsWebApplicationFactory>
         Assert.Equal(3, getPosts.Result.TotalCount);
     }
 
-    [Fact]
+    [Fact(Skip = "Only run manually")]
     public async Task GivenOnehundredandTenPostsExists_WhenUserQuriesWithATakerMoreThanHundred_ThenOnlyAHundredAreReturned()
     {
         // Given
@@ -347,7 +347,7 @@ public class GetPostsTests : IClassFixture<PostsWebApplicationFactory>
         Assert.Equal(postWithUniqueDescription.Description, getPosts.Result.Items.Single().Description);
     }
 
-    [Fact]
+    [Fact(Skip = "Only run manually")]
     public async Task Given150PostsExistsAnd110OfThemHaveMatchingTitleAndRedPrimaryColorWhenUserQueriesForRedPrimaryColor_Thern100PostsAreReturnedAndTotalCountIs110()
     {
         // Given

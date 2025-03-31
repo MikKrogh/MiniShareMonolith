@@ -26,7 +26,11 @@ internal class AddImage
         long.TryParse(claims["exp"], out ticks);
         DateTime expiration = DateTimeOffset.FromUnixTimeSeconds(ticks).LocalDateTime;
 
-        StreamBank.RegisterStream(command.PostId, command.StreamId, file.OpenReadStream(), expiration);
+        var couldAdd = StreamBank.RegisterStream(command.PostId, command.StreamId, file.OpenReadStream(), expiration);
+        if (!couldAdd)
+        {
+            return Results.Problem();
+        }
 
         var result = await client.GetResponse<CommandResult<AddImageCommandResult>>(command);
 
