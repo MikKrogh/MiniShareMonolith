@@ -1,4 +1,5 @@
-﻿using MassTransit;
+﻿using EventMessages;
+using MassTransit;
 using MassTransit.Testing;
 using PostsModule.Application.UserEvents;
 
@@ -16,7 +17,11 @@ public class MesageBrokerFacade
     }
     public async Task<UserCreatedEvent> SendUserCreatedEvent(Guid? userId = null, string? username = null)
     {
-        var userCreateEvent = new UserCreatedEvent(userId.ToString() ?? Guid.NewGuid().ToString(), username ?? "some random Name");
+        var userCreateEvent = new UserCreatedEvent()
+        {
+            UserId = userId.ToString() ?? Guid.NewGuid().ToString(),
+            UserName = username ?? "some random Name"
+        };
         await _bus.Publish(userCreateEvent);
         return userCreateEvent;
     }

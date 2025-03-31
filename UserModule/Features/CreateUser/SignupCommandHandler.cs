@@ -1,8 +1,8 @@
 ﻿using MassTransit;
 
-namespace UserModule.Features.ManuelUserSignup;
+namespace UserModule.Features.CreateUser;
 
-internal sealed class SignupCommandHandler : IConsumer<SignupCommand>
+public sealed class SignupCommandHandler : IConsumer<SignupCommand>
 {
     private readonly IUserRepository repository;
     private readonly IBus sender;

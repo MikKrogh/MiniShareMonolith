@@ -1,7 +1,7 @@
 ﻿using MassTransit;
 namespace UserModule.Features.GetUser;
 
-internal class GetUserCommandHandler : IConsumer<GetUserCommand>
+public class GetUserCommandHandler : IConsumer<GetUserCommand>
 {
     private readonly IUserRepository repository;
 

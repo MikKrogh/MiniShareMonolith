@@ -1,3 +1,4 @@
+using MassTransit;
 using PostsModule;
 using PostsModule.Presentation;
 
@@ -5,6 +6,16 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AppConfiguration();
 
 builder.Services.AddPostModuleServices(builder.Configuration);
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumers(typeof(ServiceExtensions).Assembly);
+    x.UsingInMemory((context, cfg) =>
+    {
+        cfg.ConfigureEndpoints(context);
+    });
+});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 var app = builder.Build();

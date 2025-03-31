@@ -1,4 +1,4 @@
-﻿namespace UserModule.Features.ManuelUserSignup;
+﻿namespace UserModule.Features.CreateUser;
 
 internal sealed record SignupCommandResult
 {

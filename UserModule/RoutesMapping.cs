@@ -1,9 +1,7 @@
 ﻿using MassTransit;
-using MassTransit.Clients;
 using Microsoft.AspNetCore.Mvc;
-using System.Xml;
 using UserModule.Features.GetUser;
-using UserModule.Features.ManuelUserSignup;
+using UserModule.Features.CreateUser;
 
 namespace UserModule;
 
@@ -11,7 +9,7 @@ public static class RoutesMapping
 {
     public static void AddUserModuleEndpoints(this IEndpointRouteBuilder builder)
     {
-        var api = builder.MapGroup("/User");
+        var api = builder.MapGroup("/User").WithTags("UserModule");
 
         api.MapPost(string.Empty, async ([FromServices] IRequestClient<SignupCommand> client, [FromBody] SignupCommand body) => 
         {
@@ -20,7 +18,10 @@ public static class RoutesMapping
             if (response.Message.WasSucces)            
                 return Results.Ok();            
             return Results.StatusCode(response.Message.StatusCode);
-        });
+        })
+        .WithSummary("Create a user")
+        .Produces(200)
+        .Produces(500);
 
         api.MapGet("{id}", async ([FromServices] IRequestClient<GetUserCommand> client, string id) => 
         {
@@ -29,11 +30,9 @@ public static class RoutesMapping
             if (result?.Message?.User is null)
                 return Results.NotFound();
             return Results.Ok(result.Message.User);
-            
-
-            
-        });
-
-        
+        })
+        .WithSummary("Returns a user")
+        .Produces<User>(200)
+        .Produces(500);                 
     }
 }

@@ -1,6 +1,6 @@
-﻿using MassTransit;
+﻿using EventMessages;
+using MassTransit;
 using PostsModule.Domain;
-using System.Globalization;
 
 namespace PostsModule.Application.UserEvents;
 

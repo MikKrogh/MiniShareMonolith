@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using EventMessages;
+using Microsoft.Extensions.DependencyInjection;
 using PostsModule.Application;
 using PostsModule.Application.UserEvents;
 using PostsModule.Domain.Auth;
@@ -37,11 +38,11 @@ internal class TestFacade
         _factory.TruncateTables();
     }
 
-
-
-    public async Task<UserCreatedEvent> SendCreateUserEvent(string? name = null)
+    public async Task<UserCreatedEvent> SendCreateUserEvent()
     {
-        var existingUser = await _messageBroker.SendUserCreatedEvent(Guid.NewGuid(), name ?? "John Doe");
+        var id = Guid.NewGuid();
+        string username = id.ToString().Substring(0, 8);
+        var existingUser = await _messageBroker.SendUserCreatedEvent(id, username);
         await _messageBroker.WaitUntillEventHasBeenConsumed<UserCreatedEvent>(x => x.UserId == existingUser.UserId);
         return existingUser;
     }

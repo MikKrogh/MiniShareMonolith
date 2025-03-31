@@ -13,9 +13,7 @@ internal class AddImage
     internal static async Task<IResult> Process(IFormFile file, [FromServices] IAuthHelper authHelper, [FromServices] IRequestClient<AddImageCommand> client, [FromRoute] Guid postId, [FromQuery] string token)
     {
         var claims = authHelper.ReadClaims(token);
-        if (claims == null || !claims.Any() || claims["postId"] != postId.ToString()) return Results.Problem();
-
-        var t = claims["postId"];
+        if (claims == null || !claims.Any() || claims["postId"] != postId.ToString()) return Results.Problem();               
 
         var command = new AddImageCommand()
         {
@@ -32,8 +30,6 @@ internal class AddImage
 
         var result = await client.GetResponse<CommandResult<AddImageCommandResult>>(command);
 
-
-        //Add a subscriber to clear the streambank by post, after the token has expired
         if (result.Message.IsSuccess)
             return Results.Ok();
         return Results.StatusCode(result.Message.ResultStatus);

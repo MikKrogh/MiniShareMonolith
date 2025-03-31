@@ -1,3 +1,5 @@
+using MassTransit;
+using Microsoft.Extensions.DependencyInjection;
 using PostsModule;
 using PostsModule.Presentation;
 using UserModule;
@@ -7,6 +9,16 @@ builder.Configuration.AppConfiguration();
 
 builder.Services.AddPostModuleServices(builder.Configuration);
 builder.Services.AddUserModuleServices(builder.Configuration);
+
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumers(typeof(PostsModule.ServiceExtensions).Assembly);
+    x.AddConsumers(typeof(UserModule.ServiceExtensions).Assembly);
+    x.UsingInMemory((context, cfg) =>
+    {
+        cfg.ConfigureEndpoints(context);
+    });
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
