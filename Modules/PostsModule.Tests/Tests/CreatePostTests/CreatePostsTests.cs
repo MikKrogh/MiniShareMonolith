@@ -46,7 +46,7 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
     public async Task GivenNoUserExist_WhenSomeoneCreatesPost_ThenInternalServerErrorIsReturned()
     {
         // When
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(Guid.NewGuid());
+        var createBody = PostRequestBuilder.GetValidDefaultRequest(Guid.NewGuid().ToString());
         var create = await testFacade.SendCreatePost(createBody);
 
         //Then

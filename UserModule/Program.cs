@@ -3,11 +3,11 @@ using UserModule;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddUserSignupServiceExtensions(builder.Configuration);
+builder.Services.AddUserModuleServices(builder.Configuration);
 
 
 var app = builder.Build();
-app.MapEndpoints();
+app.AddUserModuleEndpoints();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.UseHttpsRedirection();

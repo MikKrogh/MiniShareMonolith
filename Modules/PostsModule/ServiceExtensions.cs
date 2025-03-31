@@ -7,7 +7,7 @@ namespace PostsModule;
 
 public static class ServiceExtensions
 {
-    public static void AddPostsServiceExtensions(this IServiceCollection serviceCollection, IConfiguration configuration)
+    public static void AddPostModuleServices(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         serviceCollection.AddDbContext<PostsContext>();
         serviceCollection.AddScoped<IPostsRepository, PostsRepository>();

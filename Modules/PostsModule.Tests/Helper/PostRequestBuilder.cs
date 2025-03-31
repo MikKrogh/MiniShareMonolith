@@ -12,6 +12,14 @@ internal class PostRequestBuilder
         };
         return this;
     }
+    public PostRequestBuilder Create(string? userID = null)
+    {
+        postRequest = new PostRequest
+        {
+            CreatorId = (userID == null) ? Guid.NewGuid().ToString() : userID,
+        };
+        return this;
+    }
 
     public PostRequestBuilder WithTitle(string title)
     {
@@ -39,9 +47,14 @@ internal class PostRequestBuilder
         return this;
     }
     public PostRequest Build() => postRequest;
-    public static PostRequest GetValidDefaultRequest(Guid? userId = null)
+
+    public static PostRequest GetValidDefaultRequest(string? userId = null)
     {
-        return new PostRequestBuilder().Create(userId)
+
+        Guid id;
+        var couldParse = Guid.TryParse(userId, out id);
+
+        return new PostRequestBuilder().Create(id == Guid.Empty ? null: id)
         .WithTitle("title")
         .WithFactionName("deathguard")
         .WithDescription("hello There")
@@ -60,3 +73,13 @@ internal record PostRequest
     public string SecondaryColor { get; set; }
 }
 
+public struct Te
+{
+    public string Id { get; set; }
+    public tedee Yee { get; set; }
+}
+
+public class tedee
+{
+
+}

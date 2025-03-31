@@ -9,7 +9,7 @@ namespace UserModule;
 
 public static class RoutesMapping
 {
-    public static void MapEndpoints(this IEndpointRouteBuilder builder)
+    public static void AddUserModuleEndpoints(this IEndpointRouteBuilder builder)
     {
         var api = builder.MapGroup("/User");
 

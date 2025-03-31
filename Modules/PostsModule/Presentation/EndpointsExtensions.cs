@@ -5,7 +5,7 @@ namespace PostsModule.Presentation;
 
 public static class EndpointsExtensions
 {
-    public static void AddPostsEndpoints(this IEndpointRouteBuilder routeBuilder)
+    public static void AddPostModuleEndpoints(this IEndpointRouteBuilder routeBuilder)
     {
 
         var api = routeBuilder.MapGroup("/Posts");

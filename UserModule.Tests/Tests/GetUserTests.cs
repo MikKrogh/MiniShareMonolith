@@ -12,7 +12,7 @@ public class GetUserTests : IClassFixture<UserWebApplicationFactory>
 
 
     [Fact]
-    public async Task GivenUserExists_WhenGetUserIsCalled_ThenSuccessIsReturned()
+    public async Task GivenUserExists_WhenSomeoneTriesToQueryUser_ThenSuccessIsReturned()
     {
         // Given
         var requestBody = UserBuilder.CreateValidUserBody();
@@ -27,7 +27,7 @@ public class GetUserTests : IClassFixture<UserWebApplicationFactory>
 
     }
     [Fact]
-    public async Task GivenUserExists_WhenGetUserIsCalled_ThenCorrectValuesAreReturned()
+    public async Task GivenUserExists_WhenSomeoneTriesToQueryUser_ThenCorrectValuesAreReturned()
     {
         // Given
         var requestBody = UserBuilder.CreateValidUserBody();

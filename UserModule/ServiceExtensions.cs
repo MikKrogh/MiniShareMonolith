@@ -6,7 +6,7 @@ namespace UserModule;
 
 public static class ServiceExtensions
 {
-    public static void AddUserSignupServiceExtensions(this IServiceCollection serviceCollection, IConfiguration configuration)
+    public static void AddUserModuleServices(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         serviceCollection.AddMassTransit(x =>
         {

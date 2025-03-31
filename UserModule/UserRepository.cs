@@ -1,5 +1,6 @@
 ﻿using Azure;
 using Azure.Data.Tables;
+using MassTransit.Testing;
 namespace UserModule;
 
 
@@ -28,7 +29,7 @@ internal class UserRepository : IUserRepository
         await CreateTable();
         try
         {
-        var userEntity = await tableClient.GetEntityAsync<UserEntity>(partitionKey, userId);
+            var userEntity = await tableClient.GetEntityAsync<UserEntity>(partitionKey, userId);
             if (userEntity == null) return null;
 
             var user = new User
@@ -39,19 +40,18 @@ internal class UserRepository : IUserRepository
             };
             return user;
         }
-        catch (Exception e)
+        catch (Exception)
         {
-
             return null;
         }
-
-
-
     }
 
     public async Task CreateUser(User user)
     {
         await CreateTable();
+
+        if (await NameIsOccupied(user.UserName)) 
+            throw new Exception("Cannot add user becouse username already exists");
         var userEntity = new UserEntity()
         {
             RowKey = user.Id,
@@ -76,6 +76,14 @@ internal class UserRepository : IUserRepository
         {
             semaphore.Release();
         }
+    }
+
+    private async Task<bool> NameIsOccupied(string displayName)
+    {
+        var getByUserName = tableClient.QueryAsync<UserEntity>(x => x.UserName == displayName);
+        var NameIsOccupied = await getByUserName.Any();
+
+        return NameIsOccupied;
     }
 
     private class UserEntity : ITableEntity

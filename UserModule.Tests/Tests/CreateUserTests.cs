@@ -65,11 +65,13 @@ public class CreateUserTests : IClassFixture<UserWebApplicationFactory>
         var response = await client.PostAsJsonAsync("User", userWithDublicateUserName);
 
         // Then
-        FilterDelegate<IPublishedMessage<UserCreatedEvent>> filter = (msg) => msg.MessageType == typeof(UserCreatedEvent);
+        FilterDelegate<IPublishedMessage<UserCreatedEvent>> filter = (msg) => msg.MessageType == typeof(UserCreatedEvent) && 
+        (msg.MessageObject as UserCreatedEvent).UserId == userWithDublicateUserName.UserId;
 
         using var cts = new CancellationTokenSource(200);
         var eventsRecieved = messageBrokerTestHarness.Published.Select(filter, cts.Token);
-        Assert.Single(eventsRecieved);
+
+        Assert.Empty(eventsRecieved);
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
     }
     
@@ -90,28 +92,4 @@ public class CreateUserTests : IClassFixture<UserWebApplicationFactory>
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
-
-
-
-    [Fact]
-    public async Task GivenOneUserExists_WhenSomeoneSignsupWithTheSameEmail_ThenBadRequestIsReturnedAndNoEventIsSent()
-    {
-        Assert.True(true);
-    }
-
-    [Fact] 
-    public async Task WhenUserTriesToSignUpWithInvalidEmail_ThenBadRequestIsReturnedAndNoEventIsSent()
-    {
-        Assert.True(false);
-    }  
-  
-    [Fact] 
-    public async Task WhenUserTriesToSignUpWithInvalidUserName_ThenBadRequestIsReturnedAndNoEventIsSent()
-    {
-        Assert.True(false);
-    }
-
-
-
-
 }
