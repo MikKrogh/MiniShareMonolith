@@ -17,9 +17,9 @@ internal class PostsContext : DbContext
         this.config = config;
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    protected async override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer(config.GetConnectionString("SQLConnectionString"));
+        optionsBuilder.UseSqlServer(config["SQLConnectionString"]);
         base.OnConfiguring(optionsBuilder);
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)

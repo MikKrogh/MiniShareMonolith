@@ -24,7 +24,7 @@ public class AzureBlobService : IImageStorageService
         }
         else
         {
-            blobServiceClient = new(new Uri(storgeAccount), new DefaultAzureCredential());
+            blobServiceClient = new(new Uri("https://minisharestorageaccount.blob.core.windows.net/"), new DefaultAzureCredential());
         }
 
         _blobClient = blobServiceClient.GetBlobContainerClient(containerName);

@@ -1,5 +1,4 @@
 using MassTransit;
-using Microsoft.Extensions.DependencyInjection;
 using PostsModule;
 using PostsModule.Presentation;
 using UserModule;
@@ -7,7 +6,7 @@ using UserModule;
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AppConfiguration();
 
-builder.Services.AddPostModuleServices(builder.Configuration);
+await builder.Services.AddPostModuleServices(builder.Configuration);
 builder.Services.AddUserModuleServices(builder.Configuration);
 
 builder.Services.AddMassTransit(x =>

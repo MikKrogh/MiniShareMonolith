@@ -1,5 +1,6 @@
 ﻿using Azure;
 using Azure.Data.Tables;
+using Azure.Identity;
 using MassTransit.Testing;
 namespace UserModule;
 
@@ -21,7 +22,9 @@ internal class UserRepository : IUserRepository
     public UserRepository(IConfiguration config)
     {
         var connString = config["MiniShare_StorageAccount"] ?? throw new Exception("Cannot initialize UserRepository without a connectionstring");
-        tableClient = new TableClient(connString, "User");
+        
+        tableClient = new TableClient(new Uri("https://minisharestorageaccount.table.core.windows.net/"), "User", new DefaultAzureCredential());
+                                               
     }
 
     public async Task<User?> GetUser(string userId)
@@ -68,8 +71,16 @@ internal class UserRepository : IUserRepository
         await semaphore.WaitAsync();
         try
         {
-            var result = await tableClient.CreateIfNotExistsAsync();
-            tableExists = true;
+            try
+            {
+                var result = await tableClient.CreateIfNotExistsAsync();
+                tableExists = true;
+            }
+            catch (Exception e)
+            {
+
+            }
+
 
         }
         finally
@@ -80,10 +91,22 @@ internal class UserRepository : IUserRepository
 
     private async Task<bool> NameIsOccupied(string displayName)
     {
-        var getByUserName = tableClient.QueryAsync<UserEntity>(x => x.UserName == displayName);
-        var NameIsOccupied = await getByUserName.Any();
+        var getByUserName =  tableClient.QueryAsync<UserEntity>(x => x.UserName == displayName);
 
-        return NameIsOccupied;
+        try
+        {
+            var NameIsOccupied = await getByUserName.Any();
+
+            return NameIsOccupied;
+        }
+        catch (Exception e )
+        {
+
+            throw;
+        }
+
+
+
     }
 
     private class UserEntity : ITableEntity

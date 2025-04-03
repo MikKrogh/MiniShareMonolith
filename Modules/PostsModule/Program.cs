@@ -5,7 +5,7 @@ using PostsModule.Presentation;
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AppConfiguration();
 
-builder.Services.AddPostModuleServices(builder.Configuration);
+await builder.Services.AddPostModuleServices(builder.Configuration);
 
 builder.Services.AddMassTransit(x =>
 {
