@@ -21,9 +21,14 @@ internal class UserRepository : IUserRepository
 
     public UserRepository(IConfiguration config)
     {
-        var connString = config["MiniShare_StorageAccount"] ?? throw new Exception("Cannot initialize UserRepository without a connectionstring");
+        var connString = config["TableStorageAccount"] ?? throw new Exception("Cannot initialize UserRepository without a connectionstring");
+        if (connString == "UseDevelopmentStorage=true;")        
+            tableClient = new(connString, "User");
         
-        tableClient = new TableClient(new Uri("https://minisharestorageaccount.table.core.windows.net/"), "User", new DefaultAzureCredential());
+        else        
+            tableClient = new TableClient(new Uri(connString), "User", new DefaultAzureCredential());
+        
+
                                                
     }
 

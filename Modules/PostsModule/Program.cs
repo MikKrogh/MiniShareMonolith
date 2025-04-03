@@ -3,7 +3,6 @@ using PostsModule;
 using PostsModule.Presentation;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Configuration.AppConfiguration();
 
 await builder.Services.AddPostModuleServices(builder.Configuration);
 

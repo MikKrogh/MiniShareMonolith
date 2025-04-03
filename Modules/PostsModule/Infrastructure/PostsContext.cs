@@ -17,13 +17,17 @@ internal class PostsContext : DbContext
         this.config = config;
     }
 
-    protected async override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseSqlServer(config["SQLConnectionString"]);
         base.OnConfiguring(optionsBuilder);
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        try
+        {
+
+
         modelBuilder.Entity<UserEntity>().ToTable("Users", "PostModule");
         modelBuilder.Entity<PostEntity>().ToTable("Posts", "PostModule");
         modelBuilder.Entity<ImageEntity>().ToTable("Image", "PostModule");
@@ -37,5 +41,11 @@ internal class PostsContext : DbContext
             .HasOne(i => i.Post)
             .WithMany(p => p.Images)
             .HasForeignKey(i => i.PostId);
+        }
+        catch (Exception e)
+        {
+
+            throw;
+        }
     }
 }

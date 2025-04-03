@@ -4,8 +4,9 @@ using PostsModule.Presentation;
 using UserModule;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Configuration.AppConfiguration();
 
+builder.Configuration.PostModuleAppConfiguration();
+builder.Configuration.UserModuleAppConfiguration();
 await builder.Services.AddPostModuleServices(builder.Configuration);
 builder.Services.AddUserModuleServices(builder.Configuration);
 

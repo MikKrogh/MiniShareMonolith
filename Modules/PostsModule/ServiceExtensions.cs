@@ -23,7 +23,7 @@ public static class ServiceExtensions
         //await dbcontext.Database.MigrateAsync();
     }
 
-    public static void AppConfiguration(this IConfigurationBuilder configBuilder)
+    public static void PostModuleAppConfiguration(this IConfigurationBuilder configBuilder)
     {
         var config = configBuilder.Build();
         if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
@@ -31,8 +31,7 @@ public static class ServiceExtensions
             configBuilder.AddAzureAppConfiguration(options =>
             {
                 options.Connect(new Uri(config["AppConfigEndpoint"]), new DefaultAzureCredential())
-                .Select("PostService*").TrimKeyPrefix("PostService:")
-                .Select("MiniShare_StorageAccount");
+                .Select("PostService*").TrimKeyPrefix("PostService:");                
             });
         }
     }
