@@ -1,7 +1,9 @@
-﻿using PostsModule.Tests.Helper;
+﻿using PostsModule.Tests.GetPostsTests;
+using PostsModule.Tests.Helper;
 using System.Net;
 
 namespace PostsModule.Tests.CreatePostTests;
+[Collection(nameof(SystemTestCollectionDefinition))]
 
 public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
 {
