@@ -238,7 +238,7 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
 
         //When
         var getResponse = await testFacade.GetPost(create.Result.PostId);
-        string? imageId = getResponse.Images.FirstOrDefault();
+        string? imageId = getResponse.Images.SingleOrDefault();
         var response = await testFacade.GetImage(create.Result.PostId, imageId);
 
         //Then

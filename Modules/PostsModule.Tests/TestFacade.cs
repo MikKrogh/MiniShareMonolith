@@ -78,6 +78,8 @@ internal class TestFacade
     public async Task<PostDto?> GetPost(string id) => await _client.GetFromJsonAsync<PostDto>($"/Posts/{id}");
     public async Task<TestFacadeResult<byte[]>> GetImage(string postId, string imageId)
     {
+        if (string.IsNullOrEmpty(imageId)) throw new Exception("imageId must not be empty");
+
         var result = new TestFacadeResult<byte[]>();
 
         var response = await _client.GetAsync($"/Posts/{postId}/image/{imageId}");
