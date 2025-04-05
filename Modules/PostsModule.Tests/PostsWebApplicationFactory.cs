@@ -69,9 +69,9 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsync
     {
         var sp = services.BuildServiceProvider();
         _postsContext = sp.GetRequiredService<PostsContext>();
-        //_postsContext.Database.EnsureDeleted();
+        _postsContext.Database.EnsureDeleted();
         _postsContext.Database.Migrate();
-        TruncateTables();
+        //TruncateTables();
     }
 
     private async Task ThrowIfAzuriteNotRunning()
