@@ -230,7 +230,7 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
     public async Task GivenUserUploadedSpecificFile_WhenUserFetchesImage_ThenSpecificFileIsReturned()
     {
         //Given 
-        byte[] file = new byte[65484];
+        byte[] file = new byte[200];
         var user = await testFacade.SendCreateUserEvent();
         var create = await testFacade.SendCreatePost(PostRequestBuilder.GetValidDefaultRequest(user.UserId));
         await testFacade.UploadImage(create.Result.PostId, create.Result.Token, file, fileExtension: ".png");
