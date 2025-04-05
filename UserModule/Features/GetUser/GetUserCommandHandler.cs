@@ -15,7 +15,7 @@ public class GetUserCommandHandler : IConsumer<GetUserCommand>
         var user = await repository.GetUser(context.Message.UserId);
 
         if (user is null)
-            await context.RespondAsync(new GetUserCommandResult() { User = null});
-         await context.RespondAsync(new GetUserCommandResult() { User = user});
+            await context.RespondAsync(new GetUserCommandResult() { User = null });
+        await context.RespondAsync(new GetUserCommandResult() { User = user });
     }
 }

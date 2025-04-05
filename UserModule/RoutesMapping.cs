@@ -1,7 +1,7 @@
 ﻿using MassTransit;
 using Microsoft.AspNetCore.Mvc;
-using UserModule.Features.GetUser;
 using UserModule.Features.CreateUser;
+using UserModule.Features.GetUser;
 
 namespace UserModule;
 
@@ -11,7 +11,7 @@ public static class RoutesMapping
     {
         var api = builder.MapGroup("/User").WithTags("UserModule");
 
-        api.MapPost(string.Empty, async ([FromServices] IRequestClient<SignupCommand> client, [FromBody] SignupCommand body) => 
+        api.MapPost(string.Empty, async ([FromServices] IRequestClient<SignupCommand> client, [FromBody] SignupCommand body) =>
         {
             if (!Guid.TryParse(body.UserId, out _))
             {
@@ -19,8 +19,8 @@ public static class RoutesMapping
             }
             var response = await client.GetResponse<SignupCommandResult>(body);
 
-            if (response.Message.WasSucces)            
-                return Results.Ok();            
+            if (response.Message.WasSucces)
+                return Results.Ok();
             return Results.StatusCode(response.Message.StatusCode);
         })
         .WithSummary("Create a user")
@@ -28,7 +28,7 @@ public static class RoutesMapping
         .Produces(400)
         .Produces(500);
 
-        api.MapGet("{id}", async ([FromServices] IRequestClient<GetUserCommand> client, string id) => 
+        api.MapGet("{id}", async ([FromServices] IRequestClient<GetUserCommand> client, string id) =>
         {
             var command = new GetUserCommand(id);
             var result = await client.GetResponse<GetUserCommandResult>(command);
@@ -38,6 +38,6 @@ public static class RoutesMapping
         })
         .WithSummary("Returns a user")
         .Produces<User>(200)
-        .Produces(500);                 
+        .Produces(500);
     }
 }

@@ -30,7 +30,7 @@ public static class ServiceExtensions
             configBuilder.AddAzureAppConfiguration(options =>
             {
                 options.Connect(new Uri(config["AppConfigEndpoint"]), new DefaultAzureCredential())
-                .Select("PostService*").TrimKeyPrefix("PostService:");                
+                .Select("PostService*").TrimKeyPrefix("PostService:");
             });
         }
     }

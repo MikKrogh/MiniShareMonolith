@@ -1,10 +1,7 @@
-﻿using MassTransit.Testing;
+﻿using EventMessages;
 using MassTransit;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.Extensions.DependencyInjection;
-using UserModule;
-using EventMessages;
 
 namespace UserModule.Tests;
 

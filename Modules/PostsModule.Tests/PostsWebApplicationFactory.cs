@@ -82,7 +82,7 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsync
 
         }
 
-        
+
         //TruncateTables();
     }
 

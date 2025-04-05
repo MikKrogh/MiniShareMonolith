@@ -54,7 +54,7 @@ internal class PostRequestBuilder
         Guid id;
         var couldParse = Guid.TryParse(userId, out id);
 
-        return new PostRequestBuilder().Create(id == Guid.Empty ? null: id)
+        return new PostRequestBuilder().Create(id == Guid.Empty ? null : id)
         .WithTitle("title")
         .WithFactionName("deathguard")
         .WithDescription("hello There")

@@ -1,7 +1,6 @@
 ﻿using EventMessages;
 using MassTransit;
 using MassTransit.Testing;
-using PostsModule.Application.UserEvents;
 
 namespace PostsModule.Tests.Helper;
 

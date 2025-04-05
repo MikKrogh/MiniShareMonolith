@@ -1,7 +1,6 @@
 ﻿using EventMessages;
 using Microsoft.Extensions.DependencyInjection;
 using PostsModule.Application;
-using PostsModule.Application.UserEvents;
 using PostsModule.Domain.Auth;
 using PostsModule.Presentation;
 using PostsModule.Tests.Helper;

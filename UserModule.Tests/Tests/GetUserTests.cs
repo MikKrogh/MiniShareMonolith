@@ -22,7 +22,7 @@ public class GetUserTests : IClassFixture<UserWebApplicationFactory>
         var getResponse = await client.GetAsync($"User/{requestBody.UserId}");
 
         // Then
-        Assert.NotNull( getResponse );
+        Assert.NotNull(getResponse);
         Assert.True(getResponse.IsSuccessStatusCode);
 
     }
@@ -52,6 +52,6 @@ public class GetUserTests : IClassFixture<UserWebApplicationFactory>
 
         // Then
         Assert.NotNull(getResponse);
-        Assert.Equal(System.Net.HttpStatusCode.NotFound,getResponse.StatusCode);
+        Assert.Equal(System.Net.HttpStatusCode.NotFound, getResponse.StatusCode);
     }
 }

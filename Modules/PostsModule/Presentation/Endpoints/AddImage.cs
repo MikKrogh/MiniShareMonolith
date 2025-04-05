@@ -13,7 +13,7 @@ internal class AddImage
     internal static async Task<IResult> Process(IFormFile file, [FromServices] IAuthHelper authHelper, [FromServices] IRequestClient<AddImageCommand> client, [FromRoute] Guid postId, [FromQuery] string token)
     {
         var claims = authHelper.ReadClaims(token);
-        if (claims == null || !claims.Any() || claims["postId"] != postId.ToString()) return Results.Problem("bad token");               
+        if (claims == null || !claims.Any() || claims["postId"] != postId.ToString()) return Results.Problem("bad token");
 
         var command = new AddImageCommand()
         {

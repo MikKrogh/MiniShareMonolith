@@ -16,7 +16,7 @@ public static class ServiceExtensions
             configBuilder.AddAzureAppConfiguration(options =>
             {
                 options.Connect(new Uri(config["AppConfigEndpoint"]), new DefaultAzureCredential())
-                .Select("UserService*").TrimKeyPrefix("UserService:");                
+                .Select("UserService*").TrimKeyPrefix("UserService:");
             });
         }
     }

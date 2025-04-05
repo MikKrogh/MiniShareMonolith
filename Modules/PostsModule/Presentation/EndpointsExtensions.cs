@@ -9,10 +9,10 @@ public static class EndpointsExtensions
     {
 
         var api = routeBuilder.MapGroup("/Posts").WithTags("PostModule");
-        
+
 
         api.MapGet("/{postId}", GetPost.Process)
-            .WithSummary("Returns details of a post")            
+            .WithSummary("Returns details of a post")
             .Produces<PostDto>(200)
             .Produces(404)
             .Produces(500);

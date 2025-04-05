@@ -4,7 +4,7 @@ using System.Net;
 
 namespace PostsModule.Tests.ImageTests;
 
-public class ImageTests: IClassFixture<PostsWebApplicationFactory>
+public class ImageTests : IClassFixture<PostsWebApplicationFactory>
 {
     private readonly TestFacade testFacade;
     public ImageTests(PostsWebApplicationFactory factory)

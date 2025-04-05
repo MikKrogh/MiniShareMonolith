@@ -26,12 +26,12 @@ public class CreateUserTests : IClassFixture<UserWebApplicationFactory>
     {
         // When
         var requestBody = UserBuilder.CreateValidUserBody();
-        var response = await client.PostAsJsonAsync("User",requestBody);
+        var response = await client.PostAsJsonAsync("User", requestBody);
 
         // Then
         Assert.NotNull(response);
-        Assert.True(response.IsSuccessStatusCode);        
-    }       
+        Assert.True(response.IsSuccessStatusCode);
+    }
 
 
     [Fact]
@@ -47,7 +47,7 @@ public class CreateUserTests : IClassFixture<UserWebApplicationFactory>
         (msg.MessageObject as UserCreatedEvent)?.UserName == requestBody.UserName;
 
         using var cts = new CancellationTokenSource(200);
-        var eventRecieved =  await messageBrokerTestHarness.Published.Any<UserCreatedEvent>(filter, cts.Token);
+        var eventRecieved = await messageBrokerTestHarness.Published.Any<UserCreatedEvent>(filter, cts.Token);
 
         Assert.True(eventRecieved, "Expected event was not published in time");
     }
@@ -56,13 +56,13 @@ public class CreateUserTests : IClassFixture<UserWebApplicationFactory>
     [InlineData("kjhgkjhgh")]
     [InlineData("876587658765")]
     [InlineData("")]
-    [InlineData(null)]   
+    [InlineData(null)]
     public async Task WhenUserIsCreatedWithNonValidId_ThemBadRequestIsReturnedAndNoEventIsSent(string? invalidId)
     {
         // When
         var requestBody = UserBuilder.CreateValidUserBody();
         requestBody.UserId = invalidId;
-        var response =  await client.PostAsJsonAsync("User", requestBody);
+        var response = await client.PostAsJsonAsync("User", requestBody);
 
         // Then
         FilterDelegate<IPublishedMessage<UserCreatedEvent>> filter = (msg) => msg.MessageType == typeof(UserCreatedEvent) &&
@@ -88,7 +88,7 @@ public class CreateUserTests : IClassFixture<UserWebApplicationFactory>
         var response = await client.PostAsJsonAsync("User", userWithDublicateUserName);
 
         // Then
-        FilterDelegate<IPublishedMessage<UserCreatedEvent>> filter = (msg) => msg.MessageType == typeof(UserCreatedEvent) && 
+        FilterDelegate<IPublishedMessage<UserCreatedEvent>> filter = (msg) => msg.MessageType == typeof(UserCreatedEvent) &&
         (msg.MessageObject as UserCreatedEvent).UserId == userWithDublicateUserName.UserId;
 
         using var cts = new CancellationTokenSource(200);
@@ -97,7 +97,7 @@ public class CreateUserTests : IClassFixture<UserWebApplicationFactory>
         Assert.Empty(eventsRecieved);
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
     }
-    
+
     [Fact]
     public async Task GivenOneUserExists_WhenSomeoneSignsupWithTheSameUserName_ThenNoNewUserIsCreated()
     {

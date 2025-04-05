@@ -22,14 +22,14 @@ internal class UserRepository : IUserRepository
     public UserRepository(IConfiguration config)
     {
         var connString = config["TableStorageAccount"] ?? throw new Exception("Cannot initialize UserRepository without a connectionstring");
-        if (connString == "UseDevelopmentStorage=true;")        
+        if (connString == "UseDevelopmentStorage=true;")
             tableClient = new(connString, "User");
-        
-        else        
-            tableClient = new TableClient(new Uri(connString), "User", new DefaultAzureCredential());
-        
 
-                                               
+        else
+            tableClient = new TableClient(new Uri(connString), "User", new DefaultAzureCredential());
+
+
+
     }
 
     public async Task<User?> GetUser(string userId)
@@ -58,7 +58,7 @@ internal class UserRepository : IUserRepository
     {
         await CreateTable();
 
-        if (await NameIsOccupied(user.UserName)) 
+        if (await NameIsOccupied(user.UserName))
             throw new Exception("Cannot add user becouse username already exists");
         var userEntity = new UserEntity()
         {
@@ -96,7 +96,7 @@ internal class UserRepository : IUserRepository
 
     private async Task<bool> NameIsOccupied(string displayName)
     {
-        var getByUserName =  tableClient.QueryAsync<UserEntity>(x => x.UserName == displayName);
+        var getByUserName = tableClient.QueryAsync<UserEntity>(x => x.UserName == displayName);
 
         try
         {
@@ -104,7 +104,7 @@ internal class UserRepository : IUserRepository
 
             return NameIsOccupied;
         }
-        catch (Exception e )
+        catch (Exception e)
         {
 
             throw;

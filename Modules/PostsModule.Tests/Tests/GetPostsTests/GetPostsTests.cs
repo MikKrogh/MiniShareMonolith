@@ -5,7 +5,7 @@ using System.Net;
 namespace PostsModule.Tests.GetPostsTests;
 [Collection(nameof(SystemTestCollectionDefinition))]
 
-public class GetPostsTests:  IClassFixture<PostsWebApplicationFactory>
+public class GetPostsTests : IClassFixture<PostsWebApplicationFactory>
 {
     private readonly TestFacade testFacade;
     public GetPostsTests(PostsWebApplicationFactory factory)

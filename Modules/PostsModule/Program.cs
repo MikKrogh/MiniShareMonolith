@@ -1,7 +1,5 @@
 using MassTransit;
-using Microsoft.EntityFrameworkCore;
 using PostsModule;
-using PostsModule.Infrastructure;
 using PostsModule.Presentation;
 
 var builder = WebApplication.CreateBuilder(args);
