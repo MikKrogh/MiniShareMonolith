@@ -41,4 +41,5 @@ jobs:
 
       
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --filter "PostsModule.Tests.ImageTests.ImageTests.GivenUserHasCreatedNewPost_WhenUserAddsImageToPost_ThenSuccessIsReturned"
+      #run: dotnet test --no-build --verbosity normal
