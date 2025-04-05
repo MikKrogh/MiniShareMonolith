@@ -18,7 +18,7 @@ public class AzureBlobService : IImageStorageService
 
         BlobServiceClient blobServiceClient;
 
-        if (storgeAccount == "UseDevelopmentStorage=true;")
+        if (storgeAccount.Contains("UseDevelopmentStorage=true"))
         {
             blobServiceClient = new(storgeAccount);
         }
