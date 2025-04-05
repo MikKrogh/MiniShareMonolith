@@ -63,7 +63,7 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsync
     }
     private void InitialDatabaseSetup(IServiceCollection services)
     {
-        //InitialEntityFrameWorkSetup(services);
+        InitialEntityFrameWorkSetup(services);
     }
     private void InitialEntityFrameWorkSetup(IServiceCollection services)
     {
@@ -71,7 +71,7 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsync
         _postsContext = sp.GetRequiredService<PostsContext>();
         try
         {
-            _postsContext.Database.Migrate();
+            //_postsContext.Database.Migrate();
             //TruncateTables();
 
         }
