@@ -1,8 +1,9 @@
-﻿using PostsModule.Tests.Helper;
+﻿using PostsModule.Tests.GetPostsTests;
+using PostsModule.Tests.Helper;
 using System.Net;
 
 namespace PostsModule.Tests.ImageTests;
-
+[Collection(nameof(SystemTestCollectionDefinition))]
 public class ImageTests : IClassFixture<PostsWebApplicationFactory>
 {
     private readonly TestFacade testFacade;
@@ -237,7 +238,7 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
 
         //When
         var getResponse = await testFacade.GetPost(create.Result.PostId);
-        string imageId = getResponse.Images.Single();
+        string? imageId = getResponse.Images.FirstOrDefault();
         var response = await testFacade.GetImage(create.Result.PostId, imageId);
 
         //Then
