@@ -65,12 +65,12 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsync
     {
         InitialEntityFrameWorkSetup(services);
     }
-    private void InitialEntityFrameWorkSetup(IServiceCollection services)
+    private async Task InitialEntityFrameWorkSetup(IServiceCollection services)
     {
         var sp = services.BuildServiceProvider();
         _postsContext = sp.GetRequiredService<PostsContext>();
 
-        _postsContext.Database.Migrate();
+        await _postsContext.Database.MigrateAsync();
         TruncateTables();
     }
 
