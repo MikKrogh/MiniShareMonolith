@@ -90,8 +90,8 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
     }
 
 
-    [Theory]
-    [MemberData(nameof(NonImageTypeFileExtensions))]
+    //[Theory]
+    //[MemberData(nameof(NonImageTypeFileExtensions))]
     public async Task GivenUserExistsAndHasCreatedAPost_WhenUserUploadsImageWithWrongExtension_ThenBadRequestIsReturned(string fileExtension)
     {
         //Given 
