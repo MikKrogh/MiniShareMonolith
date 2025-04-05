@@ -27,7 +27,6 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsync
 
         builder.ConfigureServices(services =>
         {
-            ConfigueTestDependencies(services);
             InitialDatabaseSetup(services);
 
 
@@ -57,10 +56,6 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsync
         return baseHost;
     }
 
-
-    private void ConfigueTestDependencies(IServiceCollection services)
-    {
-    }
     private void InitialDatabaseSetup(IServiceCollection services)
     {
         InitialEntityFrameWorkSetup(services);
