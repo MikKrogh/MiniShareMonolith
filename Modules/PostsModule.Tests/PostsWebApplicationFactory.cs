@@ -72,6 +72,7 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsync
         try
         {
             _postsContext.Database.Migrate();
+            //TruncateTables();
 
         }
         catch (Exception ex)
