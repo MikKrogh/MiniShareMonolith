@@ -69,12 +69,20 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsync
     {
         var sp = services.BuildServiceProvider();
         _postsContext = sp.GetRequiredService<PostsContext>();
-        var exists = _postsContext.Database.EnsureCreated();
-        if (!exists)
+        try
         {
             _postsContext.Database.Migrate();
 
         }
+        catch (Exception ex)
+        {
+            var msg = "failed add migration." + ex.Message;
+            var exx = new Exception(msg, ex);
+            throw exx;
+
+        }
+
+        
         //TruncateTables();
     }
 

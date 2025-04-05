@@ -26,21 +26,19 @@ internal class PostsContext : DbContext
     {
         try
         {
+            modelBuilder.Entity<UserEntity>().ToTable("Users", "PostModule");
+            modelBuilder.Entity<PostEntity>().ToTable("Posts", "PostModule");
+            modelBuilder.Entity<ImageEntity>().ToTable("Image", "PostModule");
 
+            modelBuilder.Entity<PostEntity>()
+                .HasOne(p => p.Creator)
+                .WithMany(u => u.Posts)
+                .HasForeignKey(p => p.CreatorId);
 
-        modelBuilder.Entity<UserEntity>().ToTable("Users", "PostModule");
-        modelBuilder.Entity<PostEntity>().ToTable("Posts", "PostModule");
-        modelBuilder.Entity<ImageEntity>().ToTable("Image", "PostModule");
-
-        modelBuilder.Entity<PostEntity>()
-            .HasOne(p => p.Creator)
-            .WithMany(u => u.Posts)
-            .HasForeignKey(p => p.CreatorId);
-
-        modelBuilder.Entity<ImageEntity>()
-            .HasOne(i => i.Post)
-            .WithMany(p => p.Images)
-            .HasForeignKey(i => i.PostId);
+            modelBuilder.Entity<ImageEntity>()
+                .HasOne(i => i.Post)
+                .WithMany(p => p.Images)
+                .HasForeignKey(i => i.PostId);
         }
         catch (Exception e)
         {
