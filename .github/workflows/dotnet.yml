@@ -41,4 +41,6 @@ jobs:
 
       
     - name: Test
-      run: dotnet test --filter "PostsModule.Tests.ImageTests.ImageTests"
+      #run: dotnet test --filter "PostsModule.Tests.ImageTests.ImageTests"
+      run: |
+        dotnet test \Modules\PostsModule.Tests\Tests\ImageTests\ImageTests.cs
