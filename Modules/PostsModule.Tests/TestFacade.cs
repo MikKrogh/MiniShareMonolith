@@ -60,7 +60,7 @@ internal class TestFacade
 
     public async Task<HttpStatusCode> UploadImage(string postId, string token, byte[]? file = null, string fileExtension = ".jpg", bool expectFailue = false)
     {
-        var bytes = file ?? new byte[2000];
+        var bytes = file ?? new byte[20];
         var stream = new MemoryStream(bytes);
         var form = new MultipartFormDataContent();
         form.Add(new StreamContent(stream), "file", $"filename" + fileExtension);
