@@ -63,7 +63,7 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsync
     }
     private void InitialDatabaseSetup(IServiceCollection services)
     {
-        InitialEntityFrameWorkSetup(services);
+        //InitialEntityFrameWorkSetup(services);
     }
     private void InitialEntityFrameWorkSetup(IServiceCollection services)
     {
