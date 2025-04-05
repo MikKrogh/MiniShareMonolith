@@ -43,4 +43,4 @@ jobs:
     - name: Test
       #run: dotnet test --filter "PostsModule.Tests.ImageTests.ImageTests"
       run: |
-        dotnet test \Modules\PostsModule.Tests\Tests\ImageTests\ImageTests.cs
+        dotnet test /home/runner/work/MiniShareMonolith/MiniShareMonolith/PostsModule.Tests/Tests/ImageTests/ImageTests.cs
