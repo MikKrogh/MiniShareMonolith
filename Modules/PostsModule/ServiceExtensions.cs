@@ -1,6 +1,5 @@
 ﻿using Azure.Identity;
-using MassTransit;
-using Microsoft.EntityFrameworkCore;
+
 using PostsModule.Domain;
 using PostsModule.Domain.Auth;
 using PostsModule.Infrastructure;
@@ -10,7 +9,7 @@ public static class ServiceExtensions
 {
     public async static Task AddPostModuleServices(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
-        serviceCollection.AddDbContext<PostsContext>();
+        serviceCollection.AddDbContext<PostsContext>(options => options.EnableSensitiveDataLogging(false));
         serviceCollection.AddScoped<IPostsRepository, PostsRepository>();
         serviceCollection.AddScoped<IUserRepository, UserRepository>();
         serviceCollection.AddScoped<IImageRepository, ImageRepository>();
