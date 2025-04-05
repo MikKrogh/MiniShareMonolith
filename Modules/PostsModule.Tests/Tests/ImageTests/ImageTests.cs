@@ -3,7 +3,6 @@ using PostsModule.Tests.Helper;
 using System.Net;
 
 namespace PostsModule.Tests.ImageTests;
-[Collection(nameof(SystemTestCollectionDefinition))]
 public class ImageTests : IClassFixture<PostsWebApplicationFactory>
 {
     private readonly TestFacade testFacade;
@@ -91,8 +90,8 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
     }
 
 
-    //[Theory]
-    //[MemberData(nameof(NonImageTypeFileExtensions))]
+    [Theory]
+    [MemberData(nameof(NonImageTypeFileExtensions))]
     public async Task GivenUserExistsAndHasCreatedAPost_WhenUserUploadsImageWithWrongExtension_ThenBadRequestIsReturned(string fileExtension)
     {
         //Given 
@@ -284,7 +283,7 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
         yield return new object[] { ".txt" };
         yield return new object[] { ".pdf" };
         yield return new object[] { ".doc" };
-        //yield return new object[] { ".docx" };
+        yield return new object[] { ".docx" };
         yield return new object[] { ".xls" };
         yield return new object[] { ".xlsx" };
         yield return new object[] { ".ppt" };
@@ -292,7 +291,7 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
         yield return new object[] { ".zip" };
         yield return new object[] { ".rar" };
         yield return new object[] { ".7z" };
-        //yield return new object[] { ".tar" };
+        yield return new object[] { ".tar" };
         yield return new object[] { ".gz" };
         yield return new object[] { ".bz2" };
         yield return new object[] { ".xz" };
@@ -311,7 +310,7 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
         yield return new object[] { ".asp" };
         yield return new object[] { ".aspx" };
         yield return new object[] { ".jsp" };
-        //yield return new object[] { ".cs" };
+        yield return new object[] { ".cs" };
         yield return new object[] { ".java" };
         yield return new object[] { ".cpp" };
         yield return new object[] { ".c" };

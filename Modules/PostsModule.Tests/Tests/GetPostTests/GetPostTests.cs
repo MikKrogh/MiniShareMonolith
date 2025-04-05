@@ -3,7 +3,6 @@ using PostsModule.Tests.Helper;
 
 
 namespace PostsModule.Tests.GetPostTests;
-[Collection(nameof(SystemTestCollectionDefinition))]
 
 public class GetPostTests : IClassFixture<PostsWebApplicationFactory>
 {
