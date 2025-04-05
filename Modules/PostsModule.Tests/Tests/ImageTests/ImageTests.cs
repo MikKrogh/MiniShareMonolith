@@ -218,7 +218,7 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
 
         //When
         var getResponse = await testFacade.GetPost(create.Result.PostId);
-        string imageId = getResponse.Images.Single();
+        string imageId = getResponse.Images.SingleOrDefault();
         var response = await testFacade.GetImage(create.Result.PostId, imageId);
 
         //Then
@@ -273,7 +273,7 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
 
         //When
         var getResponse = await testFacade.GetPost(create.Result.PostId);
-        var response = await testFacade.GetImage("wrongPostId", getResponse.Images.Single());
+        var response = await testFacade.GetImage("wrongPostId", getResponse.Images.SingleOrDefault());
 
         //Then
         Assert.True(response.StatusCode == HttpStatusCode.NotFound);
