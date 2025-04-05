@@ -2,7 +2,7 @@
 using PostsModule.Tests.Helper;
 using System.Net;
 
-namespace PostsModule.Tests.Tests.GetPostsTests;
+namespace PostsModule.Tests.GetPostsTests;
 [Collection(nameof(SystemTestCollectionDefinition))]
 public class GetPostsTests : IClassFixture<PostsWebApplicationFactory>
 {

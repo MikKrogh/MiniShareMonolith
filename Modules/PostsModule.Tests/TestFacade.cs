@@ -58,7 +58,7 @@ internal class TestFacade
         };
     }
 
-    public async Task<HttpStatusCode> UploadImage(string postId, string token, byte[]? file = null, string fileExtension = ".jpg")
+    public async Task<HttpStatusCode> UploadImage(string postId, string token, byte[]? file = null, string fileExtension = ".jpg", bool expectFailue = false)
     {
         var bytes = file ?? new byte[2000];
         var stream = new MemoryStream(bytes);
@@ -66,6 +66,11 @@ internal class TestFacade
         form.Add(new StreamContent(stream), "file", $"filename" + fileExtension);
 
         var response = await _client.PutAsync($"/Posts/{postId}/Image?token={token}", form);
+        if (!response.IsSuccessStatusCode && expectFailue)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            throw new Exception($"Error uploading image: {content}");
+        }
         return response.StatusCode;
     }
 

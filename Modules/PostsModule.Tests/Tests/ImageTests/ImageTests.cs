@@ -1,7 +1,7 @@
 ﻿using PostsModule.Tests.Helper;
 using System.Net;
 
-namespace PostsModule.Tests.Tests.ImageTests;
+namespace PostsModule.Tests.ImageTests;
 
 public class ImageTests : IClassFixture<PostsWebApplicationFactory>
 {
