@@ -20,7 +20,6 @@ public sealed class AddImageCommandConsumer : IConsumer<AddImageCommand>
         if (!IsValid(context.Message))
         {
             var result = CommandResult<AddImageCommandResult>.FailedToValidate();
-            throw new Exception("image upload context is invalid");
             await context.RespondAsync(result);
         }
         else
