@@ -13,7 +13,7 @@ internal class AddImage
     internal static async Task<IResult> Process(IFormFile file, [FromServices] IAuthHelper authHelper, [FromServices] IRequestClient<AddImageCommand> client, [FromRoute] Guid postId, [FromQuery] string token)
     {
         var claims = authHelper.ReadClaims(token);
-        if (claims == null || !claims.Any() || claims["postId"] != postId.ToString()) return Results.Problem();               
+        if (claims == null || !claims.Any() || claims["postId"] != postId.ToString()) return Results.Problem("bad token");               
 
         var command = new AddImageCommand()
         {
@@ -29,7 +29,7 @@ internal class AddImage
         var couldAdd = StreamBank.RegisterStream(command.PostId, command.StreamId, file.OpenReadStream(), expiration);
         if (!couldAdd)
         {
-            return Results.Problem();
+            return Results.Problem("could not add image to bank");
         }
 
         var result = await client.GetResponse<CommandResult<AddImageCommandResult>>(command);
