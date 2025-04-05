@@ -71,15 +71,19 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsync
         _postsContext = sp.GetRequiredService<PostsContext>();
         try
         {
-            //_postsContext.Database.Migrate();
-            //TruncateTables();
+            _postsContext.Database.EnsureCreated();
+
+            if (_postsContext.Database.GetPendingMigrations().Any())
+            {
+                _postsContext.Database.Migrate();
+            }
 
         }
         catch (Exception ex)
         {
             var msg = "failed add migration." + ex.Message;
             var exx = new Exception(msg, ex);
-            throw exx;
+
 
         }
 
@@ -106,17 +110,5 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsync
         await ThrowIfAzuriteNotRunning();
     }
 
-    Task IAsyncLifetime.DisposeAsync()
-    {
-        _postsContext.Database.EnsureDeleted();
-        _postsContext.Dispose();
-        return Task.CompletedTask;
-    }
-}
-[CollectionDefinition("Global Web Application Collection")]
-public class GlobalWebApplicationCollection : ICollectionFixture<PostsWebApplicationFactory>
-{
-    // This class doesn't need to contain any logic.
-    // It's just a marker to indicate that the `GlobalWebApplicationFactory`
-    // should be shared across all test classes in this collection.
+    Task IAsyncLifetime.DisposeAsync() => Task.CompletedTask; // No cleanup needed
 }

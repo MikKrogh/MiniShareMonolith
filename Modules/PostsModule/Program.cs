@@ -19,9 +19,8 @@ builder.Services.AddMassTransit(x =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
-var t = app.Services.GetService<PostsContext>();
-await t.Database.MigrateAsync();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.AddPostModuleEndpoints();
