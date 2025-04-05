@@ -22,10 +22,6 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
         var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
         var create = await testFacade.SendCreatePost(createBody);
 
-        if (create.StatusCode != HttpStatusCode.OK || create.StatusCode != HttpStatusCode.Created )
-        {
-            throw new Exception($"Failed to create post, result was {create.StatusCode}, user wasa {user}");
-        }
 
 
         //When
