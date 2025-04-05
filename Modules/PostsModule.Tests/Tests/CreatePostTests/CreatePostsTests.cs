@@ -4,9 +4,8 @@ using System.Net;
 
 namespace PostsModule.Tests.CreatePostTests;
 
-[Collection("Global Web Application Collection")]
 
-public class CreatePostsTests //: IClassFixture<PostsWebApplicationFactory>
+public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
 {
     private readonly TestFacade testFacade;
     public CreatePostsTests(PostsWebApplicationFactory factory)

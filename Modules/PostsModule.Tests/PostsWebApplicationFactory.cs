@@ -106,7 +106,12 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsync
         await ThrowIfAzuriteNotRunning();
     }
 
-    Task IAsyncLifetime.DisposeAsync() => Task.CompletedTask; // No cleanup needed
+    Task IAsyncLifetime.DisposeAsync()
+    {
+        _postsContext.Database.EnsureDeleted();
+        _postsContext.Dispose();
+        return Task.CompletedTask;
+    }
 }
 [CollectionDefinition("Global Web Application Collection")]
 public class GlobalWebApplicationCollection : ICollectionFixture<PostsWebApplicationFactory>
