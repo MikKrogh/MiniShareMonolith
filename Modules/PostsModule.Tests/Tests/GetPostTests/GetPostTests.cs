@@ -1,10 +1,11 @@
-﻿using PostsModule.Tests.GetPostsTests;
+﻿
 using PostsModule.Tests.Helper;
 
 
 namespace PostsModule.Tests.GetPostTests;
+[Collection("Global Web Application Collection")]
 
-public class GetPostTests : IClassFixture<PostsWebApplicationFactory>
+public class GetPostTests //: IClassFixture<PostsWebApplicationFactory>
 {
     private readonly TestFacade testFacade;
     public GetPostTests(PostsWebApplicationFactory factory)

@@ -1,9 +1,11 @@
-﻿using PostsModule.Tests.GetPostsTests;
+﻿
 using PostsModule.Tests.Helper;
 using System.Net;
 
 namespace PostsModule.Tests.ImageTests;
-public class ImageTests : IClassFixture<PostsWebApplicationFactory>
+[Collection("Global Web Application Collection")]
+
+public class ImageTests//: IClassFixture<PostsWebApplicationFactory>
 {
     private readonly TestFacade testFacade;
     public ImageTests(PostsWebApplicationFactory factory)

@@ -108,3 +108,10 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsync
 
     Task IAsyncLifetime.DisposeAsync() => Task.CompletedTask; // No cleanup needed
 }
+[CollectionDefinition("Global Web Application Collection")]
+public class GlobalWebApplicationCollection : ICollectionFixture<PostsWebApplicationFactory>
+{
+    // This class doesn't need to contain any logic.
+    // It's just a marker to indicate that the `GlobalWebApplicationFactory`
+    // should be shared across all test classes in this collection.
+}
