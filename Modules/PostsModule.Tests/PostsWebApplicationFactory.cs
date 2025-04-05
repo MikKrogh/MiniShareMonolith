@@ -65,13 +65,13 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsync
     {
         InitialEntityFrameWorkSetup(services);
     }
-    private async Task InitialEntityFrameWorkSetup(IServiceCollection services)
+    private void InitialEntityFrameWorkSetup(IServiceCollection services)
     {
         var sp = services.BuildServiceProvider();
         _postsContext = sp.GetRequiredService<PostsContext>();
-
-        await _postsContext.Database.MigrateAsync();
-        TruncateTables();
+        _postsContext.Database.EnsureDeleted();
+        _postsContext.Database.Migrate();
+        //TruncateTables();
     }
 
     private async Task ThrowIfAzuriteNotRunning()
