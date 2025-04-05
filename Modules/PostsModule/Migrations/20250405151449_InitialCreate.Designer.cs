@@ -12,8 +12,8 @@ using PostsModule.Infrastructure;
 namespace PostsModule.Migrations
 {
     [DbContext(typeof(PostsContext))]
-    [Migration("20250303182341_2025-03-03-revert3")]
-    partial class _20250303revert3
+    [Migration("20250405151449_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,7 +38,7 @@ namespace PostsModule.Migrations
 
                     b.HasIndex("PostId");
 
-                    b.ToTable("Image", "StoreSchema");
+                    b.ToTable("Image", "PostModule");
                 });
 
             modelBuilder.Entity("PostsModule.Infrastructure.PostEntity", b =>
@@ -60,11 +60,11 @@ namespace PostsModule.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PrimaryColour")
+                    b.Property<string>("PrimaryColor")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("SecondaryColour")
+                    b.Property<string>("SecondaryColor")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
@@ -75,7 +75,7 @@ namespace PostsModule.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.ToTable("Posts", "StoreSchema");
+                    b.ToTable("Posts", "PostModule");
                 });
 
             modelBuilder.Entity("PostsModule.Infrastructure.UserEntity", b =>
@@ -89,7 +89,7 @@ namespace PostsModule.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Users", "StoreSchema");
+                    b.ToTable("Users", "PostModule");
                 });
 
             modelBuilder.Entity("PostsModule.Infrastructure.ImageEntity", b =>
