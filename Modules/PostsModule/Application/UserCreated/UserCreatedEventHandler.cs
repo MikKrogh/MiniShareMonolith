@@ -18,9 +18,8 @@ public sealed class UserCreatedEventHandler : IConsumer<UserCreatedEvent>
         {
             Guid id;
             var couldParse = Guid.TryParse(context.Message.UserId, out id);
+
             if (!couldParse) throw new Exception("could not handle usercreatedevent becouse id is not guid");
-
-
 
             var user = User.Create(id);
             user.SetName(context.Message.UserName);
