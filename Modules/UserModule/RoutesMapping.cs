@@ -28,7 +28,7 @@ public static class RoutesMapping
         .Produces(400)
         .Produces(500);
 
-        api.MapGet("{id}", [Microsoft.AspNetCore.Authorization.Authorize] async ([FromServices] IRequestClient<GetUserCommand> client, string id) =>
+        api.MapGet("{id}", async ([FromServices] IRequestClient<GetUserCommand> client, string id) =>
         {
             var command = new GetUserCommand(id);
             var result = await client.GetResponse<GetUserCommandResult>(command);

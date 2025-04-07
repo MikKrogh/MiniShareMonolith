@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\EventMessages\EventMessages.csproj" />
+    <ProjectReference Include="..\..\EventMessages\EventMessages.csproj" />
   </ItemGroup>
 
   <ItemGroup>
