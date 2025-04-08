@@ -11,13 +11,24 @@ public static class ServiceExtensions
     public static void UserModuleAppConfiguration(this IConfigurationBuilder configBuilder)
     {
         var config = configBuilder.Build();
-        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production" || true)
         {
             configBuilder.AddAzureAppConfiguration(options =>
             {
                 options.Connect(new Uri(config["AppConfigEndpoint"]), new DefaultAzureCredential())
                 .Select("UserService*").TrimKeyPrefix("UserService:");
             });
+
+            var confg = configBuilder.Build();
+            var expectedTokens = confg["TableStorageAccount"];
+            var expectedTokens5 = confg["UserService:TableStorageAccount"];
+
+            if (string.IsNullOrEmpty(expectedTokens))            
+                throw new Exception("TableStorageAccount is not set in Azure App Configuration");
+            if (string.IsNullOrEmpty(expectedTokens5))
+                throw new Exception("UserService:TableStorageAccount is not set in Azure App Configuration");
+
+
         }
     }
 }

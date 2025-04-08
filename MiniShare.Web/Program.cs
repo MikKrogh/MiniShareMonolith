@@ -1,17 +1,14 @@
 using MassTransit;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using PostsModule;
 using PostsModule.Presentation;
-using System.Security.Cryptography;
-using System.Text;
+
 using UserModule;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.PostModuleAppConfiguration();
 builder.Configuration.UserModuleAppConfiguration();
-await builder.Services.AddPostModuleServices(builder.Configuration);
+builder.Services.AddPostModuleServices(builder.Configuration);
 builder.Services.AddUserModuleServices(builder.Configuration);
 
 builder.Services.AddMassTransit(x =>

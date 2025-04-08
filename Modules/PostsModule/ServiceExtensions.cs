@@ -7,7 +7,7 @@ namespace PostsModule;
 
 public static class ServiceExtensions
 {
-    public async static Task AddPostModuleServices(this IServiceCollection serviceCollection, IConfiguration configuration)
+    public static void AddPostModuleServices(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
         serviceCollection.AddDbContext<PostsContext>(options => options.EnableSensitiveDataLogging(false));
         serviceCollection.AddScoped<IPostsRepository, PostsRepository>();
