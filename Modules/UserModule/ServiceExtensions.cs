@@ -21,12 +21,10 @@ public static class ServiceExtensions
 
             var confg = configBuilder.Build();
             var expectedTokens = confg["TableStorageAccount"];
-            var expectedTokens5 = confg["UserService:TableStorageAccount"];
 
             if (string.IsNullOrEmpty(expectedTokens))            
                 throw new Exception("TableStorageAccount is not set in Azure App Configuration");
-            if (string.IsNullOrEmpty(expectedTokens5))
-                throw new Exception("UserService:TableStorageAccount is not set in Azure App Configuration");
+
 
 
         }
