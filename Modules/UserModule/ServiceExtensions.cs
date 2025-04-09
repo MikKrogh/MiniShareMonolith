@@ -8,7 +8,7 @@ public static class ServiceExtensions
     {
         serviceCollection.AddTransient<IUserRepository, UserRepository>();
     }
-    public static void UserModuleAppConfiguration(this IConfigurationBuilder configBuilder)
+    public static void UserModuleAppConfiguration(this IConfigurationBuilder configBuilder, ILogger logger)
     {
         var config = configBuilder.Build();
         if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production" || true)
@@ -22,6 +22,7 @@ public static class ServiceExtensions
             var confg = configBuilder.Build();
             var expectedTokens = confg["TableStorageAccount"];
             Console.WriteLine(expectedTokens);
+            logger.LogError(expectedTokens);
             if (string.IsNullOrEmpty(expectedTokens))            
                 throw new Exception("TableStorageAccount is not set in Azure App Configuration");
 

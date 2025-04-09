@@ -5,9 +5,14 @@ using PostsModule.Presentation;
 using UserModule;
 
 var builder = WebApplication.CreateBuilder(args);
+using var loggerFactory = LoggerFactory.Create(logging =>
+{
+    logging.AddConsole(); // or whatever providers you need
+});
 
+var logger = loggerFactory.CreateLogger("UserModuleAppConfiguration");
 builder.Configuration.PostModuleAppConfiguration();
-builder.Configuration.UserModuleAppConfiguration();
+builder.Configuration.UserModuleAppConfiguration(logger);
 builder.Services.AddPostModuleServices(builder.Configuration);
 builder.Services.AddUserModuleServices(builder.Configuration);
 
