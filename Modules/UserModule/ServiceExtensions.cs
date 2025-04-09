@@ -21,7 +21,7 @@ public static class ServiceExtensions
 
             var confg = configBuilder.Build();
             var expectedTokens = confg["TableStorageAccount"];
-
+            Console.WriteLine(expectedTokens);
             if (string.IsNullOrEmpty(expectedTokens))            
                 throw new Exception("TableStorageAccount is not set in Azure App Configuration");
 
