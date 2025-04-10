@@ -3,6 +3,7 @@
 using PostsModule.Domain;
 using PostsModule.Domain.Auth;
 using PostsModule.Infrastructure;
+using System.Net.Http.Headers;
 namespace PostsModule;
 
 public static class ServiceExtensions
@@ -32,6 +33,19 @@ public static class ServiceExtensions
                 options.Connect(new Uri(config["AppConfigEndpoint"]), new DefaultAzureCredential())
                 .Select("PostService*").TrimKeyPrefix("PostService:");
             });
+
+            var jwt = config["JwtSecret"];
+            var jw7t = config["PostService:JwtSecret"];
+            if (string.IsNullOrEmpty(jwt))
+            {
+                Console.WriteLine("jwt is empty");
+                throw new StackOverflowException("jwt is empty");
+            }            
+            if (string.IsNullOrEmpty(jw7t))
+            {
+                Console.WriteLine("jw7t is empty");
+                throw new StackOverflowException("jw7t is empty");
+            }
         }
     }
 }
