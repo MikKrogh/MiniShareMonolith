@@ -7,8 +7,9 @@ using PostsModule.Domain.Auth;
 namespace PostsModule.Presentation.Endpoints;
 internal class CreatePost
 {
-    internal static async Task<IResult> Process([FromServices] IRequestClient<CreatePostCommand> client, IAuthHelper auth, [FromBody] CreateBody body)
+    internal static async Task<IResult> Process(ILogger<CreatePost>? logger,[FromServices] IRequestClient<CreatePostCommand> client, IAuthHelper auth, [FromBody] CreateBody body)
     {
+        logger?.LogInformation("Creating post with title {title} and creatorId {creatorId}", body.Title, body.CreatorId);
         var command = new CreatePostCommand()
         {
             Title = body.Title,
@@ -39,8 +40,9 @@ internal class CreatePost
             }
             return Results.StatusCode(clientResponse.Message.ResultStatus);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            logger.LogError(ex, "Error creating post with title {title} and creatorId {creatorId}", body.Title, body.CreatorId);
             return Results.Problem();
         }
     }

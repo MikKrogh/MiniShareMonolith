@@ -34,7 +34,4 @@ public static class ServiceExtensions
             });
         }
     }
-
-
-
 }

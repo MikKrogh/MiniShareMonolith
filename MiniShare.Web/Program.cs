@@ -1,18 +1,15 @@
+using Azure.Monitor.OpenTelemetry.AspNetCore;
 using MassTransit;
+using OpenTelemetry.Metrics;
 using PostsModule;
 using PostsModule.Presentation;
 
 using UserModule;
 
 var builder = WebApplication.CreateBuilder(args);
-using var loggerFactory = LoggerFactory.Create(logging =>
-{
-    logging.AddConsole(); // or whatever providers you need
-});
 
-var logger = loggerFactory.CreateLogger("UserModuleAppConfiguration");
 builder.Configuration.PostModuleAppConfiguration();
-builder.Configuration.UserModuleAppConfiguration(logger);
+builder.Configuration.UserModuleAppConfiguration();
 builder.Services.AddPostModuleServices(builder.Configuration);
 builder.Services.AddUserModuleServices(builder.Configuration);
 
@@ -26,19 +23,28 @@ builder.Services.AddMassTransit(x =>
     });
 });
 
+
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddOpenTelemetry()
+    .UseAzureMonitor(options =>
+    {
+        options.ConnectionString = builder.Configuration[""];
+    })
+    .WithMetrics(options =>
+    {
+        options.AddMeter();
+        options.AddAspNetCoreInstrumentation();
+    }
+);       
+    
 
 var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
-
 app.AddPostModuleEndpoints();
 app.AddUserModuleEndpoints();
-
-
-
 app.Run();
-
 
 public partial class Program { }
