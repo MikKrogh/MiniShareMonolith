@@ -11,7 +11,7 @@ public static class RoutesMapping
     {
         var api = builder.MapGroup("/User").WithTags("UserModule");
 
-        api.MapGet("Test", () => "hel");
+
 
         api.MapPost(string.Empty, async ([FromServices] IRequestClient<SignupCommand> client, [FromBody] SignupCommand body) =>
         {

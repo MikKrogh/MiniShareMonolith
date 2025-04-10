@@ -10,7 +10,7 @@ public static class EndpointsExtensions
 
         var api = routeBuilder.MapGroup("/Posts").WithTags("PostModule");
 
-        api.MapGet("Test", () => "hel");
+        api.MapGet("Test", Tes.Process);
 
         api.MapGet("/{postId}", GetPost.Process)
             .WithSummary("Returns details of a post")
@@ -44,3 +44,11 @@ public static class EndpointsExtensions
     }
 }
 
+
+public static class Tes
+{
+    public static async  Task<IResult> Process()
+    {
+        return Results.Ok();
+    }
+}
