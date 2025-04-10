@@ -14,7 +14,7 @@ public static class EndpointsExtensions
 
         var api = routeBuilder.MapGroup("/Posts").WithTags("PostModule");
 
-        api.MapGet("Test", Tes.Process);
+        api.MapPost("Test", Tes.Process);
 
         api.MapGet("/{postId}", GetPost.Process)
             .WithSummary("Returns details of a post")
