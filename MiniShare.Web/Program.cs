@@ -12,7 +12,7 @@ builder.Configuration.PostModuleAppConfiguration();
 builder.Configuration.UserModuleAppConfiguration();
 builder.Services.AddPostModuleServices(builder.Configuration);
 builder.Services.AddUserModuleServices(builder.Configuration);
-
+builder.Services.AddLogging();
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumers(typeof(PostsModule.ServiceExtensions).Assembly);
@@ -30,11 +30,10 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddOpenTelemetry()
     .UseAzureMonitor(options =>
     {
-        options.ConnectionString = builder.Configuration[""];
+        options.ConnectionString = "InstrumentationKey=6a0c38b7-2a1c-4945-b272-e4d491be7b41;IngestionEndpoint=https://northeurope-2.in.applicationinsights.azure.com/;LiveEndpoint=https://northeurope.livediagnostics.monitor.azure.com/;ApplicationId=a039a579-9d41-411e-8a7a-335a09747e7c";
     })
     .WithMetrics(options =>
     {
-        options.AddMeter();
         options.AddAspNetCoreInstrumentation();
     }
 );       
