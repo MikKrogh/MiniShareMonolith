@@ -9,6 +9,7 @@ internal class CreatePost
 {
     internal static async Task<IResult> Process(ILogger<CreatePost>? logger,[FromServices] IRequestClient<CreatePostCommand> client, IAuthHelper auth, [FromBody] CreateBody body)
     {
+        logger.LogError("hello");
         logger?.LogInformation("Creating post with title {title} and creatorId {creatorId}", body.Title, body.CreatorId);
         var command = new CreatePostCommand()
         {
