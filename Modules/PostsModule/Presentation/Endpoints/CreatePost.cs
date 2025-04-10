@@ -9,6 +9,7 @@ internal class CreatePost
 {
     internal static async Task<IResult> Process(ILogger<CreatePost>? logger,[FromServices] IRequestClient<CreatePostCommand> client, IAuthHelper auth, [FromBody] CreateBody body)
     {
+        return Results.Ok();
         if (logger is null)
         {
             return Results.Problem("Logger is null");
