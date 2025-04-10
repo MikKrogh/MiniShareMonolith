@@ -9,6 +9,10 @@ internal class CreatePost
 {
     internal static async Task<IResult> Process(ILogger<CreatePost>? logger,[FromServices] IRequestClient<CreatePostCommand> client, IAuthHelper auth, [FromBody] CreateBody body)
     {
+        if (logger is null)
+        {
+            return Results.Problem("Logger is null");
+        }
         logger.LogError("hello");
         logger?.LogInformation("Creating post with title {title} and creatorId {creatorId}", body.Title, body.CreatorId);
         var command = new CreatePostCommand()
@@ -39,12 +43,12 @@ internal class CreatePost
                     Token = token
                 });
             }
-            return Results.StatusCode(clientResponse.Message.ResultStatus);
+            return Results.StatusCode(409);
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error creating post with title {title} and creatorId {creatorId}", body.Title, body.CreatorId);
-            return Results.Problem();
+            return Results.Problem(ex.Message);
         }
     }
 }
