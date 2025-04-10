@@ -1,5 +1,5 @@
 ﻿namespace PostsModule.Presentation.Endpoints;
-internal class CreateBody
+public class CreateBody
 {
     public string Title { get; set; } = string.Empty;
     public string CreatorId { get; set; } = string.Empty;

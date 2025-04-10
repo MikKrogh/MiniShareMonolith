@@ -1,4 +1,8 @@
-﻿using PostsModule.Application;
+﻿using MassTransit;
+using Microsoft.AspNetCore.Mvc;
+using PostsModule.Application;
+using PostsModule.Application.Create;
+using PostsModule.Domain.Auth;
 using PostsModule.Presentation.Endpoints;
 
 namespace PostsModule.Presentation;
@@ -47,7 +51,7 @@ public static class EndpointsExtensions
 
 public static class Tes
 {
-    public static async  Task<IResult> Process()
+    public static async  Task<IResult> Process([FromServices] IRequestClient<CreatePostCommand> client, IAuthHelper auth, [FromBody] CreateBody body)
     {
         return Results.Ok();
     }

@@ -5,9 +5,9 @@ using PostsModule.Application.Create;
 using PostsModule.Domain.Auth;
 
 namespace PostsModule.Presentation.Endpoints;
-internal class CreatePost
+public class CreatePost
 {
-    internal static async Task<IResult> Process(ILogger<CreatePost>? logger,[FromServices] IRequestClient<CreatePostCommand> client, IAuthHelper auth, [FromBody] CreateBody body)
+    public static async Task<IResult> Process(ILogger<CreatePost>? logger,[FromServices] IRequestClient<CreatePostCommand> client, IAuthHelper auth, [FromBody] CreateBody body)
     {
         return Results.Ok();
         if (logger is null)
