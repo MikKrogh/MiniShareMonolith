@@ -51,7 +51,7 @@ public static class EndpointsExtensions
 
 public static class Tes
 {
-    public static async Task<IResult> Process(ILogger<CreatePost>? logger, [FromServices] IRequestClient<CreatePostCommand> client /*,IAuthHelper auth, [FromBody] CreateBody body*/)
+    public static async Task<IResult> Process(ILogger<CreatePost>? logger, [FromServices] IRequestClient<CreatePostCommand> client, [FromBody] CreateBody body)
     {
         return Results.Ok();
     }

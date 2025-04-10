@@ -8,7 +8,7 @@ namespace PostsModule.Presentation.Endpoints;
 public class CreatePost
 {
     //public static async Task<IResult> Process(ILogger<CreatePost>? logger,[FromServices] IRequestClient<CreatePostCommand> client, IAuthHelper auth, [FromBody] CreateBody body)
-    public static async Task<IResult> Process()
+    public static async Task<IResult> Process(IAuthHelper auth)
     {
         return Results.Ok();
         //if (logger is null)
