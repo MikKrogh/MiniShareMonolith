@@ -30,13 +30,13 @@
     <ProjectReference Include="..\..\EventMessages\EventMessages.csproj" />
   </ItemGroup>
 	
-	<!--<ItemGroup>
-		<Content Remove="appsettings*.json" />
+	<ItemGroup>
+		
 		<None Update="appsettings*.json">
 			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
 			<CopyToPublishDirectory>Never</CopyToPublishDirectory>
 		</None>
-	</ItemGroup>-->
+	</ItemGroup>
 
 
 
