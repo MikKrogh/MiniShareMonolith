@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using PostsModule.Application;
 using PostsModule.Application.Create;
-using PostsModule.Domain.Auth;
 using PostsModule.Presentation.Endpoints;
 
 namespace PostsModule.Presentation;
@@ -13,9 +12,7 @@ public static class EndpointsExtensions
     {
 
         var api = routeBuilder.MapGroup("/Posts").WithTags("PostModule");
-
-        api.MapPost("Test", Tes.Process);
-
+        
         api.MapGet("/{postId}", GetPost.Process)
             .WithSummary("Returns details of a post")
             .Produces<PostDto>(200)
@@ -45,14 +42,5 @@ public static class EndpointsExtensions
             .WithSummary("Appends image file to a post")
             .Produces(500)
             .DisableAntiforgery();
-    }
-}
-
-
-public static class Tes
-{
-    public static async Task<IResult> Process(ILogger<CreatePost>? logger, [FromServices] IRequestClient<CreatePostCommand> client, [FromBody] CreateBody body)
-    {
-        return Results.Ok();
     }
 }

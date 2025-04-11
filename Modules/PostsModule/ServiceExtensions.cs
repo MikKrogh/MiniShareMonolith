@@ -26,26 +26,13 @@ public static class ServiceExtensions
     public static void PostModuleAppConfiguration(this IConfigurationBuilder configBuilder)
     {
         var config = configBuilder.Build();
-        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production" || true)
         {
             configBuilder.AddAzureAppConfiguration(options =>
             {
                 options.Connect(new Uri(config["AppConfigEndpoint"]), new DefaultAzureCredential())
                 .Select("PostService*").TrimKeyPrefix("PostService:");
             });
-
-            var jwt = config["JwtSecret"];
-            var jw7t = config["PostService:JwtSecret"];
-            if (string.IsNullOrEmpty(jwt))
-            {
-                Console.WriteLine("jwt is empty");
-                throw new StackOverflowException("jwt is empty");
-            }            
-            if (string.IsNullOrEmpty(jw7t))
-            {
-                Console.WriteLine("jw7t is empty");
-                throw new StackOverflowException("jw7t is empty");
-            }
         }
     }
 }
