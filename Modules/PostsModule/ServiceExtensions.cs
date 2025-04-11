@@ -16,12 +16,12 @@ public static class ServiceExtensions
         serviceCollection.AddSingleton<IAuthHelper, JwtHandler>();
     }
 
-    public static void PostModuleAppConfiguration(this IConfigurationBuilder configBuilder)
+    public static void PostModuleAppConfiguration(this IHostApplicationBuilder hostBuilder)
     {
-        var config = configBuilder.Build();
-        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+        var config = hostBuilder.Configuration.Build();
+        if (hostBuilder.Environment.IsProduction())
         {
-            configBuilder.AddAzureAppConfiguration(options =>
+            hostBuilder.Configuration.AddAzureAppConfiguration(options =>
             {
                 options.Connect(new Uri(config["AppConfigEndpoint"]), new DefaultAzureCredential())
                 .Select("PostService*").TrimKeyPrefix("PostService:");

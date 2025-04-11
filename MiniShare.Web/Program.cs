@@ -8,14 +8,14 @@ using UserModule;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.PostModuleAppConfiguration();
-builder.Configuration.UserModuleAppConfiguration();
 
-if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+if (builder.Environment.IsProduction()) 
 {
+    builder.PostModuleAppConfiguration();
+    builder.UserModuleAppConfiguration();
     builder.Configuration.AddAzureAppConfiguration(options =>
     {
-        options.Connect(new Uri(builder.Configuration[""]), new DefaultAzureCredential())
+        options.Connect(new Uri(builder.Configuration["AppConfigEndpoint"]), new DefaultAzureCredential())
         .Select("monolith*").TrimKeyPrefix("monolith:");
     });
 }

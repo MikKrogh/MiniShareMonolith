@@ -7,12 +7,12 @@ public static class ServiceExtensions
     {
         serviceCollection.AddTransient<IUserRepository, UserRepository>();
     }
-    public static void UserModuleAppConfiguration(this IConfigurationBuilder configBuilder)
+    public static void UserModuleAppConfiguration(this IHostApplicationBuilder hostBuilder)
     {
-        var config = configBuilder.Build();
-        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+        var config = hostBuilder.Configuration.Build();
+        if (hostBuilder.Environment.IsProduction())
         {
-            configBuilder.AddAzureAppConfiguration(options =>
+            hostBuilder.Configuration.AddAzureAppConfiguration(options =>
             {
                 options.Connect(new Uri(config["AppConfigEndpoint"]), new DefaultAzureCredential())
                 .Select("UserService*").TrimKeyPrefix("UserService:");

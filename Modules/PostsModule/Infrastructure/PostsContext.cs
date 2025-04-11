@@ -5,7 +5,7 @@ namespace PostsModule.Infrastructure;
 
 internal class PostsContext : DbContext
 {
-    private readonly IConfiguration config;
+    private readonly string connString;
 
     public DbSet<PostEntity> Posts { get; set; }
     public DbSet<UserEntity> Users { get; set; }
@@ -14,12 +14,17 @@ internal class PostsContext : DbContext
 
     public PostsContext(DbContextOptions<PostsContext> options, IConfiguration config) : base(options)
     {
-        this.config = config;
+        connString = config["SQLConnectionString"];
+        if (string.IsNullOrEmpty(connString))
+            throw new Exception("Cannot initialize PostsContext without a connectionstring");
+
+
+
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer(config["SQLConnectionString"]);
+        optionsBuilder.UseSqlServer(connString);
         base.OnConfiguring(optionsBuilder);
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)

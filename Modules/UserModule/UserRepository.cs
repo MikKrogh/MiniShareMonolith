@@ -22,6 +22,7 @@ internal class UserRepository : IUserRepository
     public UserRepository(IConfiguration config)
     {
         var connString = config["TableStorageAccount"] ?? throw new Exception("Cannot initialize UserRepository without a connectionstring");
+
         if (connString == "UseDevelopmentStorage=true;")
             tableClient = new(connString, "User");
 
