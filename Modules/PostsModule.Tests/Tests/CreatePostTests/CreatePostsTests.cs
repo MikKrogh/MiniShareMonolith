@@ -18,7 +18,6 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
     internal async Task GivenUserExists_WhenUserCreatesPost_ThenSuccessIsReturned()
     {
         // Given
-        //await testFacade._factory.ThrowIfAzuriteNotRunning();
         var user = await testFacade.SendCreateUserEvent();
 
         //When

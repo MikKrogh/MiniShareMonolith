@@ -49,27 +49,19 @@ internal class PostsRepository : IPostsRepository
         var totalCount = await postEntities.CountAsync();
         postEntities = ApplyOrderBy(descending, orderOnProperty, postEntities);
 
-
         postEntities = postEntities.Skip(skip);
 
         var qstring = postEntities.ToQueryString();
-        try
-        {
-            var queriedEntities = await postEntities.Take(take).ToListAsync();
 
-            List<Post> result = MapToDomainEntities(queriedEntities);
-            return new PaginatedResult<Post>()
-            {
-                TotalCount = totalCount,
-                Items = result,
-                PageSize = take,
-            };
-        }
-        catch (Exception e)
-        {
-            throw;
-        }
+        var queriedEntities = await postEntities.Take(take).ToListAsync();
 
+        List<Post> result = MapToDomainEntities(queriedEntities);
+        return new PaginatedResult<Post>()
+        {
+            TotalCount = totalCount,
+            Items = result,
+            PageSize = take,
+        };
     }
 
     private static IQueryable<PostEntity> ApplySearch(string? search, IQueryable<PostEntity> postEntities)
@@ -155,48 +147,40 @@ internal class PostsRepository : IPostsRepository
     {
         if (!string.IsNullOrEmpty(filter))
         {
-            try
+            var filters = OdataFilterReader.Read(filter);
+            if (filters?.Any() is true)
             {
-                var filters = OdataFilterReader.Read(filter);
-                if (filters?.Any() is true)
+                var parameter = Expression.Parameter(typeof(PostEntity), "x");
+                Expression combinedFilterExpression = null;
+                foreach (var criteria in filters)
                 {
-                    var parameter = Expression.Parameter(typeof(PostEntity), "x");
-                    Expression combinedFilterExpression = null;
-                    foreach (var criteria in filters)
-                    {
-                        var property = typeof(PostEntity).GetProperty(criteria.PropertyName);
-                        if (property == null) continue;
+                    var property = typeof(PostEntity).GetProperty(criteria.PropertyName);
+                    if (property == null) continue;
 
-                        var propertyAccess = Expression.Property(parameter, property);
-                        var constantValue = Expression.Constant(Convert.ChangeType(criteria.Value, property.PropertyType));
+                    var propertyAccess = Expression.Property(parameter, property);
+                    var constantValue = Expression.Constant(Convert.ChangeType(criteria.Value, property.PropertyType));
 
-                        Expression? expression = criteria.Operator switch
-                        {
-                            "eq" => Expression.Equal(propertyAccess, constantValue),
-                            "gt" => Expression.GreaterThan(propertyAccess, constantValue),
-                            "lt" => Expression.LessThan(propertyAccess, constantValue),
-                            _ => null
-                        };
-                        if (expression != null)
-                        {
-                            combinedFilterExpression = combinedFilterExpression == null
-                                ? expression
-                                : Expression.AndAlso(combinedFilterExpression, expression);
-                        }
-                    }
-                    if (combinedFilterExpression != null)
+                    Expression? expression = criteria.Operator switch
                     {
-                        var lambda = Expression.Lambda<Func<PostEntity, bool>>(combinedFilterExpression, parameter);
-                        postEntities = postEntities.Where(lambda);
+                        "eq" => Expression.Equal(propertyAccess, constantValue),
+                        "gt" => Expression.GreaterThan(propertyAccess, constantValue),
+                        "lt" => Expression.LessThan(propertyAccess, constantValue),
+                        _ => null
+                    };
+                    if (expression != null)
+                    {
+                        combinedFilterExpression = combinedFilterExpression == null
+                            ? expression
+                            : Expression.AndAlso(combinedFilterExpression, expression);
                     }
                 }
-            }
-            catch (Exception)
-            {
-                throw;
-            }
+                if (combinedFilterExpression != null)
+                {
+                    var lambda = Expression.Lambda<Func<PostEntity, bool>>(combinedFilterExpression, parameter);
+                    postEntities = postEntities.Where(lambda);
+                }
+            }   
         }
-
         return postEntities;
     }
 

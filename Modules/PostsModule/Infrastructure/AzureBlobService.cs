@@ -36,15 +36,9 @@ public class AzureBlobService : IImageStorageService
             await _blobClient.CreateIfNotExistsAsync();
             blobExists = true;
         }
-        try
-        {
-            var path = Path.Combine(directoryName, fileName);
-            await _blobClient.UploadBlobAsync(path, stream);
-        }
-        catch (Exception e)
-        {
-            throw;
-        }
+        var path = Path.Combine(directoryName, fileName);
+        await _blobClient.UploadBlobAsync(path, stream);
+
     }
 
     public async Task<Stream> GetImage(string directoryName, string fileName)

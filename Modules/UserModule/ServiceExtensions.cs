@@ -9,9 +9,8 @@ public static class ServiceExtensions
     }
     public static void UserModuleAppConfiguration(this IConfigurationBuilder configBuilder)
     {
-        Console.WriteLine("UserModuleAppConfiguration");
         var config = configBuilder.Build();
-        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production" || true)
+        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
         {
             configBuilder.AddAzureAppConfiguration(options =>
             {

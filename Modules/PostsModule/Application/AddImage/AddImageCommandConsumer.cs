@@ -27,8 +27,6 @@ public sealed class AddImageCommandConsumer : IConsumer<AddImageCommand>
             Stream? stream = StreamBank.GetStream(context.Message.PostId, context.Message.StreamId);
             if (stream is null)
             {
-                throw new Exception("image is nulll in bank");
-
                 var result = CommandResult<AddImageCommandResult>.InternalError();
                 await context.RespondAsync(result);
                 return;
@@ -46,7 +44,6 @@ public sealed class AddImageCommandConsumer : IConsumer<AddImageCommand>
             }
             catch (Exception ex)
             {
-                throw ex;
                 await context.RespondAsync(CommandResult<AddImageCommandResult>.InternalError());
             }
         }
@@ -64,6 +61,7 @@ public sealed class AddImageCommandConsumer : IConsumer<AddImageCommand>
         return fileExtension == ".jpg" ||
                fileExtension == ".jpeg" ||
                fileExtension == ".bmp" ||
+               fileExtension == ".webm" ||
                fileExtension == ".png";
 
     }

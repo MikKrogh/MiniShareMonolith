@@ -1,15 +1,25 @@
+using Azure.Identity;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
 using MassTransit;
 using OpenTelemetry.Metrics;
 using PostsModule;
 using PostsModule.Presentation;
-
 using UserModule;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.PostModuleAppConfiguration();
 builder.Configuration.UserModuleAppConfiguration();
+
+if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
+{
+    builder.Configuration.AddAzureAppConfiguration(options =>
+    {
+        options.Connect(new Uri(builder.Configuration[""]), new DefaultAzureCredential())
+        .Select("monolith*").TrimKeyPrefix("monolith:");
+    });
+}
+
 builder.Services.AddPostModuleServices(builder.Configuration);
 builder.Services.AddUserModuleServices(builder.Configuration);
 builder.Services.AddLogging();
@@ -23,14 +33,12 @@ builder.Services.AddMassTransit(x =>
     });
 });
 
-
-
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddOpenTelemetry()
     .UseAzureMonitor(options =>
     {
-        options.ConnectionString = "InstrumentationKey=6a0c38b7-2a1c-4945-b272-e4d491be7b41;IngestionEndpoint=https://northeurope-2.in.applicationinsights.azure.com/;LiveEndpoint=https://northeurope.livediagnostics.monitor.azure.com/;ApplicationId=a039a579-9d41-411e-8a7a-335a09747e7c";
+        options.ConnectionString = builder.Configuration["ApplicationInsightsConnectionString"];
     })
     .WithMetrics(options =>
     {
@@ -40,6 +48,16 @@ builder.Services.AddOpenTelemetry()
     
 
 var app = builder.Build();
+
+var loger = app.Services.GetRequiredService<ILogger<Program>>();
+loger.LogCritical("Log critical...");
+loger.LogError("Log error...");
+loger.LogWarning("Log warning...");
+loger.LogInformation("Log information...");
+loger.LogDebug("Log debug...");
+loger.LogTrace("Log trace...");
+
+
 app.UseSwagger();
 app.UseSwaggerUI();
 app.AddPostModuleEndpoints();

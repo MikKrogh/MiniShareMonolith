@@ -97,21 +97,8 @@ internal class UserRepository : IUserRepository
     private async Task<bool> NameIsOccupied(string displayName)
     {
         var getByUserName = tableClient.QueryAsync<UserEntity>(x => x.UserName == displayName);
-
-        try
-        {
-            var NameIsOccupied = await getByUserName.Any();
-
-            return NameIsOccupied;
-        }
-        catch (Exception e)
-        {
-
-            throw;
-        }
-
-
-
+        var NameIsOccupied = await getByUserName.Any();
+        return NameIsOccupied;
     }
 
     private class UserEntity : ITableEntity

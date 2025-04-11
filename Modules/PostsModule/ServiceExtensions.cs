@@ -1,9 +1,7 @@
 ﻿using Azure.Identity;
-
 using PostsModule.Domain;
 using PostsModule.Domain.Auth;
 using PostsModule.Infrastructure;
-using System.Net.Http.Headers;
 namespace PostsModule;
 
 public static class ServiceExtensions
@@ -16,17 +14,12 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IImageRepository, ImageRepository>();
         serviceCollection.AddScoped<IImageStorageService, AzureBlobService>();
         serviceCollection.AddSingleton<IAuthHelper, JwtHandler>();
-
-        //applies pending migrations to sql serer
-        //var sc = serviceCollection.BuildServiceProvider();
-        //var dbcontext = sc.GetRequiredService<PostsContext>();
-        //await dbcontext.Database.MigrateAsync();
     }
 
     public static void PostModuleAppConfiguration(this IConfigurationBuilder configBuilder)
     {
         var config = configBuilder.Build();
-        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production" || true)
+        if (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production")
         {
             configBuilder.AddAzureAppConfiguration(options =>
             {
