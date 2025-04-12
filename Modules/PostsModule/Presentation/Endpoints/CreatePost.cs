@@ -12,9 +12,8 @@ public class CreatePost
         if (logger is null)
         {
             return Results.Problem("Logger is null");
-        }
-        logger.LogError("hello");
-        logger?.LogInformation("Creating post with title {title} and creatorId {creatorId}", body.Title, body.CreatorId);
+        }       
+        
         var command = new CreatePostCommand()
         {
             Title = body.Title,

@@ -58,12 +58,6 @@ builder.Services.AddOpenTelemetry()
 var app = builder.Build();
 
 var loger = app.Services.GetRequiredService<ILogger<Program>>();
-loger.LogCritical("Log critical...");
-loger.LogError("Log error...");
-loger.LogWarning("Log warning...");
-loger.LogInformation("Log information...");
-loger.LogDebug("Log debug...");
-loger.LogTrace("Log trace...");
 
 
 app.UseSwagger();
