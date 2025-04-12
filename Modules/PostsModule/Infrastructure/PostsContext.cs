@@ -24,8 +24,15 @@ internal class PostsContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        optionsBuilder.UseSqlServer(connString);
+        
+        optionsBuilder.UseSqlServer(connString, options => 
+        {
+            options.EnableRetryOnFailure(3, TimeSpan.FromSeconds(2), null);
+            options.CommandTimeout(10);
+        });
+        
         base.OnConfiguring(optionsBuilder);
+        
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
