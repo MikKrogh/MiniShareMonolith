@@ -14,7 +14,7 @@ public static class RoutesMapping
 
 
 
-        api.MapPost(string.Empty, async ([FromServices] IRequestClient<SignupCommand> client,UserCreatedMeter meter, [FromBody] SignupCommand body) =>
+        api.MapPost(string.Empty, async ([FromServices] IRequestClient<SignupCommand> client,[FromServices]UserCreatedMeter? meter, [FromBody] SignupCommand body) =>
         {
             if (!Guid.TryParse(body.UserId, out _))
             {
@@ -24,7 +24,7 @@ public static class RoutesMapping
 
             if (response.Message.WasSucces)
             {
-                meter.UserCreatedCounter.Add(1, new KeyValuePair<string, object?>[] { new("UserId", body.UserId) });
+                meter?.UserCreatedCounter.Add(1, new KeyValuePair<string, object?>[] { new("UserId", body.UserId) });
                 return Results.Ok();
             }
             return Results.StatusCode(response.Message.StatusCode);

@@ -26,7 +26,6 @@ builder.Services.AddUserModuleServices(builder.Configuration);
 builder.Services.AddLogging();
 builder.Logging.SetMinimumLevel(LogLevel.Information);
 
-
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumers(typeof(PostsModule.ServiceExtensions).Assembly);
