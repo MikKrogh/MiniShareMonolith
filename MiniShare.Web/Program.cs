@@ -5,6 +5,7 @@ using OpenTelemetry.Metrics;
 using PostsModule;
 using PostsModule.Presentation;
 using UserModule;
+using UserModule.OpenTelemetry;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,12 +42,15 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddOpenTelemetry()
     .UseAzureMonitor(options =>
     {
-        if (string.IsNullOrEmpty(builder.Configuration["ApplicationInsightsConnectionString"])) throw new Exception("no connection string for applicationInsigts");
+        if (string.IsNullOrEmpty(builder.Configuration["ApplicationInsightsConnectionString"])) 
+            throw new Exception("no connection string for applicationInsigts");
+
         options.ConnectionString = builder.Configuration["ApplicationInsightsConnectionString"];
 
     })
     .WithMetrics(options =>
     {
+        options.AddMeter(UserCreatedMeter.MeterName);
         options.AddAspNetCoreInstrumentation();
     }
 );       
