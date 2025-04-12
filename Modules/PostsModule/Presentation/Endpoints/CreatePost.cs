@@ -43,7 +43,7 @@ public class CreatePost
                     Token = token
                 });
             }
-            return Results.StatusCode(409);
+            return Results.StatusCode(commandResult.ResultStatus);
         }
         catch (Exception ex)
         {

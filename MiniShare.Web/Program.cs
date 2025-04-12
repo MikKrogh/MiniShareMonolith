@@ -23,6 +23,9 @@ if (builder.Environment.IsProduction())
 builder.Services.AddPostModuleServices(builder.Configuration);
 builder.Services.AddUserModuleServices(builder.Configuration);
 builder.Services.AddLogging();
+builder.Logging.SetMinimumLevel(LogLevel.Information);
+
+
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumers(typeof(PostsModule.ServiceExtensions).Assembly);
@@ -38,7 +41,9 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddOpenTelemetry()
     .UseAzureMonitor(options =>
     {
+        if (string.IsNullOrEmpty(builder.Configuration["ApplicationInsightsConnectionString"])) throw new Exception("no connection string for applicationInsigts");
         options.ConnectionString = builder.Configuration["ApplicationInsightsConnectionString"];
+
     })
     .WithMetrics(options =>
     {
