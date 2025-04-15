@@ -27,7 +27,7 @@ internal class PostsContext : DbContext
         
         optionsBuilder.UseSqlServer(connString, options => 
         {
-            options.EnableRetryOnFailure(3, TimeSpan.FromSeconds(2), null);
+            options.EnableRetryOnFailure(5, TimeSpan.FromSeconds(5), null);
             options.CommandTimeout(10);
         });
         
