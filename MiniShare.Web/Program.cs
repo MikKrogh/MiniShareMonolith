@@ -1,9 +1,11 @@
 using Azure.Identity;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
 using MassTransit;
+using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using PostsModule;
 using PostsModule.Presentation;
+using PostsModule.Presentation.Endpoints;
 using UserModule;
 using UserModule.OpenTelemetry;
 
@@ -55,15 +57,14 @@ builder.Services.AddOpenTelemetry()
     .WithMetrics(options =>
     {
         options.AddMeter(UserCreatedMeter.MeterName);
+        options.AddMeter(PostCreatedMeter.MeterName);
         options.AddAspNetCoreInstrumentation();
     }
-);       
+);
+builder.Logging.AddOpenTelemetry(x => x.AddOtlpExporter());
     
 
 var app = builder.Build();
-
-var loger = app.Services.GetRequiredService<ILogger<Program>>();
-
 
 app.UseSwagger();
 app.UseSwaggerUI();

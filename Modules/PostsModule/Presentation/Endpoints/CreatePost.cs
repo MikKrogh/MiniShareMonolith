@@ -3,17 +3,13 @@ using Microsoft.AspNetCore.Mvc;
 using PostsModule.Application;
 using PostsModule.Application.Create;
 using PostsModule.Domain.Auth;
+using System.Diagnostics.Metrics;
 
 namespace PostsModule.Presentation.Endpoints;
 public class CreatePost
 {
     public static async Task<IResult> Process(ILogger<CreatePost>? logger,[FromServices] IRequestClient<CreatePostCommand> client, IAuthHelper auth, [FromBody] CreateBody body)    
-    {        
-        if (logger is null)
-        {
-            return Results.Problem("Logger is null");
-        }       
-        
+    {               
         var command = new CreatePostCommand()
         {
             Title = body.Title,
@@ -36,17 +32,20 @@ public class CreatePost
                     ClaimValueHolder.Create("postId", commandResult.ResultValue.PostId)
                 );
 
+                logger.LogInformation("Post created by creatorId {0}", body.CreatorId);
+                PostCreatedMeter.PostCreatedCounter.Add(1, new KeyValuePair<string, object?>("post_creator", body.CreatorId));
                 return Results.Ok(new SuccessRespnse
                 {
                     PostId = commandResult.ResultValue.PostId,
                     Token = token
                 });
             }
+            logger.LogError("No Exception. Error creating post by creatorId {0}.", body.CreatorId);
             return Results.StatusCode(commandResult.ResultStatus);
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error creating post with title {title} and creatorId {creatorId}", body.Title, body.CreatorId);
+            logger.LogError(ex, "Error creating post by creatorId {0}", body.CreatorId);
             return Results.Problem(ex.Message);
         }
     }
@@ -57,3 +56,9 @@ public class SuccessRespnse
     public string Token { get; set; }
 }
 
+public class PostCreatedMeter
+{
+    public static readonly Meter Meter = new Meter("PostModule.PostCreated", "1.0.0");
+    public static string MeterName => Meter.Name;
+    public static readonly Counter<int> PostCreatedCounter = Meter.CreateCounter<int>("post_created_count");
+}
