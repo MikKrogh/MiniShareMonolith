@@ -4,12 +4,10 @@ namespace PostsModule.Infrastructure;
 
 internal class UserRepository : IUserRepository
 {
-    private readonly ILogger<UserRepository> logger;
     private readonly PostsContext context;
 
-    public UserRepository(ILogger<UserRepository> logger, PostsContext context)
+    public UserRepository( PostsContext context)
     {
-        this.logger = logger;
         this.context = context;
     }
 

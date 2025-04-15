@@ -7,12 +7,10 @@ namespace PostsModule.Infrastructure;
 
 internal class PostsRepository : IPostsRepository
 {
-    private readonly ILogger<PostsRepository> logger;
     private readonly PostsContext context;
 
-    public PostsRepository(ILogger<PostsRepository> logger, PostsContext context)
+    public PostsRepository(PostsContext context)
     {
-        this.logger = logger;
         this.context = context;
     }
 

@@ -45,10 +45,12 @@ builder.Services.AddMassTransit(x =>
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddOpenTelemetry()
+if (builder.Environment.IsProduction())
+{
+    builder.Services.AddOpenTelemetry()
     .UseAzureMonitor(options =>
     {
-        if (string.IsNullOrEmpty(builder.Configuration["ApplicationInsightsConnectionString"])) 
+        if (string.IsNullOrEmpty(builder.Configuration["ApplicationInsightsConnectionString"]))
             throw new Exception("no connection string for applicationInsigts");
 
         options.ConnectionString = builder.Configuration["ApplicationInsightsConnectionString"];
@@ -61,8 +63,8 @@ builder.Services.AddOpenTelemetry()
         options.AddAspNetCoreInstrumentation();
     }
 );
-builder.Logging.AddOpenTelemetry(x => x.AddOtlpExporter());
-    
+    builder.Logging.AddOpenTelemetry(x => x.AddOtlpExporter());
+}
 
 var app = builder.Build();
 
