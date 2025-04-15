@@ -9,9 +9,9 @@ public static class ServiceExtensions
     }
     public static void UserModuleAppConfiguration(this IHostApplicationBuilder hostBuilder)
     {
-        var config = hostBuilder.Configuration.Build();
         if (hostBuilder.Environment.IsProduction())
         {
+            var config = hostBuilder.Configuration.Build();
             hostBuilder.Configuration.AddAzureAppConfiguration(options =>
             {
                 options.Connect(new Uri(config["AppConfigEndpoint"]), new DefaultAzureCredential())

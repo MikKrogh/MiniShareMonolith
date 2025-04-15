@@ -30,6 +30,11 @@ builder.Services.AddMassTransit(x =>
 {
     x.AddConsumers(typeof(PostsModule.ServiceExtensions).Assembly);
     x.AddConsumers(typeof(UserModule.ServiceExtensions).Assembly);
+    x.AddConfigureEndpointsCallback((context, name, cfg) =>
+    {
+        cfg.UseMessageRetry(r => r.Immediate(5));
+
+    });
     x.UsingInMemory((context, cfg) =>
     {
         cfg.ConfigureEndpoints(context);
