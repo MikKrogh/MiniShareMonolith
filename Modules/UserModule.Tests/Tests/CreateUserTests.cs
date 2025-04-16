@@ -53,8 +53,6 @@ public class CreateUserTests : IClassFixture<UserWebApplicationFactory>
     }
 
     [Theory]
-    [InlineData("kjhgkjhgh")]
-    [InlineData("876587658765")]
     [InlineData("")]
     [InlineData(null)]
     public async Task WhenUserIsCreatedWithNonValidId_ThemBadRequestIsReturnedAndNoEventIsSent(string? invalidId)

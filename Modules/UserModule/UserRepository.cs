@@ -77,17 +77,12 @@ internal class UserRepository : IUserRepository
         await semaphore.WaitAsync();
         try
         {
-            try
-            {
-                var result = await tableClient.CreateIfNotExistsAsync();
-                tableExists = true;
-            }
-            catch (Exception e)
-            {
-
-            }
-
-
+            var result = await tableClient.CreateIfNotExistsAsync();
+            tableExists = true;
+        }
+        catch (Exception e)
+        {
+            throw new Exception("Cannot create table in tableStorage", e);
         }
         finally
         {

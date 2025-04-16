@@ -14,6 +14,12 @@ public sealed class SignupCommandHandler : IConsumer<SignupCommand>
     }
     public async Task Consume(ConsumeContext<SignupCommand> context)
     {
+
+        if (!IsValidCommand(context.Message))
+        {
+            await context.RespondAsync(SignupCommandResult.BadRequest());
+            return;
+        }
         try
         {
             var user = new User
@@ -39,5 +45,10 @@ public sealed class SignupCommandHandler : IConsumer<SignupCommand>
             UserId = user.Id,
             UserName = user.UserName
         });
+    }
+
+    private bool IsValidCommand(SignupCommand command)
+    {
+        return !string.IsNullOrEmpty(command.UserId) && !string.IsNullOrEmpty(command.UserName);
     }
 }

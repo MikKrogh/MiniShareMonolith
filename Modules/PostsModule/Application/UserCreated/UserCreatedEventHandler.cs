@@ -16,12 +16,12 @@ public sealed class UserCreatedEventHandler : IConsumer<UserCreatedEvent>
     {
         try
         {
-            Guid id;
-            var couldParse = Guid.TryParse(context.Message.UserId, out id);
+            
+            if(string.IsNullOrEmpty(context.Message.UserId) || string.IsNullOrEmpty(context.Message.UserName))
+                throw new Exception("could not handle usercreatedevent becouse id or name is null or empty");
 
-            if (!couldParse) throw new Exception("could not handle usercreatedevent becouse id is not guid");
 
-            var user = User.Create(id);
+            var user = User.Create(context.Message.UserId);
             user.SetName(context.Message.UserName);
             await _userRepository.Create(user);
         }
