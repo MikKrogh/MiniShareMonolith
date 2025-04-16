@@ -47,7 +47,7 @@ public class CreatePostCommandValidator : Validator<CreatePostCommand>
     public bool isValid { get; init; } = false;
     public CreatePostCommandValidator()
     {
-        MustNotBeEmptyGuid(x => x.CreatorId);
+        MustNotBeEmptyString(x => x.CreatorId);
         MustNotContainsNumerics(x => x.Title);
         MustBeHigher(x => x.Title?.Length, 3);
         MustBeLower(x => x.Title?.Length, 33);
@@ -76,10 +76,10 @@ public abstract class Validator<T> where T : class
         var value = target.Invoke(x);
         return !string.IsNullOrEmpty(value) && !value.Any(char.IsDigit);
     });
-    public void MustNotBeEmptyGuid(Func<T, string> target) => rules.Add(x =>
+    public void MustNotBeEmptyString(Func<T, string> target) => rules.Add(x =>
     {
-        string guidString = target.Invoke(x);
-        return Guid.TryParse(guidString, out Guid newGuid) && newGuid != Guid.Empty;
+        string value = target.Invoke(x);
+        return !string.IsNullOrEmpty(value);
     });
 
     public bool IsValid(T target)
