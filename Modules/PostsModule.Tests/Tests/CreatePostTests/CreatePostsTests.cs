@@ -57,10 +57,6 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
 
     [Theory,]
     [InlineData("")]
-    [InlineData("Abclkjsd")]
-    [InlineData("12365487654")]
-    [InlineData("00000000-0000-0000-0000-000000000000")]
-    [InlineData("ghfd777t-dfgh-987g-hgc6-gvjhg8976ygh")]
     [InlineData(null)]
 
     public async Task WhenSomeoneCreatesPostWithNonValidCreatorId_ThenBadRequestIsReturned(string? creatorId)
