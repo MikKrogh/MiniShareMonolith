@@ -4,22 +4,12 @@ namespace PostsModule.Tests.Helper;
 internal class PostRequestBuilder
 {
     private PostRequest postRequest;
-    public PostRequestBuilder Create(Guid? userID = null)
+    public PostRequestBuilder Create()
     {
-        postRequest = new PostRequest
-        {
-            CreatorId = (userID == null) ? Guid.NewGuid().ToString() : userID.ToString(),
-        };
+        postRequest = new PostRequest();    
         return this;
     }
-    public PostRequestBuilder Create(string? userID = null)
-    {
-        postRequest = new PostRequest
-        {
-            CreatorId = (userID == null) ? Guid.NewGuid().ToString() : userID,
-        };
-        return this;
-    }
+
 
     public PostRequestBuilder WithTitle(string title)
     {
@@ -48,13 +38,9 @@ internal class PostRequestBuilder
     }
     public PostRequest Build() => postRequest;
 
-    public static PostRequest GetValidDefaultRequest(string? userId = null)
+    public static PostRequest GetValidDefaultBody()
     {
-
-        Guid id;
-        var couldParse = Guid.TryParse(userId, out id);
-
-        return new PostRequestBuilder().Create(id == Guid.Empty ? null : id)
+        return new PostRequestBuilder().Create()
         .WithTitle("title")
         .WithFactionName("deathguard")
         .WithDescription("hello There")
@@ -65,21 +51,9 @@ internal class PostRequestBuilder
 }
 internal record PostRequest
 {
-    public string CreatorId { get; set; }
     public string Title { get; set; }
     public string Description { get; set; }
     public string FactionName { get; set; }
     public string PrimaryColor { get; set; }
     public string SecondaryColor { get; set; }
-}
-
-public struct Te
-{
-    public string Id { get; set; }
-    public tedee Yee { get; set; }
-}
-
-public class tedee
-{
-
 }

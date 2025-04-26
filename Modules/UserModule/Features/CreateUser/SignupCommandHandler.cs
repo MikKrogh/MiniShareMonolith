@@ -32,7 +32,7 @@ public sealed class SignupCommandHandler : IConsumer<SignupCommand>
             await SendUserCreatedEvent(user);
             await context.RespondAsync(SignupCommandResult.Success());
         }
-        catch (Exception)
+        catch (Exception e)
         {
             await context.RespondAsync(SignupCommandResult.InternalError());
         }

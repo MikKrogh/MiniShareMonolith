@@ -46,9 +46,9 @@ internal class TestFacade
         return existingUser;
     }
 
-    public async Task<TestFacadeResult<CreatePostResponse?>> SendCreatePost(PostRequest request)
+    public async Task<TestFacadeResult<CreatePostResponse?>> SendCreatePost(PostRequest request, string? userId)
     {
-        var response = await _client.PostAsJsonAsync("/Posts", request);
+        var response = await _client.PostAsJsonAsync($"/Posts?UserId={userId}", request);
 
         return new TestFacadeResult<CreatePostResponse?>
         {

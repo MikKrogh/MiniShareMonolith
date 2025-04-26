@@ -1,27 +1,36 @@
 ﻿
 
+using System.Net.Http.Json;
+
 namespace UserModule.Tests;
 
 
-internal class UserBuilder
+internal static class UserBuilder
 {
-
-    public static UserToCreate CreateValidUserBody()
-    {
-        string id = Guid.NewGuid().ToString();
-        string uniqueSuffix = id.Substring(0, 8);
-
-        var requestBody = new UserToCreate
-        {
-            UserId = id,
-            UserName = $"UserName{uniqueSuffix}",
-        };
-        return requestBody;
-    }
-
     internal class UserToCreate
     {
         public string UserId { get; set; }
         public string UserName { get; set; }
     }
+
+    public static UserToCreate GenerateUserToCreate(string? userId = null, string? userName = null)
+    {
+        userId = string.IsNullOrEmpty(userId) ? Guid.NewGuid().ToString() : userId;
+        userName = string.IsNullOrEmpty(userName) ? Guid.NewGuid().ToString() : userName;   
+        userName = $"UserName{userName.Substring(0, 8)}";
+        var result = new UserToCreate
+        {
+            UserId = userId,
+            UserName = userName
+        };
+        return result;
+    }
+
+    public static  async Task<HttpResponseMessage> SendCreateUserRequest(this HttpClient client, UserToCreate user)
+    {
+        var response = await client.PostAsJsonAsync($"User?userId={user.UserId}", new { UserName = user.UserName });
+        return response;
+    }
 }
+
+

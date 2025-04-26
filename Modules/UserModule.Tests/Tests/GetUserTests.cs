@@ -15,8 +15,8 @@ public class GetUserTests : IClassFixture<UserWebApplicationFactory>
     public async Task GivenUserExists_WhenSomeoneTriesToQueryUser_ThenSuccessIsReturned()
     {
         // Given
-        var requestBody = UserBuilder.CreateValidUserBody();
-        var response = await client.PostAsJsonAsync("User", requestBody);
+        var requestBody = UserBuilder.GenerateUserToCreate();
+        var response = await client.SendCreateUserRequest(requestBody);
 
         // When
         var getResponse = await client.GetAsync($"User/{requestBody.UserId}");
@@ -30,8 +30,8 @@ public class GetUserTests : IClassFixture<UserWebApplicationFactory>
     public async Task GivenUserExists_WhenSomeoneTriesToQueryUser_ThenCorrectValuesAreReturned()
     {
         // Given
-        var requestBody = UserBuilder.CreateValidUserBody();
-        var response = await client.PostAsJsonAsync("User", requestBody);
+        var requestBody = UserBuilder.GenerateUserToCreate();
+        var response = await client.SendCreateUserRequest(requestBody);
 
         // When
         var getResponse = await client.GetFromJsonAsync<User>($"User/{requestBody.UserId}");

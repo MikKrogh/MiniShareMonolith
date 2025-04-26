@@ -19,9 +19,9 @@ public class GetPostsTests : IClassFixture<PostsWebApplicationFactory>
     {
         // Given
         var user = await testFacade.SendCreateUserEvent();
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
-        var firstCreation = await testFacade.SendCreatePost(createBody);
-        var secondCreation = await testFacade.SendCreatePost(createBody);
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
+        var firstCreation = await testFacade.SendCreatePost(createBody, user.UserId);
+        var secondCreation = await testFacade.SendCreatePost(createBody, user.UserId);
 
         // When        
         var posts = await testFacade.GetPosts();
@@ -36,7 +36,7 @@ public class GetPostsTests : IClassFixture<PostsWebApplicationFactory>
         testFacade.TruncateTables();
         var user = await testFacade.SendCreateUserEvent();
 
-        var firstPost = new PostRequestBuilder().Create(user.UserId)
+        var firstPost = new PostRequestBuilder().Create()
             .WithTitle("first")
             .WithFactionName("firstfaction")
             .WithDescription("firstdescp")
@@ -44,7 +44,7 @@ public class GetPostsTests : IClassFixture<PostsWebApplicationFactory>
             .WithSecondaryColor("blue")
         .Build();
 
-        var secondPost = new PostRequestBuilder().Create(user.UserId)
+        var secondPost = new PostRequestBuilder().Create()
             .WithTitle("second")
             .WithFactionName("seoncdfaction")
             .WithDescription("seconddescp")
@@ -52,8 +52,8 @@ public class GetPostsTests : IClassFixture<PostsWebApplicationFactory>
             .WithSecondaryColor("green")
         .Build();
 
-        await testFacade.SendCreatePost(firstPost);
-        await testFacade.SendCreatePost(secondPost);
+        await testFacade.SendCreatePost(firstPost, user.UserId);
+        await testFacade.SendCreatePost(secondPost, user.UserId);
 
         // When        
         var getPosts = await testFacade.GetPosts();
@@ -67,8 +67,8 @@ public class GetPostsTests : IClassFixture<PostsWebApplicationFactory>
         var secondDto = getPosts.Result.Items.First(x => x.Title == secondPost.Title);
 
 
-        Assert.True(RequestMatchesDto(firstDto, firstPost));
-        Assert.True(RequestMatchesDto(secondDto, secondPost));
+        Assert.True(RequestMatchesDto(firstDto, firstPost, user.UserId));
+        Assert.True(RequestMatchesDto(secondDto, secondPost, user.UserId));
 
     }
 
@@ -78,9 +78,9 @@ public class GetPostsTests : IClassFixture<PostsWebApplicationFactory>
         // Given
         testFacade.TruncateTables();
         var user = await testFacade.SendCreateUserEvent();
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
-        var firstCreation = await testFacade.SendCreatePost(createBody);
-        var secondCreation = await testFacade.SendCreatePost(createBody);
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
+        var firstCreation = await testFacade.SendCreatePost(createBody, user.UserId);
+        var secondCreation = await testFacade.SendCreatePost(createBody, user.UserId);
 
         await testFacade.UploadImage(firstCreation.Result.PostId, firstCreation.Result.Token);
         await testFacade.UploadImage(secondCreation.Result.PostId, secondCreation.Result.Token);
@@ -107,10 +107,10 @@ public class GetPostsTests : IClassFixture<PostsWebApplicationFactory>
         // Given
         testFacade.TruncateTables();
         var user = await testFacade.SendCreateUserEvent();
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
-        var firstCreation = await testFacade.SendCreatePost(createBody);
-        var secondCreation = await testFacade.SendCreatePost(createBody);
-        var thirdCreation = await testFacade.SendCreatePost(createBody);
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
+        var firstCreation = await testFacade.SendCreatePost(createBody, user.UserId);
+        var secondCreation = await testFacade.SendCreatePost(createBody, user.UserId);
+        var thirdCreation = await testFacade.SendCreatePost(createBody, user.UserId);
 
         // When
         var getPosts = await testFacade.GetPosts();
@@ -189,10 +189,10 @@ public class GetPostsTests : IClassFixture<PostsWebApplicationFactory>
         // Given
         testFacade.TruncateTables();
         var user = await testFacade.SendCreateUserEvent();
-        var defaultPost = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
-        await testFacade.SendCreatePost(defaultPost);
-        await testFacade.SendCreatePost(defaultPost);
-        await testFacade.SendCreatePost(defaultPost with { PrimaryColor = "red" });
+        var defaultPost = PostRequestBuilder.GetValidDefaultBody();
+        await testFacade.SendCreatePost(defaultPost, user.UserId);
+        await testFacade.SendCreatePost(defaultPost, user.UserId);
+        await testFacade.SendCreatePost(defaultPost with { PrimaryColor = "red" }, user.UserId);
 
         // When
         var getPosts = await testFacade.GetPosts("filter=PrimaryColor eq 'red'");
@@ -211,10 +211,10 @@ public class GetPostsTests : IClassFixture<PostsWebApplicationFactory>
         // Given
         testFacade.TruncateTables();
         var user = await testFacade.SendCreateUserEvent();
-        var defaultPost = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
-        await testFacade.SendCreatePost(defaultPost);
-        await testFacade.SendCreatePost(defaultPost);
-        await testFacade.SendCreatePost(defaultPost with { SecondaryColor = "red" });
+        var defaultPost = PostRequestBuilder.GetValidDefaultBody();
+        await testFacade.SendCreatePost(defaultPost, user.UserId);
+        await testFacade.SendCreatePost(defaultPost, user.UserId);
+        await testFacade.SendCreatePost(defaultPost with { SecondaryColor = "red" }, user.UserId);
 
         // When
         var getPosts = await testFacade.GetPosts("filter=SecondaryColor eq 'red'");
@@ -233,13 +233,13 @@ public class GetPostsTests : IClassFixture<PostsWebApplicationFactory>
         testFacade.TruncateTables();
 
         var userOne = await testFacade.SendCreateUserEvent();
-        var postByUserOne = PostRequestBuilder.GetValidDefaultRequest(userOne.UserId);
-        await testFacade.SendCreatePost(postByUserOne);
+        var postByUserOne = PostRequestBuilder.GetValidDefaultBody();
+        await testFacade.SendCreatePost(postByUserOne, userOne.UserId);
 
         var userTwo = await testFacade.SendCreateUserEvent();
-        var postByUserTwo = PostRequestBuilder.GetValidDefaultRequest(userTwo.UserId);
-        await testFacade.SendCreatePost(postByUserTwo);
-        await testFacade.SendCreatePost(postByUserTwo);
+        var postByUserTwo = PostRequestBuilder.GetValidDefaultBody();
+        await testFacade.SendCreatePost(postByUserTwo, userTwo.UserId);
+        await testFacade.SendCreatePost(postByUserTwo, userTwo.UserId);
 
 
         // When
@@ -258,14 +258,14 @@ public class GetPostsTests : IClassFixture<PostsWebApplicationFactory>
         // Given
         testFacade.TruncateTables();
 
-        var user = await testFacade.SendCreateUserEvent();
-        var post = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        var user = await testFacade.SendCreateUserEvent();  
+        var post = PostRequestBuilder.GetValidDefaultBody();
         post.FactionName = "default";
-        await testFacade.SendCreatePost(post);
+        await testFacade.SendCreatePost(post, user.UserId);
 
         var updatedPost = post with { FactionName = "spaceMarines" };
-        await testFacade.SendCreatePost(updatedPost);
-        await testFacade.SendCreatePost(updatedPost);
+        await testFacade.SendCreatePost(updatedPost, user.UserId);
+        await testFacade.SendCreatePost(updatedPost, user.UserId);
 
         // When
         var getPosts = await testFacade.GetPosts($"filter=Faction eq '{updatedPost.FactionName}'");
@@ -286,14 +286,14 @@ public class GetPostsTests : IClassFixture<PostsWebApplicationFactory>
         testFacade.TruncateTables();
 
         var user = await testFacade.SendCreateUserEvent();
-        var post = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        var post = PostRequestBuilder.GetValidDefaultBody();
         post.PrimaryColor = "red";
         post.SecondaryColor = "yellow";
-        await testFacade.SendCreatePost(post);
+        await testFacade.SendCreatePost(post, user.UserId);
 
         var updatedPost = post with { SecondaryColor = "blue" };
-        await testFacade.SendCreatePost(updatedPost);
-        await testFacade.SendCreatePost(updatedPost);
+        await testFacade.SendCreatePost(updatedPost, user.UserId);
+        await testFacade.SendCreatePost(updatedPost, user.UserId);
 
         // When
         var getPosts = await testFacade.GetPosts($"filter=PrimaryColor eq '{post.PrimaryColor}' AND SecondaryColor eq '{updatedPost.SecondaryColor}'");
@@ -310,11 +310,11 @@ public class GetPostsTests : IClassFixture<PostsWebApplicationFactory>
     {
         // Given
         var user = await testFacade.SendCreateUserEvent();
-        var post = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
-        await testFacade.SendCreatePost(post);
-        await testFacade.SendCreatePost(post);
+        var post = PostRequestBuilder.GetValidDefaultBody();
+        await testFacade.SendCreatePost(post, user.UserId);
+        await testFacade.SendCreatePost(post, user.UserId);
         var postWithUniqueTitle = post with { Title = "UniqueTitle" };
-        await testFacade.SendCreatePost(postWithUniqueTitle);
+        await testFacade.SendCreatePost(postWithUniqueTitle, user.UserId);
 
         // When
         var getPosts = await testFacade.GetPosts($"search={postWithUniqueTitle.Title}");
@@ -332,11 +332,11 @@ public class GetPostsTests : IClassFixture<PostsWebApplicationFactory>
     {
         // Given
         var user = await testFacade.SendCreateUserEvent();
-        var post = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
-        await testFacade.SendCreatePost(post);
-        await testFacade.SendCreatePost(post);
+        var post = PostRequestBuilder.GetValidDefaultBody();
+        await testFacade.SendCreatePost(post, user.UserId);
+        await testFacade.SendCreatePost(post, user.UserId);
         var postWithUniqueDescription = post with { Description = "UniqueDescription" };
-        await testFacade.SendCreatePost(postWithUniqueDescription);
+        await testFacade.SendCreatePost(postWithUniqueDescription, user.UserId);
 
         // When
         var getPosts = await testFacade.GetPosts($"search={postWithUniqueDescription.Description}");
@@ -355,10 +355,10 @@ public class GetPostsTests : IClassFixture<PostsWebApplicationFactory>
         await CreatePosts(20);
 
         var user = await testFacade.SendCreateUserEvent();
-        var post = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        var post = PostRequestBuilder.GetValidDefaultBody();
         post.PrimaryColor = "Red";
         post.Title = "unique";
-        var postsMatchingQuery = Enumerable.Range(0, 110).Select(x => testFacade.SendCreatePost(post));
+        var postsMatchingQuery = Enumerable.Range(0, 110).Select(x => testFacade.SendCreatePost(post, user.UserId));
         await Task.WhenAll(postsMatchingQuery);
 
         await CreatePosts(20);
@@ -419,10 +419,10 @@ public class GetPostsTests : IClassFixture<PostsWebApplicationFactory>
 
 
     //allTheAbove
-    private bool RequestMatchesDto(PostDto dto, PostRequest request)
+    private bool RequestMatchesDto(PostDto dto, PostRequest request, string userId)
     {
         return dto.Title == request.Title
-            && dto.CreatorId == request.CreatorId
+            && dto.CreatorId == userId
             && dto.FactionName == request.FactionName
             && dto.Description == request.Description
             && dto.PrimaryColor.ToString().ToLower() == request.PrimaryColor
@@ -432,13 +432,13 @@ public class GetPostsTests : IClassFixture<PostsWebApplicationFactory>
     private async Task CreatePosts(int count, bool introduceDelay = false)
     {
         var user = await testFacade.SendCreateUserEvent();
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
 
         for (int i = 0; i < count; i++)
         {
             if (introduceDelay)
                 await Task.Delay(50); //make it easier to verify that order by date is readable            
-            await testFacade.SendCreatePost(createBody);
+            await testFacade.SendCreatePost(createBody, user.UserId);
 
         }
     }

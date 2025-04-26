@@ -20,8 +20,8 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
         var t = user.ToString();
         if (string.IsNullOrEmpty(user.UserId)) throw new Exception("failed to create user");
 
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
-        var create = await testFacade.SendCreatePost(createBody);
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
+        var create = await testFacade.SendCreatePost(createBody, user.UserId);
 
 
 
@@ -37,8 +37,8 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
     {
         //Given 
         var user = await testFacade.SendCreateUserEvent();
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
-        var create = await testFacade.SendCreatePost(createBody);
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
+        var create = await testFacade.SendCreatePost(createBody, user.UserId);
 
         //When
         var response = await testFacade.UploadImage(create.Result.PostId, create.Result.Token);
@@ -56,8 +56,8 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
     {
         //Given 
         var user = await testFacade.SendCreateUserEvent();
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
-        var create = await testFacade.SendCreatePost(createBody);
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
+        var create = await testFacade.SendCreatePost(createBody, user.UserId);
 
         //When
         await testFacade.UploadImage(create.Result.PostId, create.Result.Token);
@@ -82,8 +82,8 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
     {
         //Given 
         var user = await testFacade.SendCreateUserEvent();
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
-        var create = await testFacade.SendCreatePost(createBody);
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
+        var create = await testFacade.SendCreatePost(createBody, user.UserId);
         //When
         var response = await testFacade.UploadImage(create.Result.PostId, create.Result.Token, new byte[9_000_001]);
         //Then
@@ -97,8 +97,8 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
     {
         //Given 
         var user = await testFacade.SendCreateUserEvent();
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
-        var create = await testFacade.SendCreatePost(createBody);
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
+        var create = await testFacade.SendCreatePost(createBody, user.UserId);
 
         //When
         var response = await testFacade.UploadImage(create.Result.PostId, create.Result.Token, fileExtension: fileExtension);
@@ -112,8 +112,8 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
     {
         // Given 
         var user = await testFacade.SendCreateUserEvent();
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
-        var create = await testFacade.SendCreatePost(createBody);
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
+        var create = await testFacade.SendCreatePost(createBody, user.UserId);
 
         var uploadTasks = Enumerable.Range(0, 8)
             .Select(x => testFacade.UploadImage(create.Result.PostId, create.Result.Token));
@@ -137,8 +137,8 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
     {
         //Given 
         var user = await testFacade.SendCreateUserEvent();
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
-        var create = await testFacade.SendCreatePost(createBody);
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
+        var create = await testFacade.SendCreatePost(createBody, user.UserId);
 
         //When        
         var response = await testFacade.UploadImage(create.Result.PostId, "nonValidToken");
@@ -155,8 +155,8 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
     {
         //Given 
         var user = await testFacade.SendCreateUserEvent();
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
-        var create = await testFacade.SendCreatePost(createBody);
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
+        var create = await testFacade.SendCreatePost(createBody, user.UserId);
 
         //When        
         var response = await testFacade.UploadImage(create.Result.PostId, create.Result.Token + "tampered");
@@ -173,8 +173,8 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
     {
         //Given 
         var user = await testFacade.SendCreateUserEvent();
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
-        var create = await testFacade.SendCreatePost(createBody);
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
+        var create = await testFacade.SendCreatePost(createBody, user.UserId);
         //When        
         var token = testFacade.CreateToken(DateTime.UtcNow.AddDays(-1), create.Result.PostId);
         var response = await testFacade.UploadImage(create.Result.PostId, token);
@@ -190,9 +190,9 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
     {
         //Given 
         var user = await testFacade.SendCreateUserEvent();
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
-        var create = await testFacade.SendCreatePost(createBody);
-        var create2 = await testFacade.SendCreatePost(createBody);
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
+        var create = await testFacade.SendCreatePost(createBody, user.UserId);
+        var create2 = await testFacade.SendCreatePost(createBody, user.UserId);
 
         //When        
         var response = await testFacade.UploadImage(create.Result.PostId, create2.Result.Token);
@@ -212,8 +212,8 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
     {
         //Given 
         var user = await testFacade.SendCreateUserEvent();
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
-        var create = await testFacade.SendCreatePost(createBody);
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
+        var create = await testFacade.SendCreatePost(createBody, user.UserId);
         await testFacade.UploadImage(create.Result.PostId, create.Result.Token);
 
         //When
@@ -233,7 +233,7 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
         //Given 
         byte[] file = new byte[200];
         var user = await testFacade.SendCreateUserEvent();
-        var create = await testFacade.SendCreatePost(PostRequestBuilder.GetValidDefaultRequest(user.UserId));
+        var create = await testFacade.SendCreatePost(PostRequestBuilder.GetValidDefaultBody(), user.UserId);
         await testFacade.UploadImage(create.Result.PostId, create.Result.Token, file, fileExtension: ".png");
 
         //When
@@ -253,7 +253,7 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
     {
         //Given
         var user = await testFacade.SendCreateUserEvent();
-        var create = await testFacade.SendCreatePost(PostRequestBuilder.GetValidDefaultRequest(user.UserId));
+        var create = await testFacade.SendCreatePost(PostRequestBuilder.GetValidDefaultBody(), user.UserId);
         await testFacade.UploadImage(create.Result.PostId, create.Result.Token);
 
         //When
@@ -268,7 +268,7 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
     {
         //Given
         var user = await testFacade.SendCreateUserEvent();
-        var create = await testFacade.SendCreatePost(PostRequestBuilder.GetValidDefaultRequest(user.UserId));
+        var create = await testFacade.SendCreatePost(PostRequestBuilder.GetValidDefaultBody(), user.UserId);
         await testFacade.UploadImage(create.Result.PostId, create.Result.Token);
 
         //When

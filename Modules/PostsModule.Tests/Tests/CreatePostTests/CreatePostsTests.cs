@@ -21,8 +21,8 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
         var user = await testFacade.SendCreateUserEvent();
 
         //When
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
-        var create = await testFacade.SendCreatePost(createBody);
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
+        var create = await testFacade.SendCreatePost(createBody, user.UserId);
 
 
         //Then
@@ -36,8 +36,8 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
         var user = await testFacade.SendCreateUserEvent();
 
         //When
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
-        var create = await testFacade.SendCreatePost(createBody);
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
+        var create = await testFacade.SendCreatePost(createBody, user.UserId);
 
         //Then
         Assert.True(create.Result?.PostId != null);
@@ -47,8 +47,8 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
     public async Task GivenNoUserExist_WhenSomeoneCreatesPost_ThenInternalServerErrorIsReturned()
     {
         // When
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(Guid.NewGuid().ToString());
-        var create = await testFacade.SendCreatePost(createBody);
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
+        var create = await testFacade.SendCreatePost(createBody, Guid.NewGuid().ToString());
 
         //Then
         Assert.True(create.StatusCode == HttpStatusCode.InternalServerError);
@@ -62,9 +62,8 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
     public async Task WhenSomeoneCreatesPostWithNonValidCreatorId_ThenBadRequestIsReturned(string? creatorId)
     {
         //When
-        var createBody = PostRequestBuilder.GetValidDefaultRequest();
-        createBody.CreatorId = creatorId;
-        var response = await testFacade.SendCreatePost(createBody);
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
+        var response = await testFacade.SendCreatePost(createBody, creatorId);
 
         //Then
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -83,9 +82,9 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
         var user = await testFacade.SendCreateUserEvent();
 
         //When
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
         createBody.Title = title;
-        var response = await testFacade.SendCreatePost(createBody);
+        var response = await testFacade.SendCreatePost(createBody, user.UserId);
 
         //Then
         Assert.True(response.StatusCode == HttpStatusCode.BadRequest, $"Status code was: {response.StatusCode}");
@@ -104,9 +103,9 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
         var user = await testFacade.SendCreateUserEvent();
 
         //When
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
         createBody.FactionName = factionName;
-        var response = await testFacade.SendCreatePost(createBody);
+        var response = await testFacade.SendCreatePost(createBody, user.UserId);
 
         //Then
         Assert.True(response.StatusCode == HttpStatusCode.BadRequest, $"Status code was: {response.StatusCode}");
@@ -127,9 +126,9 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
         var user = await testFacade.SendCreateUserEvent();
 
         //When
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
         createBody.PrimaryColor = primaryColor;
-        var response = await testFacade.SendCreatePost(createBody);
+        var response = await testFacade.SendCreatePost(createBody, user.UserId);
 
         //Then
         var getResponse = await testFacade.GetPost(response.Result.PostId);
@@ -152,9 +151,9 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
         var user = await testFacade.SendCreateUserEvent();
 
         //When
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
         createBody.SecondaryColor = secondaryColor;
-        var response = await testFacade.SendCreatePost(createBody);
+        var response = await testFacade.SendCreatePost(createBody, user.UserId);
 
         //Then
         var getResponse = await testFacade.GetPost(response.Result.PostId);
@@ -176,9 +175,9 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
         var user = await testFacade.SendCreateUserEvent();
 
         //When
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
         createBody.PrimaryColor = primaryColor;
-        var response = await testFacade.SendCreatePost(createBody);
+        var response = await testFacade.SendCreatePost(createBody, user.UserId);
 
         //Then
         var getResponse = await testFacade.GetPost(response.Result.PostId);
@@ -197,9 +196,9 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
         var user = await testFacade.SendCreateUserEvent();
 
         //When
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
         createBody.SecondaryColor = secondaryColor;
-        var response = await testFacade.SendCreatePost(createBody);
+        var response = await testFacade.SendCreatePost(createBody, user.UserId);
 
         //Then
         var getResponse = await testFacade.GetPost(response.Result.PostId);

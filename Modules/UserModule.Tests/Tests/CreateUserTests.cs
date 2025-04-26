@@ -4,20 +4,16 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http.Json;
 using Xunit.Abstractions;
+using static UserModule.Tests.UserBuilder;
 
 namespace UserModule.Tests.Tests;
 
-
-
 public class CreateUserTests : IClassFixture<UserWebApplicationFactory>
 {
-
     ITestHarness messageBrokerTestHarness;
     HttpClient client;
-    ITestOutputHelper h;
     public CreateUserTests(UserWebApplicationFactory factory, ITestOutputHelper he)
     {
-        h = he;
         client = factory.CreateClient();
         messageBrokerTestHarness = factory.Services.GetRequiredService<ITestHarness>();
     }
@@ -25,8 +21,8 @@ public class CreateUserTests : IClassFixture<UserWebApplicationFactory>
     public async Task WhenUserSignsUpWithValidInformaiton_ThenSuccessIsReturned()
     {
         // When
-        var requestBody = UserBuilder.CreateValidUserBody();
-        var response = await client.PostAsJsonAsync("User", requestBody);
+        var userToCreate = UserBuilder.GenerateUserToCreate();
+        var response = await client.SendCreateUserRequest(userToCreate);
 
         // Then
         Assert.NotNull(response);
@@ -38,13 +34,13 @@ public class CreateUserTests : IClassFixture<UserWebApplicationFactory>
     public async Task WhenUserSignsUpWithValidInformaiton_ThenUserCreatedEventIsSent()
     {
         // When
-        var requestBody = UserBuilder.CreateValidUserBody();
-        await client.PostAsJsonAsync("User", requestBody);
+        var userToCreate = UserBuilder.GenerateUserToCreate();
+        await client.SendCreateUserRequest(userToCreate);
 
         // Then
         FilterDelegate<IPublishedMessage<UserCreatedEvent>> filter = (msg) => msg.MessageType == typeof(UserCreatedEvent) &&
-        (msg.MessageObject as UserCreatedEvent)?.UserId == requestBody.UserId &&
-        (msg.MessageObject as UserCreatedEvent)?.UserName == requestBody.UserName;
+        (msg.MessageObject as UserCreatedEvent)?.UserId == userToCreate.UserId &&
+        (msg.MessageObject as UserCreatedEvent)?.UserName == userToCreate.UserName;
 
         using var cts = new CancellationTokenSource(200);
         var eventRecieved = await messageBrokerTestHarness.Published.Any<UserCreatedEvent>(filter, cts.Token);
@@ -58,7 +54,7 @@ public class CreateUserTests : IClassFixture<UserWebApplicationFactory>
     public async Task WhenUserIsCreatedWithNonValidId_ThemBadRequestIsReturnedAndNoEventIsSent(string? invalidId)
     {
         // When
-        var requestBody = UserBuilder.CreateValidUserBody();
+        var requestBody = UserBuilder.GenerateUserToCreate();
         requestBody.UserId = invalidId;
         var response = await client.PostAsJsonAsync("User", requestBody);
 
@@ -77,13 +73,13 @@ public class CreateUserTests : IClassFixture<UserWebApplicationFactory>
     public async Task GivenOneUserExists_WhenSomeoneSignsupWithTheSameUserName_ThenBadRequestIsReturnedAndNoEventIsSent()
     {
         //Given 
-        var initialuser = UserBuilder.CreateValidUserBody();
-        await client.PostAsJsonAsync("User", initialuser);
+        var initialUser = UserBuilder.GenerateUserToCreate();
+         await client.SendCreateUserRequest(initialUser);
 
         // When
-        var userWithDublicateUserName = UserBuilder.CreateValidUserBody();
-        userWithDublicateUserName.UserName = initialuser.UserName;
-        var response = await client.PostAsJsonAsync("User", userWithDublicateUserName);
+        var userWithDublicateUserName = UserBuilder.GenerateUserToCreate();
+        userWithDublicateUserName.UserName = initialUser.UserName;
+        var response = await client.SendCreateUserRequest(userWithDublicateUserName);
 
         // Then
         FilterDelegate<IPublishedMessage<UserCreatedEvent>> filter = (msg) => msg.MessageType == typeof(UserCreatedEvent) &&
@@ -100,12 +96,12 @@ public class CreateUserTests : IClassFixture<UserWebApplicationFactory>
     public async Task GivenOneUserExists_WhenSomeoneSignsupWithTheSameUserName_ThenNoNewUserIsCreated()
     {
         //Given 
-        var initialuser = UserBuilder.CreateValidUserBody();
-        await client.PostAsJsonAsync("User", initialuser);
+        var initialUser = UserBuilder.GenerateUserToCreate();
+        await client.SendCreateUserRequest(initialUser);
 
         // When
-        var requestWithDublicateName = UserBuilder.CreateValidUserBody();
-        requestWithDublicateName.UserName = initialuser.UserName;
+        var requestWithDublicateName = UserBuilder.GenerateUserToCreate();
+        requestWithDublicateName.UserName = initialUser.UserName;
         await client.PostAsJsonAsync("User", requestWithDublicateName);
 
         // Then
@@ -113,4 +109,6 @@ public class CreateUserTests : IClassFixture<UserWebApplicationFactory>
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
+
+
 }

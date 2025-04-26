@@ -19,8 +19,8 @@ public class GetPostTests : IClassFixture<PostsWebApplicationFactory>
     {
         // Given
         var user = await testFacade.SendCreateUserEvent();
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
-        var create = await testFacade.SendCreatePost(createBody);
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
+        var create = await testFacade.SendCreatePost(createBody, user.UserId);
 
         // When
         var post = await testFacade.GetPost(create.Result.PostId);
@@ -30,7 +30,7 @@ public class GetPostTests : IClassFixture<PostsWebApplicationFactory>
         Assert.False(string.IsNullOrEmpty(post.Id.ToString()));
         Assert.Equal(createBody.Title, post.Title);
         Assert.Equal(createBody.Description, post.Description);
-        Assert.Equal(createBody.CreatorId, post.CreatorId);
+        Assert.Equal(user.UserId, post.CreatorId);
         Assert.False(string.IsNullOrEmpty(post.CreatorName));
         Assert.Equal(createBody.PrimaryColor.ToLower(), post.PrimaryColor.ToString().ToLower());
         Assert.Equal(createBody.SecondaryColor.ToLower(), post.SecondaryColor.ToString().ToLower());
@@ -41,8 +41,8 @@ public class GetPostTests : IClassFixture<PostsWebApplicationFactory>
     {
         // Given
         var user = await testFacade.SendCreateUserEvent();
-        var createBody = PostRequestBuilder.GetValidDefaultRequest(user.UserId);
-        var create = await testFacade.SendCreatePost(createBody);
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
+        var create = await testFacade.SendCreatePost(createBody, user.UserId);
 
         await testFacade.UploadImage(create.Result.PostId, create.Result.Token);
         await testFacade.UploadImage(create.Result.PostId, create.Result.Token);

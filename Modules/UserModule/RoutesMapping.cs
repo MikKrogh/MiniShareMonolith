@@ -14,9 +14,14 @@ public static class RoutesMapping
 
 
 
-        api.MapPost(string.Empty, async ([FromServices] IRequestClient<SignupCommand> client, [FromBody] SignupCommand body) =>
+        api.MapPost(string.Empty, async ([FromServices] IRequestClient<SignupCommand> client, [FromBody] SignupCommand body, [FromQuery]string UserId) =>
         {
-            var response = await client.GetResponse<SignupCommandResult>(body);
+            var command = new SignupCommand
+            {
+                UserId = UserId,
+                UserName = body.UserName
+            };
+            var response = await client.GetResponse<SignupCommandResult>(command);
 
             if (response.Message.WasSucces)
             {
