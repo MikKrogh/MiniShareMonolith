@@ -19,7 +19,7 @@ public static class RoutesMapping
             var command = new SignupCommand
             {
                 UserId = UserId,
-                UserName = body.UserName
+                DisplayName = body.DisplayName
             };
             var response = await client.GetResponse<SignupCommandResult>(command);
 

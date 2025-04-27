@@ -24,7 +24,7 @@ public sealed class SignupCommandHandler : IConsumer<SignupCommand>
         {
             var user = new User
             {
-                UserName = context.Message.UserName,
+                UserName = context.Message.DisplayName,
                 Id = context.Message.UserId,
                 CreationDate = DateTime.UtcNow
             };
@@ -49,6 +49,6 @@ public sealed class SignupCommandHandler : IConsumer<SignupCommand>
 
     private bool IsValidCommand(SignupCommand command)
     {
-        return !string.IsNullOrEmpty(command.UserId) && !string.IsNullOrEmpty(command.UserName);
+        return !string.IsNullOrEmpty(command.UserId) && !string.IsNullOrEmpty(command.DisplayName);
     }
 }
