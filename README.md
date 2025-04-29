@@ -4,7 +4,7 @@
   across the board
 </h4>
   <li>
-    more metrics and find a better logging structure across the backend
+    more metrics and find a better logging structure/pattern across the backend, so they all follow a similar setup
   </li>
 
 
