@@ -18,12 +18,16 @@
   <li>
     fix this warnning from pagination route **The query uses a row limiting operator ('Skip'/'Take') without an 'OrderBy' operator. This may lead to unpredictable results. If the 'Distinct' operator is used after 'OrderBy', then make sure to use the 'OrderBy' operator after 'Distinct' as the ordering would otherwise get erased.**
   </li>
-
 <h4>
-  <li>
-    more metrics and find a better logging structure across the backend
-  </li>
+  UserModule
 </h4>
+<li>
+  move firebase signup away from the frontend, and into a backend, to ensure that the displayname property is a unique thing
+</li>
+<li>
+  introduce gracefull cleanup flow incase a step fails in the account creation process. Case: user is created in firebase, but the backend fails to introduce the event across backend modules/services making the user stuck in a state where they can login, but are unable to performs actions.
+</li>
+
 
 <h4>
   YARP PROXY
