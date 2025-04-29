@@ -31,6 +31,19 @@
   introduce gracefull cleanup flow incase a step fails in the account creation process. Case: user is created in firebase, but the backend fails to introduce the event across backend modules/services making the user stuck in a state where they can login, but are unable to performs actions.
 </li>
 
+<h4>
+  Frontend
+</h4>
+<li>
+  better error handling for image upload, currently the user has no way of knowing how to handle image upload errors. also we need a frontend warning on filesize limits
+</li>
+<li>
+  cleanup 
+</li>
+<li>
+  tests
+</li>
+
 
 <h4>
   YARP PROXY
