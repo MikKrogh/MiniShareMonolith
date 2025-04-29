@@ -6,6 +6,9 @@
   <li>
     more metrics and find a better logging structure/pattern across the backend, so they all follow a similar setup
   </li>
+  <li>
+    improve firebase signup setup, verification email always ends up in spam, and the text in the mail is unfriendly
+  </li>
 
 
 <h4>
