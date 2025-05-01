@@ -17,13 +17,8 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
     {
         //Given 
         var user = await testFacade.SendCreateUserEvent();
-        var t = user.ToString();
-        if (string.IsNullOrEmpty(user.UserId)) throw new Exception("failed to create user");
-
         var createBody = PostRequestBuilder.GetValidDefaultBody();
         var create = await testFacade.SendCreatePost(createBody, user.UserId);
-
-
 
         //When
         var response = await testFacade.UploadImage(create.Result.PostId, create.Result.Token);

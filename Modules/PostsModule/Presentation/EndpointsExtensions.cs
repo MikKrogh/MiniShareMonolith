@@ -42,5 +42,17 @@ public static class EndpointsExtensions
             .WithSummary("Appends image file to a post")
             .Produces(500)
             .DisableAntiforgery();
+
+        api.MapPut("{postId}/thumbnail", AddThumbnail.Process)
+            .Produces(200)
+            .Produces(500)
+            .WithSummary("Sets thumbnail for a post")
+            .DisableAntiforgery();
+
+        api.MapGet("{postId}/Thumbnail", GetThumbnail.Process)
+            .Produces(200)
+            .Produces(404)
+            .Produces(500)
+            .WithSummary("Returns an image file");
     }
 }

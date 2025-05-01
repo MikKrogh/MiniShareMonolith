@@ -1,12 +1,14 @@
 ﻿using EventMessages;
 using Microsoft.Extensions.DependencyInjection;
 using PostsModule.Application;
+using PostsModule.Domain;
 using PostsModule.Domain.Auth;
 using PostsModule.Presentation;
 using PostsModule.Tests.Helper;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace PostsModule.Tests;
 
@@ -57,7 +59,8 @@ internal class TestFacade
         };
     }
 
-    public async Task<HttpStatusCode> UploadImage(string postId, string token, byte[]? file = null, string fileExtension = ".jpg", bool expectFailue = false)
+
+    public async Task<HttpStatusCode> UploadImage(string postId, string token, byte[]? file = null, string fileExtension = ".jpg")
     {
         var bytes = file ?? new byte[20];
         var stream = new MemoryStream(bytes);
@@ -65,13 +68,22 @@ internal class TestFacade
         form.Add(new StreamContent(stream), "file", $"filename" + fileExtension);
 
         var response = await _client.PutAsync($"/Posts/{postId}/Image?token={token}", form);
-        if (!response.IsSuccessStatusCode && expectFailue)
-        {
-            var content = await response.Content.ReadAsStringAsync();
-            throw new Exception($"Error uploading image: {content}");
-        }
+
         return response.StatusCode;
     }
+
+    public async Task<HttpStatusCode> UploadThumbnail(string postId, string token, byte[]? file = null, string fileExtension = "webm")
+    {
+        var bytes = file ?? new byte[20];
+        var stream = new MemoryStream(bytes);
+        var form = new MultipartFormDataContent();
+        form.Add(new StreamContent(stream), "file", $"filename" + fileExtension);
+
+        var response = await _client.PutAsync($"/Posts/{postId}/Thumbnail?token={token}", form);
+        return response.StatusCode;
+    }
+
+
 
     public async Task<PostDto?> GetPost(Guid id) => await _client.GetFromJsonAsync<PostDto>($"/Posts/{id.ToString()}");
     public async Task<PostDto?> GetPost(string id) => await _client.GetFromJsonAsync<PostDto>($"/Posts/{id}");
@@ -94,6 +106,25 @@ internal class TestFacade
         result.Result = await content;
         return result;
     }
+    public async Task<TestFacadeResult<byte[]>> GetThumbnail(string postId)
+    {
+        if (string.IsNullOrEmpty(postId)) throw new Exception("imageId must not be empty");
+
+        var result = new TestFacadeResult<byte[]>();
+
+        var response = await _client.GetAsync($"/Posts/{postId}/thumbnail");
+        result.StatusCode = response.StatusCode;
+
+        if (!response.IsSuccessStatusCode)
+        {
+            result.Result = null;
+            return result;
+        }
+        var content = response.Content.ReadAsByteArrayAsync();
+        result.Result = await content;
+        return result;
+    }
+
 
     public async Task<TestFacadeResult<PaginationResult<PostDto>>> GetPosts(string? queryString = null)
     {

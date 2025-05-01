@@ -37,7 +37,8 @@ public class AzureBlobService : IImageStorageService
             blobExists = true;
         }
         var path = Path.Combine(directoryName, fileName);
-        await _blobClient.UploadBlobAsync(path, stream);
+        var blobclient = _blobClient.GetBlobClient(path);
+        await blobclient.UploadAsync(stream, overwrite:true);
 
     }
 
@@ -54,5 +55,10 @@ public class AzureBlobService : IImageStorageService
         {
             return null;
         }
+    }
+
+    public async Task UploadThumbnail(Stream stream, string postId)
+    {
+        await UploadImage(stream, "thumbnails", postId);
     }
 }
