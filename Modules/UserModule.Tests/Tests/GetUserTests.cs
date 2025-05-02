@@ -39,7 +39,7 @@ public class GetUserTests : IClassFixture<UserWebApplicationFactory>
         // Then
         Assert.NotNull(getResponse);
         Assert.Equal(requestBody.UserId, getResponse.Id);
-        Assert.Equal(requestBody.UserName, getResponse.UserName);
+        Assert.Equal(requestBody.DisplayName, getResponse.UserName);
         DateTime now = DateTime.UtcNow;
         Assert.True((now - getResponse.CreationDate).TotalMilliseconds <= 500, $"Expected {getResponse.CreationDate} to be within 500ms of {now}");
     }

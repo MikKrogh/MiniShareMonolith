@@ -40,7 +40,7 @@ public class CreateUserTests : IClassFixture<UserWebApplicationFactory>
         // Then
         FilterDelegate<IPublishedMessage<UserCreatedEvent>> filter = (msg) => msg.MessageType == typeof(UserCreatedEvent) &&
         (msg.MessageObject as UserCreatedEvent)?.UserId == userToCreate.UserId &&
-        (msg.MessageObject as UserCreatedEvent)?.UserName == userToCreate.UserName;
+        (msg.MessageObject as UserCreatedEvent)?.UserName == userToCreate.DisplayName;
 
         using var cts = new CancellationTokenSource(200);
         var eventRecieved = await messageBrokerTestHarness.Published.Any<UserCreatedEvent>(filter, cts.Token);
@@ -78,7 +78,7 @@ public class CreateUserTests : IClassFixture<UserWebApplicationFactory>
 
         // When
         var userWithDublicateUserName = UserBuilder.GenerateUserToCreate();
-        userWithDublicateUserName.UserName = initialUser.UserName;
+        userWithDublicateUserName.DisplayName = initialUser.DisplayName;
         var response = await client.SendCreateUserRequest(userWithDublicateUserName);
 
         // Then
@@ -101,7 +101,7 @@ public class CreateUserTests : IClassFixture<UserWebApplicationFactory>
 
         // When
         var requestWithDublicateName = UserBuilder.GenerateUserToCreate();
-        requestWithDublicateName.UserName = initialUser.UserName;
+        requestWithDublicateName.DisplayName = initialUser.DisplayName;
         await client.PostAsJsonAsync("User", requestWithDublicateName);
 
         // Then

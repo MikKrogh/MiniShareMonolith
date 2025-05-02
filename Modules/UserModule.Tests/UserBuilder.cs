@@ -10,7 +10,7 @@ internal static class UserBuilder
     internal class UserToCreate
     {
         public string UserId { get; set; }
-        public string UserName { get; set; }
+        public string DisplayName { get; set; }
     }
 
     public static UserToCreate GenerateUserToCreate(string? userId = null, string? userName = null)
@@ -21,14 +21,14 @@ internal static class UserBuilder
         var result = new UserToCreate
         {
             UserId = userId,
-            UserName = userName
+            DisplayName = userName
         };
         return result;
     }
 
     public static  async Task<HttpResponseMessage> SendCreateUserRequest(this HttpClient client, UserToCreate user)
     {
-        var response = await client.PostAsJsonAsync($"User?userId={user.UserId}", new { UserName = user.UserName });
+        var response = await client.PostAsJsonAsync($"User?userId={user.UserId}", new { DisplayName = user.DisplayName });
         return response;
     }
 }
