@@ -1,5 +1,6 @@
 ﻿using MassTransit;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using PostsModule.Application;
 using PostsModule.Application.AddImage;
 using PostsModule.Application.AddThumbnail;
@@ -10,11 +11,23 @@ namespace PostsModule.Presentation.Endpoints;
 
 public class AddThumbnail
 {
-    //internal static async Task<IResult> Process(IFormFile file, [FromServices] IAuthHelper authHelper, ILogger<AddImage> logger, [FromServices] IRequestClient<AddImageCommand> client, [FromRoute] Guid postId, [FromQuery] string token)
-    internal static async Task<IResult> Process(IFormFile file, [FromServices] IRequestClient<AddThumbnailCommand> client,[FromRoute] string postId)
+    [RequestFormLimits(MultipartBodyLengthLimit = 500_000)]
+    internal static async Task<IResult> Process(IFormFile file, [FromServices] IAuthHelper authHelper, IRequestClient<AddThumbnailCommand> client,ILogger<AddThumbnail> logger,[FromRoute] string postId, [FromQuery]string token)
     {
+        var claims = authHelper.ReadClaims(token);
+        if (claims == null || !claims.Any() || claims["postId"] != postId.ToString())
+        {
+            logger.LogError("request for AddImage called with bad token: {0} ", token);
+            return Results.Problem("bad token");
+        }
+        if (!IsValidFileFormat(Path.GetExtension(file.FileName)))
+        {
+            return Results.BadRequest();
+        } 
+
+
         byte[] fileBytes;
-        string t = "";
+        
         using (var memoryStream = new MemoryStream())
         {
             await file.CopyToAsync(memoryStream);
@@ -32,6 +45,10 @@ public class AddThumbnail
         return Results.StatusCode(result.Message.ResultStatus);
 
 
+    }
+    private static bool IsValidFileFormat(string format)
+    {
+        return format == "webm";
     }
 
 }
