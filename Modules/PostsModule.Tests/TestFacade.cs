@@ -72,7 +72,7 @@ internal class TestFacade
         return response.StatusCode;
     }
 
-    public async Task<HttpStatusCode> UploadThumbnail(string postId, string token, byte[]? file = null, string fileExtension = ".webm")
+    public async Task<HttpStatusCode> UploadThumbnail(string postId, string token, byte[]? file = null, string fileExtension = ".webp")
     {
         var bytes = file ?? new byte[20];
         var stream = new MemoryStream(bytes);

@@ -48,7 +48,7 @@ public class AddThumbnail
     }
     private static bool IsValidFileFormat(string format)
     {
-        int isEqual = string.Compare(format, ".webm", StringComparison.OrdinalIgnoreCase);
+        int isEqual = string.Compare(format, ".webp", StringComparison.OrdinalIgnoreCase);
         return isEqual == 0;
     }
 
