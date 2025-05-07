@@ -21,6 +21,9 @@
   <li>
     fix this warnning from pagination route **The query uses a row limiting operator ('Skip'/'Take') without an 'OrderBy' operator. This may lead to unpredictable results. If the 'Distinct' operator is used after 'OrderBy', then make sure to use the 'OrderBy' operator after 'Distinct' as the ordering would otherwise get erased.**
   </li>
+  <li>
+    perform file type check on imageupload, check the file metada value. look into ways of doing this, and other practices to ensure malicious files are not saved.
+  </li>
 <h4>
   UserModule
 </h4>
