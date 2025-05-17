@@ -9,6 +9,9 @@
   <li>
     improve firebase signup setup, verification email always ends up in spam, and the text in the mail is unfriendly
   </li>
+  <li>
+    keeping secrets in the uri is considered bad practice, becourse of securtiy. uri routes get stored/logged by browsers and used for analytics, and in our case, exposes the user's email. look into moving the user token into a header. 
+  </li>
 
 
 <h4>
