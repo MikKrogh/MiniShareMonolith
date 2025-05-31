@@ -278,6 +278,29 @@ public class GetPostsTests : IClassFixture<PostsWebApplicationFactory>
         Assert.All(getPosts.Result.Items, x => Assert.Equal(updatedPost.FactionName, x.FactionName));
     }
 
+    [Fact]
+    public async Task GivenThreePostsExistsAndOneHasFactionWithSpaceSeperatorInItsName_WhenUserQueriesForThisFaction_ThenMatchingPostIsReturnedAndTotalCountIsOne()
+    {
+        // Given
+        testFacade.TruncateTables();
+        var user = await testFacade.SendCreateUserEvent();
+        var post = PostRequestBuilder.GetValidDefaultBody();        
+        await testFacade.SendCreatePost(post, user.UserId);
+        await testFacade.SendCreatePost(post, user.UserId);
+
+        var updatedPost = post with { FactionName = "space marines" };        
+        await testFacade.SendCreatePost(updatedPost, user.UserId);
+
+        // When
+        var getPosts = await testFacade.GetPosts($"filter=Faction eq '{updatedPost.FactionName}'");
+
+        // Then
+        Assert.NotNull(getPosts.Result);
+        Assert.Single(getPosts.Result.Items);
+        Assert.Equal(1, getPosts.Result.TotalCount);
+        Assert.All(getPosts.Result.Items, x => Assert.Equal(updatedPost.FactionName, x.FactionName));
+    }
+
 
     [Fact]
     public async Task GivenThreePostsExistsAllWithTheSamePrimaryColorAndTwopostsShareSecondaryColor_WhenUserQueriesThePrimaryAndSecondaryColor_ThenTwoPostsAreTurnedWithTheSecondayColor()

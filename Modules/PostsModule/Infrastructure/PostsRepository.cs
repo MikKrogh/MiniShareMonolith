@@ -220,7 +220,8 @@ public static class OdataFilterReader
         var filtermodels = new List<FilterCriteria>();
         foreach (var filter in filterStrings)
         {
-            var split = filter.Trim().Split(' ');
+            var trimmedFilter = filter.Trim();
+            var split = splitFilterExpression(trimmedFilter);
             var t = new FilterCriteria
             {
                 PropertyName = split[0],
@@ -236,5 +237,27 @@ public static class OdataFilterReader
         public string PropertyName { get; set; }
         public string Operator { get; set; }
         public string Value { get; set; }
+    }
+    private static string[] splitFilterExpression(string filter)
+    {
+        int count = 0;
+        while (filter[count] != ' ') count++;
+
+        string filterProperty = filter.Substring(0, count);
+        count++; // get past the space char
+
+        int expressionStartIndex = count;
+        while (filter[count] != ' ') count++;
+
+        string filterOpratetor = filter.Substring(expressionStartIndex, count - expressionStartIndex);
+        count++;// get past the space char
+
+        //value is stored with ' seperators on both sides, we need to trim them
+        var valueStartIndex = count + 1;
+        var lastIndex = filter.Length - 1;
+        var charsInValueCount = (lastIndex) - valueStartIndex;
+        string filterValue = filter.Substring(valueStartIndex, charsInValueCount);
+
+        return new[] { filterProperty, filterOpratetor, filterValue };
     }
 }

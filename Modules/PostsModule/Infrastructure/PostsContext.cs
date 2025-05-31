@@ -12,13 +12,19 @@ internal class PostsContext : DbContext
     public DbSet<ImageEntity> Images { get; set; }
     public string DbPath { get; }
 
-    public PostsContext(DbContextOptions<PostsContext> options, IConfiguration config) : base(options)
+    public PostsContext(DbContextOptions<PostsContext> options, IConfiguration config, IWebHostEnvironment env) : base(options)
     {
         connString = config["SQLConnectionString"];
         if (string.IsNullOrEmpty(connString))
             throw new Exception("Cannot initialize PostsContext without a connectionstring");
 
+        if (env.IsDevelopment())
+        {
+            Database.Migrate();
+            Database.EnsureCreated();
+            SaveChanges();
 
+        }
 
     }
 
