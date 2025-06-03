@@ -58,3 +58,8 @@
   stop it from exposing swagger 
 </li>
 
+
+net stop winnat
+net start winnat
+
+
