@@ -61,7 +61,7 @@ public sealed class AddImageCommandConsumer : IConsumer<AddImageCommand>
         return fileExtension == ".jpg" ||
                fileExtension == ".jpeg" ||
                fileExtension == ".bmp" ||
-               fileExtension == ".webm" ||
+               fileExtension == ".webp" ||
                fileExtension == ".png";
 
     }
