@@ -9,6 +9,9 @@
   <li>
     improve firebase signup setup, verification email always ends up in spam, and the text in the mail is unfriendly
   </li>
+  <li>
+    keeping secrets in the uri is considered bad practice, becourse of securtiy. uri routes get stored/logged by browsers and used for analytics, and in our case, exposes the user's email. look into moving the user token into a header. 
+  </li>
 
 
 <h4>
@@ -20,6 +23,9 @@
   </li>
   <li>
     fix this warnning from pagination route **The query uses a row limiting operator ('Skip'/'Take') without an 'OrderBy' operator. This may lead to unpredictable results. If the 'Distinct' operator is used after 'OrderBy', then make sure to use the 'OrderBy' operator after 'Distinct' as the ordering would otherwise get erased.**
+  </li>
+  <li>
+    perform file type check on imageupload, check the file metada value. look into ways of doing this, and other practices to ensure malicious files are not saved.
   </li>
 <h4>
   UserModule
@@ -51,4 +57,9 @@
 <li>
   stop it from exposing swagger 
 </li>
+
+
+net stop winnat
+net start winnat
+
 
