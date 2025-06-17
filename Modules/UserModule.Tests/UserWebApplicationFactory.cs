@@ -14,8 +14,6 @@ public class UserWebApplicationFactory : WebApplicationFactory<Program>
         {
             services.AddMassTransitTestHarness(cfg =>
             {
-                cfg.AddConsumer<MyEventConsumer>();
-
                 cfg.AddConsumers(typeof(ServiceExtensions).Assembly);
                 cfg.SetInMemorySagaRepositoryProvider();
                 cfg.UsingInMemory((context, config) =>
@@ -26,11 +24,4 @@ public class UserWebApplicationFactory : WebApplicationFactory<Program>
         });
     }
 }
-public class MyEventConsumer : IConsumer<UserCreatedEvent>
-{
-    public Task Consume(ConsumeContext<UserCreatedEvent> context)
-    {
-        Console.WriteLine($"Received event: {context.Message.UserName}");
-        return Task.CompletedTask;
-    }
-}
+

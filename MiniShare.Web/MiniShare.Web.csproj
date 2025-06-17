@@ -18,6 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EngagementModule\EngagementModule.csproj" />
     <ProjectReference Include="..\Modules\PostsModule\PostsModule.csproj" />
     <ProjectReference Include="..\Modules\UserModule\UserModule.csproj" />
   </ItemGroup>

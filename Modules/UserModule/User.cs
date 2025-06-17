@@ -1,6 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
 
-[assembly: InternalsVisibleTo("UserModule.Tests")]
 namespace UserModule;
 
 public class User

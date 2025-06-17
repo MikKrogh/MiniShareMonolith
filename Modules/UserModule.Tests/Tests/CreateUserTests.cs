@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http.Json;
 using Xunit.Abstractions;
-using static UserModule.Tests.UserBuilder;
 
 namespace UserModule.Tests.Tests;
 
@@ -12,7 +11,7 @@ public class CreateUserTests : IClassFixture<UserWebApplicationFactory>
 {
     ITestHarness messageBrokerTestHarness;
     HttpClient client;
-    public CreateUserTests(UserWebApplicationFactory factory, ITestOutputHelper he)
+    public CreateUserTests(UserWebApplicationFactory factory)
     {
         client = factory.CreateClient();
         messageBrokerTestHarness = factory.Services.GetRequiredService<ITestHarness>();

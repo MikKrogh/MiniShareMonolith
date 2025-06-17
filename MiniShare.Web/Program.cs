@@ -8,6 +8,7 @@ using PostsModule.Presentation;
 using PostsModule.Presentation.Endpoints;
 using UserModule;
 using UserModule.OpenTelemetry;
+using EngagementModule;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,11 +20,13 @@ if (builder.Environment.IsProduction())
     builder.Configuration.AddAzureAppConfiguration(options =>
     {
         options.Connect(new Uri(builder.Configuration["AppConfigEndpoint"]), new DefaultAzureCredential())
-        .Select("monolith*").TrimKeyPrefix("monolith:");
+        .Select("monolith*").TrimKeyPrefix("monolith:")
+        .Select("EngagementModule");
     });
 }
 
 builder.Services.AddPostModuleServices(builder.Configuration);
+builder.Services.AddEngagementModuleServices(builder.Configuration);
 builder.Services.AddUserModuleServices(builder.Configuration);
 builder.Services.AddLogging();
 builder.Logging.SetMinimumLevel(LogLevel.Information);
