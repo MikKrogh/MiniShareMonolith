@@ -1,0 +1,45 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Npgsql;
+
+namespace EngagementModule;
+
+public static class SetupExtensions
+{
+    public static void AddEngagementModuleServices(this IServiceCollection serviceCollection, IConfiguration configuration)
+    {
+        serviceCollection.AddDbContext<EngagementDbContext>(options => options.EnableSensitiveDataLogging(false));
+        serviceCollection.AddTransient<IPostLikeService, EngagementDbContext>();
+    }
+    public static void EngagementModuleEndpointSetup(this IEndpointRouteBuilder builder) 
+    {
+        var rootApi = builder.MapGroup("/engagement/{postid}").WithTags("engagementModule");
+
+        var likesApi = rootApi.MapGroup("/likes").WithTags("likes");
+        likesApi.MapPost(string.Empty, async (string postid, [FromQuery] string userId, [FromServices] IPostLikeService service) =>
+        {
+
+            try
+            {
+                await service.Like(postid, userId);
+                return Results.Ok();
+            }
+            catch (Exception e)
+            {
+                if (e.InnerException is PostgresException pgex && pgex.SqlState == Constants.PostgresDublicateErrorCode)
+                    return Results.Ok();
+                else return Results.Problem();
+            }
+
+        }); 
+        likesApi.MapDelete(string.Empty, async (string postid, [FromQuery] string userId, IPostLikeService service) =>
+        {
+            await service.Unlike(postid, userId);
+            return Results.Ok(new { UserId = userId, PostId = postid });
+        });
+        likesApi.MapGet("/count", async (string postid, IPostLikeService service) =>
+        {
+            var count = await service.GetLikesCount(postid);
+            return Results.Ok(new { Count = count });
+        });
+    }
+}

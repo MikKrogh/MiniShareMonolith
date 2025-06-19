@@ -6,20 +6,21 @@ public class EngagementDbContext : DbContext, IPostLikeService
 {
     private readonly string connString;
     private  DbSet<PostLikeEntity> Likes { get; set; }
-    public EngagementDbContext(IConfiguration config, IWebHostEnvironment env) 
+    public EngagementDbContext(DbContextOptions<EngagementDbContext> options,IConfiguration config, IWebHostEnvironment? env):  base(options)
     {
         var connectionString = config["EngagementModuleConnString"];
         if (string.IsNullOrEmpty(connectionString))
             throw new ArgumentNullException("Postgres connecion string must not be empty");
         else connString = connectionString;
 
-        if (!env.IsProduction())
-        {
-            Database.Migrate();
-            Database.EnsureCreated();
-            SaveChanges();
-        }
+        //if (!env.IsProduction())
+        //{
+        //    Database.Migrate();
+        //    Database.EnsureCreated();
+        //    SaveChanges();
+        //}
     }
+
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) 
     {

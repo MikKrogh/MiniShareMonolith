@@ -75,6 +75,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 app.AddPostModuleEndpoints();
 app.AddUserModuleEndpoints();
+app.EngagementModuleEndpointSetup();
 app.Run();
 
 public partial class Program { }
