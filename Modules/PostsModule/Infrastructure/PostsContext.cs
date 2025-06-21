@@ -30,8 +30,7 @@ internal class PostsContext : DbContext
 
                 throw;
             }
-            Database.EnsureCreated();
-            SaveChanges();
+
         }
 
     }
