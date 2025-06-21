@@ -20,6 +20,16 @@ internal class PostsContext : DbContext
 
         if(env.IsDevelopment() || env.IsEnvironment("Test"))
         {
+            try
+            {
+                Database.EnsureCreated();
+                SaveChanges();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
             Database.EnsureCreated();
             SaveChanges();
         }
