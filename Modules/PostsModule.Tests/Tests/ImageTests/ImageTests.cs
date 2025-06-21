@@ -68,8 +68,6 @@ public class ImageTests : IClassFixture<PostsWebApplicationFactory>
 
         Assert.NotEmpty(images1.Result);
         Assert.NotEmpty(images2.Result);
-
-
     }
 
     [Fact]

@@ -18,12 +18,10 @@ internal class PostsContext : DbContext
         if (string.IsNullOrEmpty(connString))
             throw new Exception("Cannot initialize PostsContext without a connectionstring");
 
-        if (env.IsDevelopment())
+        if(env.IsDevelopment() || env.IsEnvironment("Test"))
         {
             Database.Migrate();
-            Database.EnsureCreated();
             SaveChanges();
-
         }
 
     }

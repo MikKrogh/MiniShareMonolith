@@ -1,14 +1,12 @@
 ﻿using EventMessages;
 using Microsoft.Extensions.DependencyInjection;
 using PostsModule.Application;
-using PostsModule.Domain;
 using PostsModule.Domain.Auth;
 using PostsModule.Presentation;
 using PostsModule.Tests.Helper;
 using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace PostsModule.Tests;
 

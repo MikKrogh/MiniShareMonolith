@@ -27,9 +27,6 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsync
 
         builder.ConfigureServices(services =>
         {
-            InitialDatabaseSetup(services);
-
-
             services.AddMassTransitTestHarness(cfg =>
             {
                 cfg.AddConsumers(typeof(ServiceExtensions).Assembly);
@@ -39,6 +36,10 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsync
                     config.ConfigureEndpoints(context);
                 });
             });
+
+            var sp = services.BuildServiceProvider();
+            _postsContext = sp.GetRequiredService<PostsContext>();
+
             services.AddSingleton<MesageBrokerFacade>(sp =>
             {
                 var ibus = sp.GetRequiredService<IBus>();
@@ -51,40 +52,11 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsync
     protected override IHost CreateHost(IHostBuilder builder)
     {
         var baseHost = base.CreateHost(builder);
-        var sp = baseHost.Services.GetService<MesageBrokerFacade>();
-        MessageBrokerTestFacade = sp;
+        MessageBrokerTestFacade = baseHost.Services.GetService<MesageBrokerFacade>();        
         return baseHost;
     }
 
-    private void InitialDatabaseSetup(IServiceCollection services)
-    {
-        InitialEntityFrameWorkSetup(services);
-    }
-    private void InitialEntityFrameWorkSetup(IServiceCollection services)
-    {
-        var sp = services.BuildServiceProvider();
-        _postsContext = sp.GetRequiredService<PostsContext>();
-        try
-        {
-            _postsContext.Database.EnsureCreated();
 
-            if (_postsContext.Database.GetPendingMigrations().Any())
-            {
-                _postsContext.Database.Migrate();
-            }
-
-        }
-        catch (Exception ex)
-        {
-            var msg = "failed add migration." + ex.Message;
-            var exx = new Exception(msg, ex);
-
-
-        }
-
-
-        //TruncateTables();
-    }
 
     private async Task ThrowIfAzuriteNotRunning()
     {
@@ -96,14 +68,13 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsync
         catch (Exception)
         {
             throw new Exception("Azurite is not running.");
-
         }
     }
 
     public async Task InitializeAsync()
     {
-        await ThrowIfAzuriteNotRunning();
+        await ThrowIfAzuriteNotRunning(); // azurite timeout when not running is too long, so we check it here
     }
 
-    Task IAsyncLifetime.DisposeAsync() => Task.CompletedTask; // No cleanup needed
+    Task IAsyncLifetime.DisposeAsync() => Task.CompletedTask; // exists because we want to use the initializeAsync from IAsyncLifetime
 }

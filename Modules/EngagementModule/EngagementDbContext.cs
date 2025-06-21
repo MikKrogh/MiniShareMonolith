@@ -15,10 +15,9 @@ public class EngagementDbContext : DbContext, IPostLikeService
             throw new ArgumentNullException("Postgres connecion string must not be empty");
         else connString = connectionString;
 
-        if (!env.IsProduction())
+        if (env.IsDevelopment() || env.IsEnvironment("Test"))
         {
             Database.Migrate();
-            Database.EnsureCreated();
             SaveChanges();
         }
     }
