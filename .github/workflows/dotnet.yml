@@ -18,15 +18,7 @@ jobs:
         ports:
           - 10000:10000  # Blob
           - 10001:10001  # Queue
-          - 10002:10002  # Table  
-      mssql:
-        image: mcr.microsoft.com/mssql/server:2022-latest
-        ports:
-          - 8080:1433
-        env:
-          SA_PASSWORD: "Jegerher11!"
-          ACCEPT_EULA: "Y"
-          
+          - 10002:10002  # Table        
       postgres:
         image: postgres:latest
         ports:
