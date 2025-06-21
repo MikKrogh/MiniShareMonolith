@@ -12,6 +12,9 @@ namespace PostsModule.Tests;
 
 public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
+    private static bool _databaseInitialized;
+    private static readonly object _lock = new();
+
     public MesageBrokerFacade MessageBrokerTestFacade { get; private set; }
     private PostsContext _postsContext;
     public void TruncateTables()
@@ -39,7 +42,7 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsync
 
             var sp = services.BuildServiceProvider();
             _postsContext = sp.GetRequiredService<PostsContext>();
-           _postsContext.Database.EnsureCreated();
+            EnsureDatabaseCreated(_postsContext);
 
             services.AddSingleton<MesageBrokerFacade>(sp =>
             {
@@ -49,7 +52,21 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsync
             });
         });
     }
+    private static void EnsureDatabaseCreated(PostsContext context)
+    {
+        if (_databaseInitialized)
+            return;
 
+        lock (_lock)
+        {
+            if (_databaseInitialized)
+                return;
+
+            // Apply migrations or EnsureCreated
+            context.Database.Migrate(); // preferred over EnsureCreated()
+            _databaseInitialized = true;
+        }
+    }
     protected override IHost CreateHost(IHostBuilder builder)
     {
         var baseHost = base.CreateHost(builder);
