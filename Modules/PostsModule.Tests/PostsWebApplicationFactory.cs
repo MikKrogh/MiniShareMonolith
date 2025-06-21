@@ -39,6 +39,7 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsync
 
             var sp = services.BuildServiceProvider();
             _postsContext = sp.GetRequiredService<PostsContext>();
+           _postsContext.Database.EnsureCreated();
 
             services.AddSingleton<MesageBrokerFacade>(sp =>
             {

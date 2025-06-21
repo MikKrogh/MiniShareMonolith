@@ -18,20 +18,7 @@ internal class PostsContext : DbContext
         if (string.IsNullOrEmpty(connString))
             throw new Exception("Cannot initialize PostsContext without a connectionstring");
 
-        if(env.IsDevelopment() || env.IsEnvironment("Test"))
-        {
-            try
-            {
-                Database.EnsureCreated();
-                SaveChanges();
-            }
-            catch (Exception)
-            {
 
-                throw;
-            }
-
-        }
 
     }
 
