@@ -14,10 +14,9 @@ public static class SetupExtensions
     {
         var rootApi = builder.MapGroup("/engagement/{postid}").WithTags("engagementModule");
 
-        var likesApi = rootApi.MapGroup("/likes").WithTags("likes");
-        likesApi.MapPost(string.Empty, async (string postid, [FromQuery] string userId, [FromServices] IPostLikeService service) =>
+        var likesRoutes = rootApi.MapGroup("/likes").WithTags("likes");
+        likesRoutes.MapPost(string.Empty, async (string postid, [FromQuery] string userId, [FromServices] IPostLikeService service) =>
         {
-
             try
             {
                 await service.Like(postid, userId);
@@ -31,12 +30,12 @@ public static class SetupExtensions
             }
 
         }); 
-        likesApi.MapDelete(string.Empty, async (string postid, [FromQuery] string userId, IPostLikeService service) =>
+        likesRoutes.MapDelete(string.Empty, async (string postid, [FromQuery] string userId, IPostLikeService service) =>
         {
             await service.Unlike(postid, userId);
             return Results.Ok(new { UserId = userId, PostId = postid });
         });
-        likesApi.MapGet("/count", async (string postid, IPostLikeService service) =>
+        likesRoutes.MapGet("/count", async (string postid, IPostLikeService service) =>
         {
             var count = await service.GetLikesCount(postid);
             return Results.Ok(new { Count = count });

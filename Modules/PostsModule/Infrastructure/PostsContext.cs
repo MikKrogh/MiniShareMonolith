@@ -14,7 +14,7 @@ internal class PostsContext : DbContext
 
     public PostsContext(DbContextOptions<PostsContext> options, IConfiguration config, IWebHostEnvironment env) : base(options)
     {
-        connString = config["SQLConnectionString"];
+        connString = config["PostModuleConnString"];
         if (string.IsNullOrEmpty(connString))
             throw new Exception("Cannot initialize PostsContext without a connectionstring");
 
@@ -31,7 +31,7 @@ internal class PostsContext : DbContext
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         
-        optionsBuilder.UseSqlServer(connString, options => 
+        optionsBuilder.UseNpgsql(connString, options => 
         {
             options.EnableRetryOnFailure(5, TimeSpan.FromSeconds(5), null);
             options.CommandTimeout(10);
