@@ -20,7 +20,7 @@ internal class PostsContext : DbContext
 
         if(env.IsDevelopment() || env.IsEnvironment("Test"))
         {
-            Database.Migrate();
+            Database.EnsureCreated();
             SaveChanges();
         }
 
