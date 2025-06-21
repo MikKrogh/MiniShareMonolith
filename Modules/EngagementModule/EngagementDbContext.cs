@@ -17,8 +17,12 @@ public class EngagementDbContext : DbContext, IPostLikeService
 
         if (env.IsDevelopment() || env.IsEnvironment("Test"))
         {
-            Database.Migrate();
-            SaveChanges();
+            if (!Database.EnsureCreated()) {                 // If the database is not created, we apply migrations
+                Database.Migrate();
+                SaveChanges();
+            }
+
+
         }
     }
 
