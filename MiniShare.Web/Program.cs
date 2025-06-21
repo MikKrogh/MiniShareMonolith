@@ -21,7 +21,8 @@ if (builder.Environment.IsProduction())
     {
         options.Connect(new Uri(builder.Configuration["AppConfigEndpoint"]), new DefaultAzureCredential())
         .Select("monolith*").TrimKeyPrefix("monolith:")
-        .Select("EngagementModule").TrimKeyPrefix("EngagementModule:");
+        .Select("EngagementModule").TrimKeyPrefix("EngagementModule:")
+        .Select("PostModuleModule").TrimKeyPrefix("EngagementModule:");
     });
 }
 
