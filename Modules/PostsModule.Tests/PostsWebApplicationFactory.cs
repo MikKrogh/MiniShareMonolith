@@ -16,9 +16,9 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsync
     private PostsContext _postsContext;
     public void TruncateTables()
     {
-        _postsContext.Database.ExecuteSqlRaw("DELETE FROM \"PostModule\".\"Image\";\r\n");
-        _postsContext.Database.ExecuteSqlRaw("DELETE FROM \"PostModule\".\"Posts\";\r\n");
-        _postsContext.Database.ExecuteSqlRaw("DELETE FROM \"PostModule\".\"Users\";\r\n");
+        _postsContext.Database.ExecuteSqlRaw(@"DELETE FROM ""PostModule"".""Image"";");
+        _postsContext.Database.ExecuteSqlRaw(@"DELETE FROM ""PostModule"".""Posts"";");
+        _postsContext.Database.ExecuteSqlRaw(@"DELETE FROM ""PostModule"".""Users"";");
     }
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
