@@ -11,6 +11,7 @@ public class GetPostsTests : IClassFixture<PostsWebApplicationFactory>
     public GetPostsTests(PostsWebApplicationFactory factory)
     {
         testFacade = new TestFacade(factory);
+        
     }
 
 
@@ -332,6 +333,8 @@ public class GetPostsTests : IClassFixture<PostsWebApplicationFactory>
     public async Task GivenThreePostsExistsAndOneHasAUniqueTitle_WhenUserQueriesWithASearchForThisTitle_ThenMatchingPostIsReturnedWithCorrectTotalCount()
     {
         // Given
+        testFacade.TruncateTables();
+
         var user = await testFacade.SendCreateUserEvent();
         var post = PostRequestBuilder.GetValidDefaultBody();
         await testFacade.SendCreatePost(post, user.UserId);
