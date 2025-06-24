@@ -55,11 +55,17 @@ public class EngagementDbContext : DbContext, IPostLikeService
         var count = await Likes.CountAsync(l => l.PostId == postId);
         return count;
     }
+    public async Task<bool> HasLiked(string postId, string userId)
+    {
+        var hasLiked = await Likes.AnyAsync(l => l.PostId == postId && l.UserId == userId);
+        return hasLiked;
+    }
 }
 
 public interface IPostLikeService
 {
-    Task Like(string postId, string userId);  
+    Task Like(string postId, string userId);
+    Task<bool> HasLiked(string postId, string userId);     
     Task Unlike(string postId, string userId);
     Task<int> GetLikesCount(string postId);
 

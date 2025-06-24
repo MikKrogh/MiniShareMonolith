@@ -40,5 +40,10 @@ public static class SetupExtensions
             var count = await service.GetLikesCount(postid);
             return Results.Ok(new { Count = count });
         });
+        likesRoutes.MapGet(string.Empty, async (string postid, [FromQuery] string userId, IPostLikeService service) =>
+        {
+            var hasLiked = await service.HasLiked(postid, userId);
+            return Results.Ok(hasLiked);
+        });
     }
 }

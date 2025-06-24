@@ -100,12 +100,34 @@ public class LikesTests : IClassFixture<EngagementWebApplication>
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal(0, count?.Count);
+    }
 
-
-
-
-
-
+    [Fact]
+    public async Task GivenUserHasLikedPost_WhenUserChecksIfTheyHaveLikedThePost_ThenTrueIsReturned()
+    {
+        // Given
+        var postId = GetGuid();
+        var userId = GetGuid();
+        await client.PostAsync($"/Engagement/{postId}/Likes?userId={userId}", null);
+        // When
+        var response = await client.GetAsync($"/Engagement/{postId}/likes?userId={userId}");
+        // Then
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var hasLiked = await response.Content.ReadFromJsonAsync<bool>();
+        Assert.True(hasLiked);
+    }
+    [Fact]
+    public async Task GivenUserHasNotLikedPost_WhenUserChecksIfTheyHaveLikedThePost_ThenFalseIsReturned()
+    {
+        // Given
+        var postId = GetGuid();
+        var userId = GetGuid();
+        // When
+        var response = await client.GetAsync($"/Engagement/{postId}/likes?userId={userId}");
+        // Then
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var hasLiked = await response.Content.ReadFromJsonAsync<bool>();
+        Assert.False(hasLiked);
     }
 
 
