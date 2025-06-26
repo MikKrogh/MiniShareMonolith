@@ -49,6 +49,7 @@ internal sealed class DeletePostService:  IDeletePostService
     }
     public async Task<IEnumerable<string>> FetchUnfinishedJobs(int take = 20 )
     {
+        //dont take items with more then 5 retries
         var incompleteJobs = _context.DeletionJobs
             .Where(job =>
                 !job.ImagesDeletionCompleted ||

@@ -16,31 +16,46 @@ public class DeletePostsProcessor : BackgroundService
     }
 
 
-    protected override async  Task ExecuteAsync(CancellationToken stoppingToken)
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        while (!stoppingToken.IsCancellationRequested)
+        try
         {
-            logger.LogInformation("backgroundworker for delete posts has started.");
-            using (var scope = _serviceProvider.CreateScope())
+            while (!stoppingToken.IsCancellationRequested)
             {
-                var service = scope.ServiceProvider.GetRequiredService<IDeletePostService>();
-                var postsAwaitingDeletion = await service.FetchUnfinishedJobs(10);
-                foreach (var postId in postsAwaitingDeletion)
+                logger.LogInformation("backgroundworker for delete posts has started.");
+                using (var scope = _serviceProvider.CreateScope())
                 {
-                    if (stoppingToken.IsCancellationRequested) break;                    
-                    try
+                    var service = scope.ServiceProvider.GetRequiredService<IDeletePostService>();
+                    var postsAwaitingDeletion = await service.FetchUnfinishedJobs(10);
+                    foreach (var postId in postsAwaitingDeletion)
                     {
-                        await service.TryDelete(postId);
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.LogError(ex, "failed deletiong on post with id: {0}", postId);
+                        if (stoppingToken.IsCancellationRequested) break;                    
+                        try
+                        {
+                                await Task.Delay(3);
+                            await service.TryDelete(postId);
+                        }
+                        catch (Exception ex)
+                        {
+                            logger.LogError(ex, "failed deletiong on post with id: {0}", postId);
+                        }
                     }
                 }
+                logger.LogInformation("backgroundworker for delete posts has completed a run.");
+                await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
             }
-            logger.LogInformation("backgroundworker for delete posts has completed a run.");
-            await Task.Delay(TimeSpan.FromSeconds(60), stoppingToken);
+            Console.WriteLine("never reached");
+            logger.LogInformation("never reached");
+            }
+        finally
+        {
+            Console.WriteLine( "reached");
+            logger.LogInformation("reached");
         }
-
+    }
+    public override async Task StopAsync(CancellationToken cancellationToken)
+    {
+        // Optional: add logic to run when the service is stopping
+        await base.StopAsync(cancellationToken);
     }
 }
