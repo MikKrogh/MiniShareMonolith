@@ -1,22 +1,19 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MassTransit;
+using Microsoft.EntityFrameworkCore;
 using PostsModule.Domain;
-using System.Runtime.CompilerServices;
+using System.Threading;
 
 namespace PostsModule.Infrastructure;
 
 internal sealed class DeletePostService:  IDeletePostService
 {
     private readonly PostsContext _context;
-    //private readonly IImageStorageService imageRepository;
-    private readonly IPostsRepository postsRepository;
     private readonly IImageStorageService blobStorage;
     private readonly ILogger<DeletePostService> logger;
 
-    public DeletePostService(PostsContext context, IImageStorageService imageRepository, IPostsRepository postsRepository, IImageStorageService blobStorage, ILogger<DeletePostService> logger)
+    public DeletePostService(PostsContext context, IImageStorageService blobStorage, ILogger<DeletePostService> logger)
     {
         _context = context;
-        //this.imageRepository = imageRepository;
-        this.postsRepository = postsRepository;
         this.blobStorage = blobStorage;
         this.logger = logger;
     }
@@ -52,18 +49,17 @@ internal sealed class DeletePostService:  IDeletePostService
     }
     public async Task<IEnumerable<string>> FetchUnfinishedJobs(int take = 20 )
     {
-        var query = _context.DeletionJobs
-            .Where( x => x.IsCompleted == false )
+        var incompleteJobs = _context.DeletionJobs
+            .Where(job =>
+                !job.ImagesDeletionCompleted ||
+                !job.PostDataDeletionCompleted ||
+                !job.ThumbnailRemovedCompleted ||
+                !job.PostDeletedEventPublished)
             .Select(x => x.Id)
-            .Take( take );
-        string sql = query.ToQueryString();
+            .Take(take);
+            
 
-
-        return await _context.DeletionJobs
-            .Where( x => x.IsCompleted == false )
-            .Select(x => x.Id)
-            .Take( take )
-            .ToListAsync();
+        return await incompleteJobs.ToListAsync();
     }
 
     public async Task CreateJob(string postId)

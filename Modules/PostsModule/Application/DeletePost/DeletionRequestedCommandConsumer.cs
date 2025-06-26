@@ -10,9 +10,8 @@ public class DeletionRequestedCommandConsumer : IConsumer<DeletionRequestedComma
     private readonly IDeletePostService deletePostService;
     private readonly ILogger<DeletionRequestedCommandConsumer> logger;
 
-    public DeletionRequestedCommandConsumer(IDeletePostService tmp, IPostsRepository postsRepository, IDeletePostService deletePostService, ILogger<DeletionRequestedCommandConsumer> logger)
+    public DeletionRequestedCommandConsumer( IPostsRepository postsRepository, IDeletePostService deletePostService, ILogger<DeletionRequestedCommandConsumer> logger)
     {
-        this.tmp = tmp;
         this.postsRepository = postsRepository;
         this.deletePostService = deletePostService;
         this.logger = logger;

@@ -1,4 +1,5 @@
 ﻿using Azure.Identity;
+using PostsModule.Application.DeletePost;
 using PostsModule.Domain;
 using PostsModule.Domain.Auth;
 using PostsModule.Infrastructure;
@@ -12,9 +13,10 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IPostsRepository, PostsRepository>();
         serviceCollection.AddScoped<IUserRepository, UserRepository>();
         serviceCollection.AddScoped<IImageRepository, ImageRepository>();
-        serviceCollection.AddScoped<IDeletePostService, DeletePostService>();
+        serviceCollection.AddTransient<IDeletePostService, DeletePostService>();
         serviceCollection.AddScoped<IImageStorageService, AzureBlobService>();
         serviceCollection.AddSingleton<IAuthHelper, JwtHandler>();
+        serviceCollection.AddHostedService<DeletePostsProcessor>();
     }
 
     public static void PostModuleAppConfiguration(this IHostApplicationBuilder hostBuilder)

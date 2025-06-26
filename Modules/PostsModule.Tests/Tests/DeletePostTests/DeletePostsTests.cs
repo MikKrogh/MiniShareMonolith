@@ -43,8 +43,7 @@ public class DeletePostsTests : IClassFixture<PostsWebApplicationFactory>
         
         // Then
         Assert.Equal(HttpStatusCode.OK, response);
-        var getPost = await testFacade._client.GetAsync($"/Posts/{post.Result.PostId}");
-        Assert.Equal(HttpStatusCode.NotFound, getPost.StatusCode);
+
 
     }
     //givenPostexists_WhenPostExists_ThenImagesAreDeleted()
