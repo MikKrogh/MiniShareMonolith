@@ -16,23 +16,25 @@ public sealed class GetPostCommandConsumer : IConsumer<GetPostCommand>
         var post = await repository.Get(context.Message.PostId);
         if (post is null)
         {
-            await context.RespondAsync(default);
+
+            await context.RespondAsync(CommandResult<GetPostCommandResult>.NotFound());
             return;
         }
 
-        var result = new GetPostCommandResult()
-        {
-            Id = post.Id.ToString(),
-            Faction = post.FactionName,
-            Title = post.Title,
-            Description = post.Description,
-            CreatorName = post.CreatorName,
-            CreatorId = post.CreatorId,
-            Images = post.Images,
-            PrimaryColor = post.PrimaryColor,
-            SecondaryColor = post.SecondaryColor,
-            CreationDate = post.CreationDate
-        };
+
+            var result = new GetPostCommandResult()
+            {
+                Id = post.Id.ToString(),
+                Faction = post.FactionName,
+                Title = post.Title,
+                Description = post.Description,
+                CreatorName = post.CreatorName,
+                CreatorId = post.CreatorId,
+                Images = post.Images,
+                PrimaryColor = post.PrimaryColor,
+                SecondaryColor = post.SecondaryColor,
+                CreationDate = post.CreationDate
+            };
 
         var commandResult = CommandResult<GetPostCommandResult>.Success(result);
 

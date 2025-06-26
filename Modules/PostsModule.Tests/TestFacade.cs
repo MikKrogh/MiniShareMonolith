@@ -16,7 +16,7 @@ internal class TestFacade
     private readonly MesageBrokerFacade _messageBroker;
     private readonly IAuthHelper jwtHandler;
 
-    private readonly HttpClient _client;
+    public readonly HttpClient _client;
     public TestFacade(PostsWebApplicationFactory factory)
     {
         _factory = factory;
@@ -58,6 +58,12 @@ internal class TestFacade
         };
     }
 
+    public async Task<HttpStatusCode> DeletePost(string postId, string userId)
+    {
+        var response = await _client.DeleteAsync($"/Posts/{postId}?userId={userId}");
+        return response.StatusCode;
+    }
+
 
     public async Task<HttpStatusCode> UploadImage(string postId, string token, byte[]? file = null, string fileExtension = ".jpg")
     {
@@ -84,8 +90,7 @@ internal class TestFacade
 
 
 
-    public async Task<PostDto?> GetPost(Guid id) => await _client.GetFromJsonAsync<PostDto>($"/Posts/{id.ToString()}");
-    public async Task<PostDto?> GetPost(string id) => await _client.GetFromJsonAsync<PostDto>($"/Posts/{id}");
+    public async Task<PostDto?> GetPost(string id) => await _client.GetFromJsonAsync<PostDto?>($"/Posts/{id}");
     public async Task<TestFacadeResult<byte[]>> GetImage(string postId, string imageId)
     {
         if (string.IsNullOrEmpty(imageId)) throw new Exception("imageId must not be empty");

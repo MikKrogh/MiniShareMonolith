@@ -202,6 +202,15 @@ internal class PostsRepository : IPostsRepository
         await context.SaveChangesAsync();
 
     }
+
+    public async Task<string?> GetCreatorId(string postId)
+    {
+        var userId = await context.Posts
+            .Where(x => x.Id == postId)
+            .Select(x => x.CreatorId)
+            .FirstOrDefaultAsync();
+        return userId;
+    }
 }
 
 public static class OdataFilterReader

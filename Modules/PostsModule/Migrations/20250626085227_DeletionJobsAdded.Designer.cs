@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PostsModule.Infrastructure;
@@ -11,9 +12,11 @@ using PostsModule.Infrastructure;
 namespace PostsModule.Migrations
 {
     [DbContext(typeof(PostsContext))]
-    partial class PostsContextModelSnapshot : ModelSnapshot
+    [Migration("20250626085227_DeletionJobsAdded")]
+    partial class DeletionJobsAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,9 +31,6 @@ namespace PostsModule.Migrations
                         .HasColumnType("text");
 
                     b.Property<bool>("ImagesDeletionCompleted")
-                        .HasColumnType("boolean");
-
-                    b.Property<bool>("PostDataDeletionCompleted")
                         .HasColumnType("boolean");
 
                     b.Property<bool>("PostDeletedEventPublished")

@@ -1,4 +1,6 @@
-﻿namespace PostsModule.Infrastructure;
+﻿
+
+namespace PostsModule.Infrastructure;
 
 internal class UserEntity
 {

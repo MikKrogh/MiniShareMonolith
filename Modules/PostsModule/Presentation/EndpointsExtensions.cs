@@ -37,6 +37,11 @@ public static class EndpointsExtensions
             .Produces(400)
             .Produces(500);
 
+        api.MapDelete("{postId}", DeletePost.Process)
+            .WithSummary("Delete a post and images related to post")
+            .Produces(200)
+            .Produces(500);
+
         api.MapPut("{postId}/Image", AddImage.Process)
             .Produces(200)
             .WithSummary("Appends image file to a post")

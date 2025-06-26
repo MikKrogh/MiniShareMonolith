@@ -24,6 +24,7 @@ internal class GetPost
                     Description = commandResult.Description,
                     CreatorId = commandResult.CreatorId,
                     CreatorName = commandResult.CreatorName,
+                    CreationDate = commandResult.CreationDate,
                     Images = commandResult.Images,
                     PrimaryColor = commandResult.PrimaryColor,
                     SecondaryColor = commandResult.SecondaryColor,

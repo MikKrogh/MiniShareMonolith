@@ -10,6 +10,7 @@ internal class PostsContext : DbContext
     public DbSet<PostEntity> Posts { get; set; }
     public DbSet<UserEntity> Users { get; set; }
     public DbSet<ImageEntity> Images { get; set; }
+    public DbSet<DeletePostJob> DeletionJobs { get; set; }
     public string DbPath { get; }
 
     public PostsContext(DbContextOptions<PostsContext> options, IConfiguration config, IWebHostEnvironment env) : base(options)
@@ -17,9 +18,6 @@ internal class PostsContext : DbContext
         connString = config["PostModuleConnString"];
         if (string.IsNullOrEmpty(connString))
             throw new Exception("Cannot initialize PostsContext without a connectionstring");
-
-
-
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -39,6 +37,7 @@ internal class PostsContext : DbContext
         modelBuilder.Entity<UserEntity>().ToTable("Users", "PostModule");
         modelBuilder.Entity<PostEntity>().ToTable("Posts", "PostModule");
         modelBuilder.Entity<ImageEntity>().ToTable("Image", "PostModule");
+        modelBuilder.Entity<DeletePostJob>().ToTable("DeletionJobs", "PostModule");
 
         modelBuilder.Entity<PostEntity>()
             .HasOne(p => p.Creator)

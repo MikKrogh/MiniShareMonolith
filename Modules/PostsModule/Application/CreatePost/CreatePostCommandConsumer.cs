@@ -59,7 +59,6 @@ public class CreatePostCommandValidator : Validator<CreatePostCommand>
 public abstract class Validator<T> where T : class
 {
     private List<Func<T, bool>> rules = new();
-    //public void MustBeHigher(Func<T,int> target, int limit) => rules.Add(x => (target.Invoke(x)  > limit));
     public void MustBeHigher(Func<T, int?> target, int limit) => rules.Add(x =>
     {
         int? value = target.Invoke(x);

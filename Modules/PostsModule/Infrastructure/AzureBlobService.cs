@@ -1,6 +1,8 @@
 ﻿using Azure.Identity;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using PostsModule.Domain;
+using System.IO;
 
 namespace PostsModule.Infrastructure;
 
@@ -26,7 +28,7 @@ public class AzureBlobService : IImageStorageService
         {
             blobServiceClient = new(new Uri("https://minisharestorageaccount.blob.core.windows.net/"), new DefaultAzureCredential());
         }
-
+        
         _blobClient = blobServiceClient.GetBlobContainerClient(containerName);
     }
     public async Task UploadImage(Stream stream, string directoryName, string fileName)
@@ -60,5 +62,22 @@ public class AzureBlobService : IImageStorageService
     public async Task UploadThumbnail(Stream stream, string postId)
     {
         await UploadImage(stream, "thumbnails", postId);
+    }
+
+    public async Task DeleteDirectory(string postId)
+    {
+        await foreach (BlobItem blobItem in _blobClient.GetBlobsAsync(prefix: postId))
+        {
+            BlobClient blob = _blobClient.GetBlobClient(blobItem.Name);
+            await blob.DeleteIfExistsAsync();
+        }
+
+
+    }
+
+    public async Task DeleteThumbnail(string postId)
+    {
+        var blobClient = _blobClient.GetBlobClient("thumbnails/"+ postId);
+        await blobClient.DeleteAsync();
     }
 }

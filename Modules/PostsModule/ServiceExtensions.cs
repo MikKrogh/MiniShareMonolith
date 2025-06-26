@@ -12,6 +12,7 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IPostsRepository, PostsRepository>();
         serviceCollection.AddScoped<IUserRepository, UserRepository>();
         serviceCollection.AddScoped<IImageRepository, ImageRepository>();
+        serviceCollection.AddScoped<IDeletePostService, DeletePostService>();
         serviceCollection.AddScoped<IImageStorageService, AzureBlobService>();
         serviceCollection.AddSingleton<IAuthHelper, JwtHandler>();
     }
