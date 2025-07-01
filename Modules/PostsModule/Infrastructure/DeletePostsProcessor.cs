@@ -6,13 +6,18 @@ namespace PostsModule.Application.DeletePost;
 public class DeletePostsProcessor : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly int DelayTime = 5000;
 
     private readonly ILogger<DeletePostsProcessor> logger;
 
-    public DeletePostsProcessor(ILogger<DeletePostsProcessor> logger, IServiceProvider serviceProvider)
+    public DeletePostsProcessor(ILogger<DeletePostsProcessor> logger, IServiceProvider serviceProvider, IConfiguration config)
     {
         this._serviceProvider = serviceProvider;
         this.logger = logger;
+
+        var isTestEnvironment = config["Environment"];
+        if (isTestEnvironment == "Test")        
+            DelayTime = 200; // Reduce delay time for tests    
     }
 
 
@@ -42,20 +47,14 @@ public class DeletePostsProcessor : BackgroundService
                     }
                 }
                 logger.LogInformation("backgroundworker for delete posts has completed a run.");
-                await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+                await Task.Delay(TimeSpan.FromMilliseconds(DelayTime), stoppingToken);
             }
-            Console.WriteLine("never reached");
-            logger.LogInformation("never reached");
+
             }
         finally
         {
             Console.WriteLine( "reached");
             logger.LogInformation("reached");
         }
-    }
-    public override async Task StopAsync(CancellationToken cancellationToken)
-    {
-        // Optional: add logic to run when the service is stopping
-        await base.StopAsync(cancellationToken);
     }
 }
