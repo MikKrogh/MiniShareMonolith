@@ -6,11 +6,13 @@ public sealed class SignupCommandHandler : IConsumer<SignupCommand>
 {
     private readonly IUserRepository repository;
     private readonly IBus sender;
+    private readonly BarebonesMessageBroker.IBus tmpBus;
 
-    public SignupCommandHandler(IUserRepository repository, IBus sender)
+    public SignupCommandHandler(IUserRepository repository, IBus sender, BarebonesMessageBroker.IBus tmpBus)
     {
         this.repository = repository;
         this.sender = sender;
+        this.tmpBus = tmpBus;
     }
     public async Task Consume(ConsumeContext<SignupCommand> context)
     {
@@ -29,7 +31,12 @@ public sealed class SignupCommandHandler : IConsumer<SignupCommand>
                 CreationDate = DateTime.UtcNow
             };
             await repository.CreateUser(user);
-            await SendUserCreatedEvent(user);
+            //await SendUserCreatedEvent(user);
+            await tmpBus.Publish(new EventMessages.UserCreatedEvent()
+            {
+                UserId = user.Id,
+                UserName = user.UserName
+            }, "UserModule.UserCreated");
             await context.RespondAsync(SignupCommandResult.Success());
         }
         catch (Exception e)

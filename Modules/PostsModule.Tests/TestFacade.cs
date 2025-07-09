@@ -42,7 +42,6 @@ internal class TestFacade
         var id = Guid.NewGuid();
         string username = id.ToString().Substring(0, 8);
         var existingUser = await _messageBroker.SendUserCreatedEvent(id, username);
-        var existingUser1 = await _messageBroker.SendUserCreatedEvent(id, username);
         await _messageBroker.WaitUntillEventHasBeenConsumed<UserCreatedEvent>(x => x.UserId == existingUser.UserId);
         return existingUser;
     }

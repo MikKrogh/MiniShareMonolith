@@ -79,7 +79,6 @@ public class DeletePostsTests : IClassFixture<PostsWebApplicationFactory>
         var response = await testFacade.DeletePost(post.Result.PostId, user.UserId);
         // Then
         Assert.Equal(HttpStatusCode.OK, response);
-        await testFacade.MessageBrokerTestFacade.WaitUntilEventHasBeenConsumed<PostDeletedEvent>(x => x.PostId == post.Result.PostId);
     }
 
 

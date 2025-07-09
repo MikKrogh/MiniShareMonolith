@@ -6,7 +6,7 @@ namespace PostsModule.Application.DeletePost;
 public class DeletePostsProcessor : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly int DelayTime = 5000;
+    private readonly int DelayTime = 30000;
 
     private readonly ILogger<DeletePostsProcessor> logger;
 
@@ -17,7 +17,7 @@ public class DeletePostsProcessor : BackgroundService
 
         var isTestEnvironment = config["Environment"];
         if (isTestEnvironment == "Test")        
-            DelayTime = 200; // Reduce delay time for tests    
+            DelayTime = 50; // Reduce delay time for tests    
     }
 
 

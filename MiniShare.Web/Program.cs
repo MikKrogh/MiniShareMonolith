@@ -9,6 +9,7 @@ using PostsModule.Presentation.Endpoints;
 using UserModule;
 using UserModule.OpenTelemetry;
 using EngagementModule;
+using BarebonesMessageBroker;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,7 @@ builder.Services.AddPostModuleServices(builder.Configuration);
 builder.Services.AddEngagementModuleServices(builder.Configuration);
 builder.Services.AddUserModuleServices(builder.Configuration);
 builder.Services.AddLogging();
+builder.Services.AddSingleton<BarebonesMessageBroker.IBus>(sp => { return new BareBonesBus(sp); });
 builder.Logging.SetMinimumLevel(LogLevel.Information);
 
 builder.Services.AddMassTransit(x =>
