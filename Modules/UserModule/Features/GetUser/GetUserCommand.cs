@@ -1,5 +1,5 @@
 ﻿namespace UserModule.Features.GetUser;
 
-public record GetUserCommand(string UserId);
+internal record GetUserCommand(string UserId);
 
 

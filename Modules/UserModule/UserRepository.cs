@@ -1,7 +1,6 @@
 ﻿using Azure;
 using Azure.Data.Tables;
 using Azure.Identity;
-using MassTransit.Testing;
 namespace UserModule;
 
 
@@ -93,8 +92,11 @@ internal class UserRepository : IUserRepository
     private async Task<bool> NameIsOccupied(string displayName)
     {
         var getByUserName = tableClient.QueryAsync<UserEntity>(x => x.UserName == displayName);
-        var NameIsOccupied = await getByUserName.Any();
-        return NameIsOccupied;
+        await foreach (var item in getByUserName)
+        {
+            return true;
+        }
+        return false ;
     }
 
     private class UserEntity : ITableEntity

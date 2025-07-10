@@ -1,7 +1,7 @@
-﻿using MassTransit;
+﻿
 namespace UserModule.Features.GetUser;
 
-public class GetUserCommandHandler : IConsumer<GetUserCommand>
+internal class GetUserCommandHandler
 {
     private readonly IUserRepository repository;
 
@@ -10,12 +10,11 @@ public class GetUserCommandHandler : IConsumer<GetUserCommand>
         this.repository = repository;
     }
 
-    public async Task Consume(ConsumeContext<GetUserCommand> context)
+    public async Task<GetUserCommandResult> Consume(GetUserCommand context)
     {
-        var user = await repository.GetUser(context.Message.UserId);
-
+        var user = await repository.GetUser(context.UserId);
         if (user is null)
-            await context.RespondAsync(new GetUserCommandResult() { User = null });
-        await context.RespondAsync(new GetUserCommandResult() { User = user });
+            return new GetUserCommandResult() { User = null };
+        return new GetUserCommandResult() { User = user };
     }
 }

@@ -35,13 +35,13 @@ public static class RoutesMapping
         .Produces(400)
         .Produces(500);
 
-        api.MapGet("{id}", async ([FromServices] IRequestClient<GetUserCommand> client, string id) =>
+        api.MapGet("{id}", async ([FromServices] GetUserCommandHandler handler, string id) =>
         {
             var command = new GetUserCommand(id);
-            var result = await client.GetResponse<GetUserCommandResult>(command);
-            if (result?.Message?.User is null)
+            var result = await handler.Consume(command);
+            if (result?.User is null)
                 return Results.NotFound();
-            return Results.Ok(result.Message.User);
+            return Results.Ok(result.User);
         })
         .WithSummary("Returns a user")
         .Produces<User>(200)
