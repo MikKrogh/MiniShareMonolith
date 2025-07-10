@@ -1,22 +1,20 @@
-﻿using MassTransit;
-using Microsoft.AspNetCore.Mvc;
-using PostsModule.Application;
+﻿using Microsoft.AspNetCore.Mvc;
 using PostsModule.Application.GetImage;
 
 namespace PostsModule.Presentation.Endpoints;
 
 internal class GetImage
 {
-    internal static async Task<IResult> Process([FromServices] IRequestClient<GetImageCommand> client, [FromRoute] string postId, [FromRoute] string ImageId)
+    internal static async Task<IResult> Process([FromServices] GetImageCommandConsumer client, [FromRoute] string postId, [FromRoute] string ImageId)
     {
         var command = new GetImageCommand(postId, ImageId);
-        var commandResult = await client.GetResponse<CommandResult<GetImageCommandResult>>(command);
-        var result = commandResult.Message;
+        var commandResult = await client.Consume(command);
+        
 
-        if (result.IsSuccess && result.ResultValue is not null)
+        if (commandResult.IsSuccess && commandResult.ResultValue is not null)
         {
-            return Results.File(result.ResultValue.File);
+            return Results.File(commandResult.ResultValue.File);
         }
-        return Results.StatusCode(result.ResultStatus);
+        return Results.StatusCode(commandResult.ResultStatus);
     }
 }

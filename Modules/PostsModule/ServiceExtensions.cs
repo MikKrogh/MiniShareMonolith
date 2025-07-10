@@ -1,5 +1,11 @@
 ﻿using Azure.Identity;
+using PostsModule.Application.AddImage;
+using PostsModule.Application.AddThumbnail;
+using PostsModule.Application.Create;
 using PostsModule.Application.DeletePost;
+using PostsModule.Application.Get;
+using PostsModule.Application.GetImage;
+using PostsModule.Application.GetPosts;
 using PostsModule.Domain;
 using PostsModule.Domain.Auth;
 using PostsModule.Infrastructure;
@@ -17,6 +23,13 @@ public static class ServiceExtensions
         serviceCollection.AddScoped<IImageStorageService, AzureBlobService>();
         serviceCollection.AddSingleton<IAuthHelper, JwtHandler>();
         serviceCollection.AddHostedService<DeletePostsProcessor>();
+        serviceCollection.AddTransient<AddImageCommandConsumer>();
+        serviceCollection.AddTransient<AddThumbnailCommandConsumer>();
+        serviceCollection.AddTransient<CreatePostCommandConsumer>();
+        serviceCollection.AddTransient<DeletionRequestedCommandConsumer>();
+        serviceCollection.AddTransient<GetImageCommandConsumer>();
+        serviceCollection.AddTransient<GetPostCommandConsumer>();
+        serviceCollection.AddTransient<GetPostsCommandConsumer>();
     }
 
     public static void PostModuleAppConfiguration(this IHostApplicationBuilder hostBuilder)

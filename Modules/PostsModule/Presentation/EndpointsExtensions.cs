@@ -1,7 +1,4 @@
-﻿using MassTransit;
-using Microsoft.AspNetCore.Mvc;
-using PostsModule.Application;
-using PostsModule.Application.Create;
+﻿using PostsModule.Application;
 using PostsModule.Presentation.Endpoints;
 
 namespace PostsModule.Presentation;

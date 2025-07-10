@@ -1,5 +1,4 @@
-﻿using MassTransit;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using PostsModule.Application;
 using PostsModule.Application.GetPosts;
 
@@ -7,7 +6,7 @@ namespace PostsModule.Presentation.Endpoints;
 
 public class GetPosts
 {
-    internal static async Task<IResult> Process([FromServices] IRequestClient<GetPostsCommand> client, [FromQuery] int? take, string? orderBy, string? filter, string? search, int? skip)
+    internal static async Task<IResult> Process([FromServices] GetPostsCommandConsumer client, [FromQuery] int? take, string? orderBy, string? filter, string? search, int? skip)
     {
         var queryModel = new QueryModel()
         {
@@ -31,19 +30,18 @@ public class GetPosts
             QueryModel = queryModel
         };
 
-        var commandResult = await client.GetResponse<CommandResult<GetPostsCommandResult>>(command);
-        var result = commandResult.Message;
+        var commandResult = await client.Consume(command);
 
-        if (result.IsSuccess && result.ResultValue?.Posts is not null)
+        if (commandResult.IsSuccess && commandResult.ResultValue?.Posts is not null)
         {
             var paginationResult = new PaginationResult<PostDto>()
             {
-                TotalCount = result.ResultValue.TotalCount,
-                Items = result.ResultValue.Posts
+                TotalCount = commandResult.ResultValue.TotalCount,
+                Items = commandResult.ResultValue.Posts
             };
             return Results.Ok(paginationResult);
         }
-        return Results.StatusCode(result.ResultStatus);
+        return Results.StatusCode(commandResult.ResultStatus);
     }
     private static int SetTake(int? take)
     {

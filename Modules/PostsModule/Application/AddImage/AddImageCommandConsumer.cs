@@ -1,10 +1,10 @@
-﻿using MassTransit;
+﻿
 using PostsModule.Domain;
 using PostsModule.Presentation.Endpoints;
 
 namespace PostsModule.Application.AddImage;
 
-public sealed class AddImageCommandConsumer : IConsumer<AddImageCommand>
+public sealed class AddImageCommandConsumer
 {
     private readonly IImageStorageService _imageBlobService;
     private readonly IImageRepository _imageRepository;
@@ -15,36 +15,35 @@ public sealed class AddImageCommandConsumer : IConsumer<AddImageCommand>
         this._imageRepository = imageRepository;
     }
 
-    public async Task Consume(ConsumeContext<AddImageCommand> context)
+    public async Task<CommandResult<AddImageCommandResult>> Consume(AddImageCommand context)
     {
-        if (!IsValid(context.Message))
+        if (!IsValid(context))
         {
             var result = CommandResult<AddImageCommandResult>.FailedToValidate();
-            await context.RespondAsync(result);
+            return result;
         }
         else
         {
-            Stream? stream = StreamBank.GetStream(context.Message.PostId, context.Message.StreamId);
+            Stream? stream = StreamBank.GetStream(context.PostId, context.StreamId);
             if (stream is null)
             {
                 var result = CommandResult<AddImageCommandResult>.InternalError();
-                await context.RespondAsync(result);
-                return;
+                return result;
             }
 
             try
             {
-                string newFileName = context.Message.StreamId.ToString() + context.Message.FileExtension;
+                string newFileName = context.StreamId.ToString() + context.FileExtension;
 
-                await _imageBlobService.UploadImage(stream, context.Message.PostId.ToString(), newFileName);
-                await _imageRepository.Create(Image.Create(newFileName, context.Message.PostId.ToString()));
+                await _imageBlobService.UploadImage(stream, context.PostId.ToString(), newFileName);
+                await _imageRepository.Create(Image.Create(newFileName, context.PostId.ToString()));
 
-                await context.RespondAsync(CommandResult<AddImageCommandResult>.Success(null));
-                StreamBank.RemoveStream(context.Message.PostId, context.Message.StreamId);
+                StreamBank.RemoveStream(context.PostId, context.StreamId);
+                return CommandResult<AddImageCommandResult>.Success(null);
             }
             catch (Exception ex)
             {
-                await context.RespondAsync(CommandResult<AddImageCommandResult>.InternalError());
+                return CommandResult<AddImageCommandResult>.InternalError();
             }
         }
     }

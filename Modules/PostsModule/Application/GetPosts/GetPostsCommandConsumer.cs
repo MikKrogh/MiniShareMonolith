@@ -1,9 +1,9 @@
-﻿using MassTransit;
+﻿
 using PostsModule.Domain;
 
 namespace PostsModule.Application.GetPosts;
 
-public class GetPostsCommandConsumer : IConsumer<GetPostsCommand>
+public class GetPostsCommandConsumer
 {
     private readonly IPostsRepository repository;
 
@@ -11,17 +11,15 @@ public class GetPostsCommandConsumer : IConsumer<GetPostsCommand>
     {
         this.repository = repository;
     }
-    public async Task Consume(ConsumeContext<GetPostsCommand> context)
+    public async Task<CommandResult<GetPostsCommandResult>> Consume(GetPostsCommand context)
     {
         var posts = await repository.GetAll(
-            context.Message.QueryModel.Take,
-            context.Message.QueryModel.Descending,
-            context.Message.QueryModel.OrderBy,
-            context.Message.QueryModel.Filter,
-            context.Message.QueryModel.Search,
-            context.Message.QueryModel.Skip
-
-
+            context.QueryModel.Take,
+            context.QueryModel.Descending,
+            context.QueryModel.OrderBy,
+            context.QueryModel.Filter,
+            context.QueryModel.Search,
+            context.QueryModel.Skip
         );
 
         var mappedPosts = posts.Items.Select(post => new PostDto()
@@ -43,8 +41,6 @@ public class GetPostsCommandConsumer : IConsumer<GetPostsCommand>
             Posts = mappedPosts,
             TotalCount = posts.TotalCount
         };
-
-
-        await context.RespondAsync(CommandResult<GetPostsCommandResult>.Success(result));
+        return CommandResult<GetPostsCommandResult>.Success(result);
     }
 }

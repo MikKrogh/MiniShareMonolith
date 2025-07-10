@@ -1,5 +1,3 @@
-using MassTransit;
-using Microsoft.IdentityModel.Abstractions;
 using PostsModule;
 using PostsModule.Presentation;
 
@@ -10,14 +8,7 @@ builder.Services.Configure<HostOptions>(options =>
 {
     options.ShutdownTimeout = TimeSpan.FromSeconds(15);
 });
-builder.Services.AddMassTransit(x =>
-{
-    x.AddConsumers(typeof(ServiceExtensions).Assembly);
-    x.UsingInMemory((context, cfg) =>
-    {
-        cfg.ConfigureEndpoints(context);
-    });
-});
+
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

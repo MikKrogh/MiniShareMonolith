@@ -1,6 +1,4 @@
-﻿using MassTransit;
-using MassTransit.Testing;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,24 +28,12 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsync
 
         builder.ConfigureServices(services =>
         {
-            services.AddMassTransitTestHarness(cfg =>
-            {
-                cfg.AddConsumers(typeof(ServiceExtensions).Assembly);
-                cfg.SetInMemorySagaRepositoryProvider();
-                cfg.UsingInMemory((context, config) =>
-                {
-                    config.ConfigureEndpoints(context);
-                });
-            });
-
             var sp = services.BuildServiceProvider();
             _postsContext = sp.GetRequiredService<PostsContext>();
             EnsureDatabaseCreated(_postsContext);
 
             services.AddSingleton<MesageBrokerFacade>(sp =>
             {
-                var ibus = sp.GetRequiredService<IBus>();
-                var harness = sp.GetRequiredService<ITestHarness>();
                 return new MesageBrokerFacade(ibus, harness);
             });
         });

@@ -1,9 +1,9 @@
-﻿using MassTransit;
+﻿
 using PostsModule.Domain;
 
 namespace PostsModule.Application.AddThumbnail;
 
-public sealed class AddThumbnailCommandConsumer : IConsumer<AddThumbnailCommand>
+public sealed class AddThumbnailCommandConsumer
 {
     private readonly IImageStorageService _imageBlobService;
     private readonly ILogger<AddThumbnailCommandConsumer> logger;
@@ -13,22 +13,22 @@ public sealed class AddThumbnailCommandConsumer : IConsumer<AddThumbnailCommand>
         _imageBlobService = imageBlobService;
         this.logger = logger;
     }
-    public async Task Consume(ConsumeContext<AddThumbnailCommand> context)
+    public async Task<CommandResult<AddThumbnailCommandResult>> Consume(AddThumbnailCommand context)
     {
         try
         {
-            using (var stream = new MemoryStream(context.Message.File))
+            using (var stream = new MemoryStream(context.File))
             {
-                await _imageBlobService.UploadThumbnail(stream, context.Message.PostId);
+                await _imageBlobService.UploadThumbnail(stream, context.PostId);
             }
             var result = CommandResult<AddThumbnailCommandResult>.Success(null);
-            await context.RespondAsync(result);
+            return result;
         }
         catch (Exception e)
         {
-            logger.LogError($"failed to create thumbnail for {context.Message.PostId}.", e.Message);
-            var result = CommandResult<AddThumbnailCommand>.InternalError();
-            await context.RespondAsync(result);
+            logger.LogError($"failed to create thumbnail for {context.PostId}.", e.Message);
+            var result = CommandResult<AddThumbnailCommandResult>.InternalError();
+            return result;
         }
     }
 }

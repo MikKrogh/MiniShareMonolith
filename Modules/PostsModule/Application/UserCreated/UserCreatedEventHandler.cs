@@ -1,5 +1,4 @@
 ﻿using BarebonesMessageBroker;
-using MassTransit;
 using PostsModule.Domain;
 
 namespace PostsModule.Application.UserEvents;

@@ -1,5 +1,4 @@
-﻿using MassTransit;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using PostsModule.Application;
 using PostsModule.Application.Get;
 
@@ -7,16 +6,16 @@ namespace PostsModule.Presentation.Endpoints;
 
 internal class GetPost
 {
-    internal static async Task<IResult> Process([FromServices] IRequestClient<GetPostCommand> client, [FromRoute] string postId)
+    internal static async Task<IResult> Process([FromServices] GetPostCommandConsumer client, [FromRoute] string postId)
     {
         try
         {
             var command = new GetPostCommand(postId);
-            var clientResponse = await client.GetResponse<CommandResult<GetPostCommandResult>>(command);
+            var clientResponse = await client.Consume(command);
 
-            if (clientResponse.Message.IsSuccess && clientResponse.Message.ResultValue is not null)
+            if (clientResponse.IsSuccess && clientResponse.ResultValue is not null)
             {
-                var commandResult = clientResponse.Message.ResultValue;
+                var commandResult = clientResponse.ResultValue;
                 var dto = new PostDto
                 {
                     Id = commandResult.Id,
@@ -31,7 +30,7 @@ internal class GetPost
                 };
                 return Results.Ok(dto);
             }
-            return Results.StatusCode(clientResponse.Message.ResultStatus);
+            return Results.StatusCode(clientResponse.ResultStatus);
 
         }
         catch (Exception)

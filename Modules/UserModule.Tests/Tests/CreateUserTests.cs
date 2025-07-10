@@ -1,6 +1,4 @@
-﻿
-using BarebonesMessageBroker;
-using MassTransit.Testing;
+﻿using BarebonesMessageBroker;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http.Json;

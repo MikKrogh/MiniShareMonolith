@@ -1,9 +1,9 @@
-﻿using MassTransit;
+﻿
 using PostsModule.Domain;
 
 namespace PostsModule.Application.Get;
 
-public sealed class GetPostCommandConsumer : IConsumer<GetPostCommand>
+public sealed class GetPostCommandConsumer
 {
     private readonly IPostsRepository repository;
 
@@ -11,33 +11,30 @@ public sealed class GetPostCommandConsumer : IConsumer<GetPostCommand>
     {
         this.repository = repository;
     }
-    public async Task Consume(ConsumeContext<GetPostCommand> context)
+    public async Task<CommandResult<GetPostCommandResult>> Consume(GetPostCommand context)
     {
-        var post = await repository.Get(context.Message.PostId);
+        var post = await repository.Get(context.PostId);
         if (post is null)
         {
-
-            await context.RespondAsync(CommandResult<GetPostCommandResult>.NotFound());
-            return;
+            return CommandResult<GetPostCommandResult>.NotFound();            
         }
 
-
-            var result = new GetPostCommandResult()
-            {
-                Id = post.Id.ToString(),
-                Faction = post.FactionName,
-                Title = post.Title,
-                Description = post.Description,
-                CreatorName = post.CreatorName,
-                CreatorId = post.CreatorId,
-                Images = post.Images,
-                PrimaryColor = post.PrimaryColor,
-                SecondaryColor = post.SecondaryColor,
-                CreationDate = post.CreationDate
-            };
+        var result = new GetPostCommandResult()
+        {
+            Id = post.Id.ToString(),
+            Faction = post.FactionName,
+            Title = post.Title,
+            Description = post.Description,
+            CreatorName = post.CreatorName,
+            CreatorId = post.CreatorId,
+            Images = post.Images,
+            PrimaryColor = post.PrimaryColor,
+            SecondaryColor = post.SecondaryColor,
+            CreationDate = post.CreationDate
+        };
 
         var commandResult = CommandResult<GetPostCommandResult>.Success(result);
 
-        await context.RespondAsync(commandResult);
+        return commandResult;
     }
 }

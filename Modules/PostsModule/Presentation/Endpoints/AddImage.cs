@@ -1,6 +1,4 @@
-﻿using MassTransit;
-using Microsoft.AspNetCore.Mvc;
-using PostsModule.Application;
+﻿using Microsoft.AspNetCore.Mvc;
 using PostsModule.Application.AddImage;
 using PostsModule.Domain.Auth;
 using System.Collections.Concurrent;
@@ -10,7 +8,7 @@ namespace PostsModule.Presentation.Endpoints;
 internal class AddImage
 {
     [RequestFormLimits(MultipartBodyLengthLimit = 9_000_000)]
-    internal static async Task<IResult> Process(IFormFile file, [FromServices] IAuthHelper authHelper, ILogger<AddImage> logger, [FromServices] IRequestClient<AddImageCommand> client, [FromRoute] Guid postId, [FromQuery] string token)
+    internal static async Task<IResult> Process(IFormFile file, [FromServices] IAuthHelper authHelper, ILogger<AddImage> logger, [FromServices] AddImageCommandConsumer client, [FromRoute] Guid postId, [FromQuery] string token)
     {
         var claims = authHelper.ReadClaims(token);
         if (claims == null || !claims.Any() || claims["postId"] != postId.ToString()) 
@@ -37,11 +35,11 @@ internal class AddImage
             return Results.Problem();
         }
 
-        var result = await client.GetResponse<CommandResult<AddImageCommandResult>>(command);
+        var result = await client.Consume(command);
 
-        if (result.Message.IsSuccess)
+        if (result.IsSuccess)
             return Results.Ok();
-        return Results.StatusCode(result.Message.ResultStatus);
+        return Results.StatusCode(result.ResultStatus);
     }
 }
 

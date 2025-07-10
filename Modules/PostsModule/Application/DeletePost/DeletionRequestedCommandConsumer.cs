@@ -1,10 +1,9 @@
-﻿using MassTransit;
-using PostsModule.Domain;
+﻿using PostsModule.Domain;
 using PostsModule.Infrastructure;
 
 namespace PostsModule.Application.DeletePost;
 
-public class DeletionRequestedCommandConsumer : IConsumer<DeletionRequestedCommand>
+public class DeletionRequestedCommandConsumer
 {
     private readonly IPostsRepository postsRepository;
     private readonly IDeletePostService deletePostService;
@@ -16,19 +15,18 @@ public class DeletionRequestedCommandConsumer : IConsumer<DeletionRequestedComma
         this.deletePostService = deletePostService;
         this.logger = logger;
     }
-    public async Task Consume(ConsumeContext<DeletionRequestedCommand> context)
+    public async Task<CommandResult<DeletionRequestedCommandResult>> Consume(DeletionRequestedCommand context)
     {
-        var creatorId = await postsRepository.GetCreatorId(context.Message.PostId);
-        if(creatorId != context.Message.UserId)
+        var creatorId = await postsRepository.GetCreatorId(context.PostId);
+        if(creatorId != context.UserId)
         {
-            logger.LogWarning("User {UserId} attempted to delete post {PostId} but is not the creator.", context.Message.UserId, context.Message.PostId);
-            await context.RespondAsync(CommandResult<DeletionRequestedCommandResult>.InternalError());
-            return;
+            logger.LogWarning("User {UserId} attempted to delete post {PostId} but is not the creator.", context.UserId, context.PostId);
+            return CommandResult<DeletionRequestedCommandResult>.InternalError();            
         }
         else
         {
-            await deletePostService.CreateJob(context.Message.PostId);
-            await context.RespondAsync(CommandResult<DeletionRequestedCommandResult>.Success(null));
+            await deletePostService.CreateJob(context.PostId);
+            return  CommandResult<DeletionRequestedCommandResult>.Success(null);
         }
 
     }

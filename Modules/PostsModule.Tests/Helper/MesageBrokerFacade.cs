@@ -1,7 +1,4 @@
 ﻿
-using MassTransit;
-using MassTransit.Testing;
-
 namespace PostsModule.Tests.Helper;
 
 public class MesageBrokerFacade

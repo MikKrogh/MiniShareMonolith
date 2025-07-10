@@ -1,6 +1,4 @@
-﻿using MassTransit;
-using Microsoft.AspNetCore.Mvc;
-using PostsModule.Application;
+﻿using Microsoft.AspNetCore.Mvc;
 using PostsModule.Application.Create;
 using PostsModule.Domain.Auth;
 using System.Diagnostics.Metrics;
@@ -8,7 +6,7 @@ using System.Diagnostics.Metrics;
 namespace PostsModule.Presentation.Endpoints;
 public class CreatePost
 {
-    public static async Task<IResult> Process(ILogger<CreatePost>? logger,[FromServices] IRequestClient<CreatePostCommand> client, IAuthHelper auth, [FromBody] CreateBody body, [FromQuery]string UserId)    
+    public static async Task<IResult> Process(ILogger<CreatePost>? logger,[FromServices] CreatePostCommandConsumer client, IAuthHelper auth, [FromBody] CreateBody body, [FromQuery]string UserId)    
     {               
         var command = new CreatePostCommand()
         {
@@ -22,15 +20,14 @@ public class CreatePost
 
         try
         {
-            var clientResponse = await client.GetResponse<CommandResult<CreatePostCommandResult>>(command);
-            var commandResult = clientResponse.Message;
+            
+            var commandResult = await client.Consume(command);
 
-            if (clientResponse.Message.IsSuccess && commandResult is not null)
+            if (commandResult is not null && commandResult.IsSuccess && commandResult.ResultValue is not null)
             {
-                var token = auth.CreateToken(
-                    DateTime.UtcNow.AddMinutes(5),
-                    ClaimValueHolder.Create("postId", commandResult.ResultValue.PostId)
-                );
+                var claim = ClaimValueHolder.Create("postId", commandResult.ResultValue.PostId) ?? throw new Exception($"could not create claim required to create imageupload token. for post: {commandResult.ResultValue.PostId}");
+                
+                var token = auth.CreateToken(DateTime.UtcNow.AddMinutes(5), claim);
 
                 logger.LogInformation("Post created by creatorId {0}", UserId);
                 PostCreatedMeter.PostCreatedCounter.Add(1, new KeyValuePair<string, object?>("post_creator", UserId));

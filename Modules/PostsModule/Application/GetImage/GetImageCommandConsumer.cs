@@ -1,10 +1,10 @@
-﻿using MassTransit;
+﻿
 using PostsModule.Domain;
 
 
 namespace PostsModule.Application.GetImage;
 
-public sealed class GetImageCommandConsumer : IConsumer<GetImageCommand>
+public sealed class GetImageCommandConsumer
 {
     private readonly IImageStorageService imageService;
 
@@ -12,15 +12,15 @@ public sealed class GetImageCommandConsumer : IConsumer<GetImageCommand>
     {
         this.imageService = imageService;
     }
-    public async Task Consume(ConsumeContext<GetImageCommand> context)
+    public async Task<CommandResult<GetImageCommandResult>> Consume(GetImageCommand context)
     {
         try
         {
-            var image = await imageService.GetImage(context.Message.PostId, context.Message.ImageId);
+            var image = await imageService.GetImage(context.PostId, context.ImageId);
             if (image is null)
             {
-                await context.RespondAsync(CommandResult<GetImageCommandResult>.NotFound());
-                return;
+                return CommandResult<GetImageCommandResult>.NotFound();
+                
             }
 
             MemoryStream memoryStream;
@@ -28,12 +28,12 @@ public sealed class GetImageCommandConsumer : IConsumer<GetImageCommand>
             {
                 image.CopyTo(memoryStream);
             }
-            await context.RespondAsync(CommandResult<GetImageCommandResult>.Success(new() { File = memoryStream.ToArray() }));
+            return  CommandResult<GetImageCommandResult>.Success(new() { File = memoryStream.ToArray() });
 
         }
         catch (Exception)
         {
-            await context.RespondAsync(CommandResult<GetImageCommandResult>.InternalError());
+            return CommandResult<GetImageCommandResult>.InternalError();
         }
 
     }

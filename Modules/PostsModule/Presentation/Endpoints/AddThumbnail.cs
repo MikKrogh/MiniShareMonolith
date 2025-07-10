@@ -1,10 +1,5 @@
-﻿using MassTransit;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using PostsModule.Application;
-using PostsModule.Application.AddImage;
+﻿using Microsoft.AspNetCore.Mvc;
 using PostsModule.Application.AddThumbnail;
-using PostsModule.Application.Create;
 using PostsModule.Domain.Auth;
 
 namespace PostsModule.Presentation.Endpoints;
@@ -12,7 +7,7 @@ namespace PostsModule.Presentation.Endpoints;
 public class AddThumbnail
 {
     [RequestFormLimits(MultipartBodyLengthLimit = 500_000)]
-    internal static async Task<IResult> Process(IFormFile file, [FromServices] IAuthHelper authHelper, IRequestClient<AddThumbnailCommand> client,ILogger<AddThumbnail> logger,[FromRoute] string postId, [FromQuery]string token)
+    internal static async Task<IResult> Process(IFormFile file, [FromServices] IAuthHelper authHelper, AddThumbnailCommandConsumer client,ILogger<AddThumbnail> logger,[FromRoute] string postId, [FromQuery]string token)
     {
         var claims = authHelper.ReadClaims(token);
         if (claims == null || !claims.Any() || claims["postId"] != postId.ToString())
@@ -39,10 +34,10 @@ public class AddThumbnail
             File = fileBytes
 
         };
-        var result = await client.GetResponse<CommandResult<AddThumbnailCommandResult>>(command);
-        if (result.Message.IsSuccess)
+        var result = await client.Consume(command);
+        if (result.IsSuccess)
             return Results.Ok();
-        return Results.StatusCode(result.Message.ResultStatus);
+        return Results.StatusCode(result.ResultStatus);
 
 
     }

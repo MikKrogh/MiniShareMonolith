@@ -1,8 +1,7 @@
-﻿using MassTransit;
-using PostsModule.Domain;
+﻿using PostsModule.Domain;
 namespace PostsModule.Application.Create;
 
-public  class CreatePostCommandConsumer : IConsumer<CreatePostCommand>
+public  class CreatePostCommandConsumer
 {
     private readonly IPostsRepository repository;
 
@@ -10,18 +9,18 @@ public  class CreatePostCommandConsumer : IConsumer<CreatePostCommand>
     {
         this.repository = repository;
     }
-    public async Task Consume(ConsumeContext<CreatePostCommand> context)
+    public async Task<CommandResult<CreatePostCommandResult>> Consume(CreatePostCommand context)
     {
-        if (IsValid(context.Message))
+        if (IsValid(context))
         {
-            Post post = CreateDomainEntity(context.Message);
+            Post post = CreateDomainEntity(context);
             await repository.Save(post);
-            await context.RespondAsync(CommandResult<CreatePostCommandResult>.Success(new() { PostId = post.Id.ToString() }));
+            return CommandResult<CreatePostCommandResult>.Success(new() { PostId = post.Id.ToString() });
         }
         else
         {
             var result = CommandResult<CreatePostCommandResult>.FailedToValidate();
-            await context.RespondAsync(result);
+            return result;
         }
     }
 
