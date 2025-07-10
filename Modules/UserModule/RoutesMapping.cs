@@ -1,4 +1,4 @@
-﻿using MassTransit;
+﻿
 using Microsoft.AspNetCore.Mvc;
 using UserModule.Features.CreateUser;
 using UserModule.Features.GetUser;
@@ -14,21 +14,21 @@ public static class RoutesMapping
 
 
 
-        api.MapPost(string.Empty, async ([FromServices] IRequestClient<SignupCommand> client, [FromBody] SignupCommand body, [FromQuery]string UserId) =>
+        api.MapPost(string.Empty, async ([FromServices]SignupCommandHandler handler,[FromBody] SignupCommand body, [FromQuery]string UserId) =>
         {
             var command = new SignupCommand
             {
                 UserId = UserId,
                 DisplayName = body.DisplayName
             };
-            var response = await client.GetResponse<SignupCommandResult>(command);
+            var response = await handler.Handle(command);
 
-            if (response.Message.WasSucces)
+            if (response.WasSucces)
             {
                 UserCreatedMeter.UserCreatedCounter.Add(1, new KeyValuePair<string, object>("user_role", "admin"));
                 return Results.Ok();
             }
-            return Results.StatusCode(response.Message.StatusCode);
+            return Results.StatusCode(response.StatusCode);
         })
         .WithSummary("Create a user")
         .Produces(200)

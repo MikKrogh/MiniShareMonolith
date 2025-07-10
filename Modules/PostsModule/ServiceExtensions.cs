@@ -11,7 +11,7 @@ public static class ServiceExtensions
     {
         serviceCollection.AddDbContext<PostsContext>(options => options.EnableSensitiveDataLogging(false));
         serviceCollection.AddScoped<IPostsRepository, PostsRepository>();
-        serviceCollection.AddScoped<IUserRepository, UserRepository>();
+        serviceCollection.AddTransient<IUserRepository, UserRepository>();
         serviceCollection.AddScoped<IImageRepository, ImageRepository>();
         serviceCollection.AddTransient<IDeletePostService, DeletePostService>();
         serviceCollection.AddScoped<IImageStorageService, AzureBlobService>();

@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostsModule", "Modules\Post
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PostsModule.Tests", "Modules\PostsModule.Tests\PostsModule.Tests.csproj", "{E9356226-0AE6-40DB-B416-8AA691CE4171}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventMessages", "EventMessages\EventMessages.csproj", "{C007BB69-E736-4447-9771-40E1E069991C}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserModule", "Modules\UserModule\UserModule.csproj", "{15AF147D-0DF6-1879-E661-0E5936AB95BB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserModule.Tests", "Modules\UserModule.Tests\UserModule.Tests.csproj", "{00A03CD5-4EF0-2989-AA7F-D5691424ABBF}"
@@ -39,10 +37,6 @@ Global
 		{E9356226-0AE6-40DB-B416-8AA691CE4171}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E9356226-0AE6-40DB-B416-8AA691CE4171}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E9356226-0AE6-40DB-B416-8AA691CE4171}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C007BB69-E736-4447-9771-40E1E069991C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C007BB69-E736-4447-9771-40E1E069991C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C007BB69-E736-4447-9771-40E1E069991C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C007BB69-E736-4447-9771-40E1E069991C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{15AF147D-0DF6-1879-E661-0E5936AB95BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{15AF147D-0DF6-1879-E661-0E5936AB95BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15AF147D-0DF6-1879-E661-0E5936AB95BB}.Release|Any CPU.ActiveCfg = Release|Any CPU

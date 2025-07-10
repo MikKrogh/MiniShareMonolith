@@ -6,10 +6,14 @@ internal class UserRepository : IUserRepository
 {
     private readonly PostsContext context;
 
-    public UserRepository( PostsContext context)
+    public UserRepository(PostsContext context)
     {
         this.context = context;
     }
+    //public UserRepository()
+    //{
+
+    //}
 
     public async Task Create(User user)
     {

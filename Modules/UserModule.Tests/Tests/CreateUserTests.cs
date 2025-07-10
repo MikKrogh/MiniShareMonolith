@@ -1,20 +1,22 @@
-﻿using EventMessages;
+﻿
+using BarebonesMessageBroker;
 using MassTransit.Testing;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http.Json;
-using Xunit.Abstractions;
+using UserModule.Features.CreateUser;
 
 namespace UserModule.Tests.Tests;
 
 public class CreateUserTests : IClassFixture<UserWebApplicationFactory>
 {
-    ITestHarness messageBrokerTestHarness;
     HttpClient client;
+    TestBus _busTestFacade;
     public CreateUserTests(UserWebApplicationFactory factory)
     {
         client = factory.CreateClient();
-        messageBrokerTestHarness = factory.Services.GetRequiredService<ITestHarness>();
+        var busInterFace = factory.Services.GetRequiredService<IBus>();
+        _busTestFacade = busInterFace as TestBus ?? throw new Exception("couldnt find Testbus");
     }
     [Fact]
     public async Task WhenUserSignsUpWithValidInformaiton_ThenSuccessIsReturned()
@@ -32,19 +34,14 @@ public class CreateUserTests : IClassFixture<UserWebApplicationFactory>
     [Fact]
     public async Task WhenUserSignsUpWithValidInformaiton_ThenUserCreatedEventIsSent()
     {
-        // When
-        var userToCreate = UserBuilder.GenerateUserToCreate();
+        //When
+       var userToCreate = UserBuilder.GenerateUserToCreate();
         await client.SendCreateUserRequest(userToCreate);
 
         // Then
-        FilterDelegate<IPublishedMessage<UserCreatedEvent>> filter = (msg) => msg.MessageType == typeof(UserCreatedEvent) &&
-        (msg.MessageObject as UserCreatedEvent)?.UserId == userToCreate.UserId &&
-        (msg.MessageObject as UserCreatedEvent)?.UserName == userToCreate.DisplayName;
+        var wasPublished = _busTestFacade.WasPublished<UserCreatedEvent>("UserModule.UserCreated", x => x.UserName == userToCreate.DisplayName && x.UserId == userToCreate.UserId);
 
-        using var cts = new CancellationTokenSource(200);
-        var eventRecieved = await messageBrokerTestHarness.Published.Any<UserCreatedEvent>(filter, cts.Token);
-
-        Assert.True(eventRecieved, "Expected event was not published in time");
+        Assert.True(wasPublished, "Expected event was not published in time");
     }
 
     [Theory]
@@ -58,13 +55,12 @@ public class CreateUserTests : IClassFixture<UserWebApplicationFactory>
         var response = await client.PostAsJsonAsync("User", requestBody);
 
         // Then
-        FilterDelegate<IPublishedMessage<UserCreatedEvent>> filter = (msg) => msg.MessageType == typeof(UserCreatedEvent) &&
-        (msg.MessageObject as UserCreatedEvent).UserId == invalidId;
 
-        using var cts = new CancellationTokenSource(200);
-        var eventsRecieved = messageBrokerTestHarness.Published.Select(filter, cts.Token);
+        await Task.Delay(100);
+        var waspublished = _busTestFacade.WasPublished<UserCreatedEvent>("UserModule.UserCreated", x => x.UserName == requestBody.DisplayName && x.UserId == requestBody.UserId);
 
-        Assert.Empty(eventsRecieved);
+
+        Assert.False(waspublished);
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }
 
@@ -81,13 +77,10 @@ public class CreateUserTests : IClassFixture<UserWebApplicationFactory>
         var response = await client.SendCreateUserRequest(userWithDublicateUserName);
 
         // Then
-        FilterDelegate<IPublishedMessage<UserCreatedEvent>> filter = (msg) => msg.MessageType == typeof(UserCreatedEvent) &&
-        (msg.MessageObject as UserCreatedEvent).UserId == userWithDublicateUserName.UserId;
+        var wasPublished = _busTestFacade.WasPublished<UserCreatedEvent>("UserModule.UserCreated", x => x.UserName == initialUser.DisplayName && x.UserId == userWithDublicateUserName.UserId);
 
-        using var cts = new CancellationTokenSource(200);
-        var eventsRecieved = messageBrokerTestHarness.Published.Select(filter, cts.Token);
 
-        Assert.Empty(eventsRecieved);
+        Assert.False(wasPublished);
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
     }
 

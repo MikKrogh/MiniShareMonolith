@@ -26,18 +26,11 @@
   </ItemGroup>
 
   <ItemGroup>
-	  <PackageReference Include="BarebonesMessageBroker" Version="0.0.7" />
-
-	  <PackageReference Include="Azure.Data.Tables" Version="12.11.0" />
+	 <PackageReference Include="BarebonesMessageBroker" Version="0.0.10" />
+	<PackageReference Include="Azure.Data.Tables" Version="12.11.0" />
 	<PackageReference Include="Azure.Identity" Version="1.14.0" />
 	<PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.4" />
-	  <PackageReference Include="Microsoft.Azure.AppConfiguration.AspNetCore" Version="8.2.0" />
-
-	  <PackageReference Include="MassTransit" Version="8.4.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\EventMessages\EventMessages.csproj" />
+	<PackageReference Include="Microsoft.Azure.AppConfiguration.AspNetCore" Version="8.2.0" />
   </ItemGroup>
 
 </Project>

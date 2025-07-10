@@ -1,11 +1,10 @@
 ﻿using BarebonesMessageBroker;
-using EventMessages;
 using MassTransit;
 using PostsModule.Domain;
 
 namespace PostsModule.Application.UserEvents;
 
-public sealed class UserCreatedEventHandler : IConsumer<UserCreatedEvent>, Listener<TmpEventUSer>
+public sealed class UserCreatedEventHandler :  Listener<TmpEventUSer>
 
 {
     private readonly IUserRepository _userRepository;
@@ -14,30 +13,22 @@ public sealed class UserCreatedEventHandler : IConsumer<UserCreatedEvent>, Liste
         _userRepository = userRepository;
     }
 
-    public async Task Consume(ConsumeContext<UserCreatedEvent> context)
+    public async Task Handle(TmpEventUSer t)
     {
         try
         {
-            
-            if(string.IsNullOrEmpty(context.Message.UserId) || string.IsNullOrEmpty(context.Message.UserName))
+            if (string.IsNullOrEmpty(t.UserId) || string.IsNullOrEmpty(t.UserName))
                 throw new Exception("could not handle usercreatedevent becouse id or name is null or empty");
 
-
-            var user = User.Create(context.Message.UserId);
-            user.SetName(context.Message.UserName);
+            var user = User.Create(t.UserId);
+            user.SetName(t.UserName);
             await _userRepository.Create(user);
         }
         catch (Exception e)
         {
 
             throw;
-        }
-    }
-
-    public Task Handle(TmpEventUSer t)
-    {
-        Console.WriteLine("hello createdevent {0} {1}", t.UserName, t.UserId);
-        return Task.CompletedTask;
+        }        
     }
 
 

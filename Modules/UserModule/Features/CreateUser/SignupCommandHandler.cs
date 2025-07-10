@@ -1,61 +1,51 @@
-﻿using MassTransit;
-
+﻿using BarebonesMessageBroker;
 namespace UserModule.Features.CreateUser;
 
-public sealed class SignupCommandHandler : IConsumer<SignupCommand>
+internal sealed class SignupCommandHandler 
 {
     private readonly IUserRepository repository;
-    private readonly IBus sender;
-    private readonly BarebonesMessageBroker.IBus tmpBus;
+    private readonly IBus _bus;
 
-    public SignupCommandHandler(IUserRepository repository, IBus sender, BarebonesMessageBroker.IBus tmpBus)
+    public SignupCommandHandler(IUserRepository repository,  IBus bus)
     {
-        this.repository = repository;
-        this.sender = sender;
-        this.tmpBus = tmpBus;
+        this.repository = repository;        
+        this._bus = bus;
     }
-    public async Task Consume(ConsumeContext<SignupCommand> context)
+    public async Task<SignupCommandResult> Handle(SignupCommand context)
     {
 
-        if (!IsValidCommand(context.Message))
+        if (!IsValidCommand(context))
         {
-            await context.RespondAsync(SignupCommandResult.BadRequest());
-            return;
+            return SignupCommandResult.BadRequest();            
         }
         try
         {
             var user = new User
             {
-                UserName = context.Message.DisplayName,
-                Id = context.Message.UserId,
+                UserName = context.DisplayName,
+                Id = context.UserId,
                 CreationDate = DateTime.UtcNow
             };
             await repository.CreateUser(user);
-            //await SendUserCreatedEvent(user);
-            await tmpBus.Publish(new EventMessages.UserCreatedEvent()
+            await _bus.Publish(new UserCreatedEvent()
             {
                 UserId = user.Id,
                 UserName = user.UserName
             }, "UserModule.UserCreated");
-            await context.RespondAsync(SignupCommandResult.Success());
+            return SignupCommandResult.Success();
         }
         catch (Exception e)
         {
-            await context.RespondAsync(SignupCommandResult.InternalError());
+            return SignupCommandResult.InternalError();
         }
     }
-
-    private async Task SendUserCreatedEvent(User user)
-    {
-        await sender.Publish(new EventMessages.UserCreatedEvent()
-        {
-            UserId = user.Id,
-            UserName = user.UserName
-        });
-    }
-
     private bool IsValidCommand(SignupCommand command)
     {
         return !string.IsNullOrEmpty(command.UserId) && !string.IsNullOrEmpty(command.DisplayName);
     }
+}
+public class UserCreatedEvent
+{
+    public string UserId { get; set; }
+    public string UserName { get; set; }
 }

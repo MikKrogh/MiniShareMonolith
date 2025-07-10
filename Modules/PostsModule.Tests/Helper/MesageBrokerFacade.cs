@@ -1,4 +1,4 @@
-﻿using EventMessages;
+﻿
 using MassTransit;
 using MassTransit.Testing;
 

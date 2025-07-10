@@ -1,5 +1,4 @@
-﻿using EventMessages;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using PostsModule.Application;
 using PostsModule.Domain.Auth;
 using PostsModule.Presentation;
@@ -169,4 +168,9 @@ public class CreatePostResponse
 {
     public string PostId { get; set; }
     public string Token { get; set; }
+}
+public record UserCreatedEvent
+{
+    public string UserId { get; init; } = string.Empty;
+    public string UserName { get; init; } = string.Empty;
 }

@@ -31,7 +31,11 @@ builder.Services.AddPostModuleServices(builder.Configuration);
 builder.Services.AddEngagementModuleServices(builder.Configuration);
 builder.Services.AddUserModuleServices(builder.Configuration);
 builder.Services.AddLogging();
-builder.Services.AddSingleton<BarebonesMessageBroker.IBus>(sp => { return new BareBonesBus(sp); });
+builder.Services.AddSingleton<BarebonesMessageBroker.IBus>(sp =>
+{
+    var scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
+    return new BareBonesBus(scopeFactory);
+});
 builder.Logging.SetMinimumLevel(LogLevel.Information);
 
 builder.Services.AddMassTransit(x =>

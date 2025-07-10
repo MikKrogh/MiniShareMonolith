@@ -1,17 +1,16 @@
-using MassTransit;
+using BarebonesMessageBroker;
+
 using UserModule;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddUserModuleServices(builder.Configuration);
-builder.Services.AddMassTransit(x =>
+
+builder.Services.AddSingleton<BarebonesMessageBroker.IBus>(sp =>
 {
-    x.AddConsumers(typeof(ServiceExtensions).Assembly);
-    x.UsingInMemory((context, cfg) =>
-    {
-        cfg.ConfigureEndpoints(context);
-    });
+    var scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
+    return new BareBonesBus(scopeFactory);
 });
 
 var app = builder.Build();

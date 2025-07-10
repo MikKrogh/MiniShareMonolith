@@ -1,7 +1,7 @@
-﻿using EventMessages;
-using MassTransit;
+﻿using BarebonesMessageBroker;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace UserModule.Tests;
 
@@ -12,15 +12,7 @@ public class UserWebApplicationFactory : WebApplicationFactory<Program>
         builder.UseEnvironment("Test");
         builder.ConfigureServices(services =>
         {
-            services.AddMassTransitTestHarness(cfg =>
-            {
-                cfg.AddConsumers(typeof(ServiceExtensions).Assembly);
-                cfg.SetInMemorySagaRepositoryProvider();
-                cfg.UsingInMemory((context, config) =>
-                {
-                    config.ConfigureEndpoints(context);
-                });
-            });
+            services.AddSingleton<BarebonesMessageBroker.IBus>(new TestBus());
         });
     }
 }
