@@ -22,7 +22,8 @@ internal sealed class DeletePostService:  IDeletePostService
     {
         logger.LogInformation("started deletion process for post: {0}", postId);
         var entity = await _context.DeletionJobs.FirstOrDefaultAsync( x => x.Id == postId);
-        if (entity == null) return;        
+        if (entity == null) return;
+        entity.FailedAttempts++;
 
         if (!entity.PostDataDeletionCompleted)
         {
@@ -49,13 +50,13 @@ internal sealed class DeletePostService:  IDeletePostService
     }
     public async Task<IEnumerable<string>> FetchUnfinishedJobs(int take = 20 )
     {
-        //dont take items with more then 5 retries
         var incompleteJobs = _context.DeletionJobs
             .Where(job =>
-                !job.ImagesDeletionCompleted ||
+                (!job.ImagesDeletionCompleted ||
                 !job.PostDataDeletionCompleted ||
                 !job.ThumbnailRemovedCompleted ||
-                !job.PostDeletedEventPublished)
+                !job.PostDeletedEventPublished) && 
+                job.FailedAttempts < 4) 
             .Select(x => x.Id)
             .Take(take);
             

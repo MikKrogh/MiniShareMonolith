@@ -3,7 +3,7 @@ using PostsModule.Domain;
 
 namespace PostsModule.Application.UserEvents;
 
-public sealed class UserCreatedEventHandler :  Listener<TmpEventUSer>
+public sealed class UserCreatedEventHandler :  Listener<UserCreatedEvent>
 
 {
     private readonly IUserRepository _userRepository;
@@ -12,7 +12,7 @@ public sealed class UserCreatedEventHandler :  Listener<TmpEventUSer>
         _userRepository = userRepository;
     }
 
-    public async Task Handle(TmpEventUSer t)
+    public async Task Handle(UserCreatedEvent t)
     {
         try
         {
@@ -34,9 +34,9 @@ public sealed class UserCreatedEventHandler :  Listener<TmpEventUSer>
 
 }
 
-public sealed class TmpEventUSer : BarebonesMessageBroker.Event
+public sealed class UserCreatedEvent : BarebonesMessageBroker.Event
 {
-    public string Id { get; init; }
+    public string Id { get; init; } = Guid.NewGuid().ToString();
 
     public string EventName => "UserModule.UserCreated";
 

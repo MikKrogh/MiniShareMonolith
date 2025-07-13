@@ -181,7 +181,6 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
 
         //Then
         var getResponse = await testFacade.GetPost(response.Result.PostId);
-
         Assert.True(Domain.Colors.Unknown == getResponse.PrimaryColor);
     }
 

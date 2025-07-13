@@ -1,3 +1,4 @@
+using BarebonesMessageBroker;
 using PostsModule;
 using PostsModule.Presentation;
 
@@ -8,7 +9,11 @@ builder.Services.Configure<HostOptions>(options =>
 {
     options.ShutdownTimeout = TimeSpan.FromSeconds(15);
 });
-
+builder.Services.AddSingleton<BarebonesMessageBroker.IBus>(sp =>
+{
+    var scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
+    return new BareBonesBus(scopeFactory);
+});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

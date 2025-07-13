@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using BarebonesMessageBroker;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,10 +32,11 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsync
             var sp = services.BuildServiceProvider();
             _postsContext = sp.GetRequiredService<PostsContext>();
             EnsureDatabaseCreated(_postsContext);
-
-            services.AddSingleton<MesageBrokerFacade>(sp =>
+            services.AddSingleton<MesageBrokerFacade>();
+            services.AddSingleton<BarebonesMessageBroker.IBus>(sp =>
             {
-                return new MesageBrokerFacade(ibus, harness);
+                var scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
+                return new TestBus(scopeFactory);
             });
         });
     }

@@ -41,18 +41,40 @@ internal class TestFacade
         var id = Guid.NewGuid();
         string username = id.ToString().Substring(0, 8);
         var existingUser = await _messageBroker.SendUserCreatedEvent(id, username);
-        await _messageBroker.WaitUntillEventHasBeenConsumed<UserCreatedEvent>(x => x.UserId == existingUser.UserId);
         return existingUser;
     }
 
     public async Task<TestFacadeResult<CreatePostResponse?>> SendCreatePost(PostRequest request, string? userId)
     {
-        var response = await _client.PostAsJsonAsync($"/Posts?UserId={userId}", request);
-
+        int maxRetries = 7;
+        int attempts = 0;
+        HttpStatusCode latestStatusCode = default;
+        while (attempts < maxRetries)
+        {
+            attempts++;
+            try
+            {
+                var response = await _client.PostAsJsonAsync($"/Posts?UserId={userId}", request);
+                latestStatusCode = response.StatusCode;
+                if (response.IsSuccessStatusCode)
+                {
+                    return new TestFacadeResult<CreatePostResponse?>
+                    {
+                        StatusCode = response.StatusCode,
+                        Result = response.IsSuccessStatusCode ? await response.Content.ReadFromJsonAsync<CreatePostResponse>() : null
+                    };
+                }
+            }
+            catch (Exception e)
+            {
+                if (attempts >= maxRetries) throw;
+                await Task.Delay(100 * attempts);
+            }
+        }
         return new TestFacadeResult<CreatePostResponse?>
         {
-            StatusCode = response.StatusCode,
-            Result = response.IsSuccessStatusCode ? await response.Content.ReadFromJsonAsync<CreatePostResponse>() : null
+            StatusCode = latestStatusCode,
+            Result = null
         };
     }
 
@@ -88,7 +110,11 @@ internal class TestFacade
 
 
 
-    public async Task<PostDto?> GetPost(string id) => await _client.GetFromJsonAsync<PostDto?>($"/Posts/{id}");
+    public async Task<PostDto?> GetPost(string id)
+    {
+        var t =  await _client.GetFromJsonAsync<PostDto?>($"/Posts/{id}");
+        return t;
+    }
     public async Task<TestFacadeResult<byte[]>> GetImage(string postId, string imageId)
     {
         if (string.IsNullOrEmpty(imageId)) throw new Exception("imageId must not be empty");

@@ -13,7 +13,7 @@ public class AzureBlobService : IImageStorageService
     private bool blobExists = false;
     public AzureBlobService(IConfiguration config)
     {
-        string storgeAccount = config["BlobStorageUri"];
+        string? storgeAccount = config["BlobStorageUri"];
         if (string.IsNullOrEmpty(storgeAccount))
             throw new Exception("Cant connect to blob storage without a storage account uri");
 
@@ -53,7 +53,7 @@ public class AzureBlobService : IImageStorageService
             var response = await blobClient.OpenReadAsync();
             return response;
         }
-        catch (Exception e)
+        catch (Exception)
         {
             return null;
         }

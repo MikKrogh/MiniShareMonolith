@@ -10,10 +10,6 @@ internal class UserRepository : IUserRepository
     {
         this.context = context;
     }
-    //public UserRepository()
-    //{
-
-    //}
 
     public async Task Create(User user)
     {

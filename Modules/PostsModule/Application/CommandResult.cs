@@ -36,7 +36,7 @@ public sealed class CommandResult<T> where T : class, new()
         };
     }
 
-    public static CommandResult<T> Success(T result)
+    public static CommandResult<T> Success(T? result)
     {
         return new CommandResult<T>()
         {

@@ -92,7 +92,7 @@ internal class PostsRepository : IPostsRepository
                 }
                 result.Add(post);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 continue;
             }
@@ -135,7 +135,7 @@ internal class PostsRepository : IPostsRepository
                 postEntities = postEntities.Provider.CreateQuery<PostEntity>(resultExpression);
 
             }
-            catch (Exception e) { }
+            catch (Exception) { }
         }
 
         return postEntities;

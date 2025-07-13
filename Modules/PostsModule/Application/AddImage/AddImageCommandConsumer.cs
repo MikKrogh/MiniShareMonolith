@@ -41,7 +41,7 @@ public sealed class AddImageCommandConsumer
                 StreamBank.RemoveStream(context.PostId, context.StreamId);
                 return CommandResult<AddImageCommandResult>.Success(null);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return CommandResult<AddImageCommandResult>.InternalError();
             }

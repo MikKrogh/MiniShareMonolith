@@ -1,15 +1,16 @@
 ﻿
+using BarebonesMessageBroker;
+
 namespace PostsModule.Tests.Helper;
 
 public class MesageBrokerFacade
 {
-    private readonly IBus _bus;
-    private readonly ITestHarness _harness;
+    private readonly TestBus _bus;
 
-    public MesageBrokerFacade(IBus bus, ITestHarness harnes)
+    public MesageBrokerFacade(IBus bus)
     {
-        _bus = bus;
-        _harness = harnes;
+        _bus = bus as TestBus ?? throw new Exception("couldnt find Testbus");
+
     }
     public async Task<UserCreatedEvent> SendUserCreatedEvent(Guid? userId = null, string? username = null)
     {
@@ -18,44 +19,15 @@ public class MesageBrokerFacade
             UserId = userId.ToString() ?? Guid.NewGuid().ToString(),
             UserName = username ?? "some random Name"
         };
-        await _bus.Publish(userCreateEvent);
+        await _bus.Publish(userCreateEvent, "UserModule.UserCreated");
         return userCreateEvent;
     }
-    public async Task Publish<T>(T message) where T : class => await _bus.Publish(message);
+    public async Task Publish<T>(T message, string eventName) where T : class => await _bus.Publish(message, eventName);
 
-    public async Task<bool> AssertExactlyOneMessageMatch<MessageType>(Predicate<MessageType> predicate) where MessageType : class
+    public bool AssertExactlyOneMessageMatch<MessageType>(Predicate<MessageType> predicate, string eventName)
     {
-        FilterDelegate<IPublishedMessage<MessageType>> filter = (msg) => msg.MessageType == typeof(MessageType);
-        var messagesMatchingMessageType = _harness.Published.Select(filter);
-
-        int foundMatches = 0;
-        foreach (var message in messagesMatchingMessageType)
-        {
-            bool hasFailures = predicate.Invoke(message.MessageObject as MessageType);
-            if (!hasFailures)
-                foundMatches++;
-
-        }
-
-        return foundMatches == 1 ? true : false;
-    }
-
-    public async Task WaitUntillEventHasBeenConsumed<T>(Predicate<T>? predicate = null) where T : class
-    {
-        var t = _harness.Consumed.SelectAsync<T>();
-        await foreach (var message in t)
-        {
-            if (message.MessageType == typeof(T))
-            {
-                if (predicate is not null)
-                {
-                    var isValid = predicate.Invoke(message.MessageObject as T);
-                    if (isValid)
-                        return;
-                    continue;
-                }
-                return;
-            }
-        }
+        var publishedEvents = _bus.PublishedEvents.Where(x => x.EventName == eventName);
+        var matchingEvents = publishedEvents.Where(x => x.Message is MessageType message && predicate.Invoke(message)).ToList();
+        return matchingEvents?.Count == 1;
     }
 }

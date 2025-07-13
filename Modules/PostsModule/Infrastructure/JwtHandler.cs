@@ -53,7 +53,7 @@ public sealed class JwtHandler : IAuthHelper
 
             return tokenHandler.ValidateToken(token, validationParameters, out _);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return null; // Invalid token
         }
