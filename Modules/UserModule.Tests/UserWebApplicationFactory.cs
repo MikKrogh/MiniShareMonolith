@@ -12,7 +12,12 @@ public class UserWebApplicationFactory : WebApplicationFactory<Program>
         builder.UseEnvironment("Test");
         builder.ConfigureServices(services =>
         {
-            services.AddSingleton<BarebonesMessageBroker.IBus>(new TestBus());
+            var sp = services.BuildServiceProvider();
+            services.AddSingleton<BarebonesMessageBroker.IBus>(sp =>
+            {
+                var scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
+                return new TestBus(scopeFactory);
+            });
         });
     }
 }
