@@ -1,5 +1,7 @@
 ﻿
+using BarebonesMessageBroker;
 using Microsoft.EntityFrameworkCore;
+using PostsModule.Application.DeletePost;
 using PostsModule.Domain;
 
 
@@ -10,12 +12,14 @@ internal sealed class DeletePostService:  IDeletePostService
     private readonly PostsContext _context;
     private readonly IImageStorageService blobStorage;
     private readonly ILogger<DeletePostService> logger;
+    private readonly IBus bus;
 
-    public DeletePostService(PostsContext context, IImageStorageService blobStorage, ILogger<DeletePostService> logger)
+    public DeletePostService(PostsContext context, IImageStorageService blobStorage, ILogger<DeletePostService> logger, IBus bus)
     {
         _context = context;
         this.blobStorage = blobStorage;
         this.logger = logger;
+        this.bus = bus;
     }
     
     public async Task TryDelete(string postId)
@@ -42,6 +46,12 @@ internal sealed class DeletePostService:  IDeletePostService
             var success = await DeleteThumbnail(postId);    
             if (success) 
                 entity.ThumbnailRemovedCompleted = true;
+        }
+        if (!entity.PostDeletedEventPublished)
+        {
+            var success = await PublishPostDeletedEvent(postId);
+            if (success) 
+                entity.PostDeletedEventPublished = true;
         }
 
         _context.DeletionJobs.Update(entity);
@@ -99,6 +109,21 @@ internal sealed class DeletePostService:  IDeletePostService
             return false;
         }
     }
+
+    private async Task<bool> PublishPostDeletedEvent(string postId)
+    {
+        try
+        {
+            await bus.Publish(new PostDeletedEvent(postId), "PostModule.PostDeleted");
+            return true;            
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to publish post deleted event for post {0}", postId);
+            return false;
+        }
+    }
+
     private async Task<bool> DeletePostRelation(string postId)
     {
         try

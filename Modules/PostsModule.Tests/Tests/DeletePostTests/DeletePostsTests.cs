@@ -1,4 +1,5 @@
 ﻿
+using PostsModule.Application.DeletePost;
 using PostsModule.Tests.Helper;
 using System.Net;
 
@@ -12,8 +13,7 @@ public class DeletePostsTests : IClassFixture<PostsWebApplicationFactory>
     {
         ///<summary >
         // Deleting posts works with a background worker which runs a loop looking for posts to delete. 
-        // the nature of the setup results in a few delays between the http call to delete and the actual deletion
-        // if tests begin failing due to timing issues, increase the delay in the test, or decrease the loop time in the background worker.
+        // the nature of the setup results in a delay between the http call/action to delete and the actual deletion        
         /// </summary>
         testFacade = new TestFacade(factory);
     }
@@ -76,11 +76,13 @@ public class DeletePostsTests : IClassFixture<PostsWebApplicationFactory>
         var user = await testFacade.SendCreateUserEvent();
         var post = await testFacade.SendCreatePost(PostRequestBuilder.GetValidDefaultBody(), user.UserId);
         // When
-        var response = await testFacade.DeletePost(post.Result.PostId, user.UserId);
+        await testFacade.DeletePost(post.Result.PostId, user.UserId);
+        await Task.Delay(200); // Wait for the background worker to process the deletion
         // Then
-        Assert.Equal(HttpStatusCode.OK, response);
+
+        var eventSent = testFacade.MessageBroker.AssertExactlyOneMessageMatch<PostDeletedEvent>(e => 
+            e.PostId == post.Result.PostId,
+            "PostModule.PostDeleted");
+        Assert.True(eventSent);
     }
-
-
-
 }

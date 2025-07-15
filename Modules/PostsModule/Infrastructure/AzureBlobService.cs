@@ -2,8 +2,6 @@
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using PostsModule.Domain;
-using System.IO;
-
 namespace PostsModule.Infrastructure;
 
 public class AzureBlobService : IImageStorageService
@@ -41,7 +39,6 @@ public class AzureBlobService : IImageStorageService
         var path = Path.Combine(directoryName, fileName);
         var blobclient = _blobClient.GetBlobClient(path);
         await blobclient.UploadAsync(stream, overwrite:true);
-
     }
 
     public async Task<Stream> GetImage(string directoryName, string fileName)
@@ -71,8 +68,6 @@ public class AzureBlobService : IImageStorageService
             BlobClient blob = _blobClient.GetBlobClient(blobItem.Name);
             await blob.DeleteIfExistsAsync();
         }
-
-
     }
 
     public async Task DeleteThumbnail(string postId)

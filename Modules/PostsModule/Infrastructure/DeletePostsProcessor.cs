@@ -7,7 +7,6 @@ public class DeletePostsProcessor : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
     private readonly int DelayTime = 30000;
-
     private readonly ILogger<DeletePostsProcessor> logger;
 
     public DeletePostsProcessor(ILogger<DeletePostsProcessor> logger, IServiceProvider serviceProvider, IConfiguration config)
@@ -37,7 +36,6 @@ public class DeletePostsProcessor : BackgroundService
                         if (stoppingToken.IsCancellationRequested) break;                    
                         try
                         {
-                                await Task.Delay(3);
                             await service.TryDelete(postId);
                         }
                         catch (Exception ex)

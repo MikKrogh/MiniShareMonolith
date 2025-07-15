@@ -12,7 +12,7 @@ namespace PostsModule.Tests;
 internal class TestFacade
 {
     private readonly PostsWebApplicationFactory _factory;
-    private readonly MesageBrokerFacade _messageBroker;
+    public readonly MesageBrokerFacade MessageBroker;
     private readonly IAuthHelper jwtHandler;
 
     public readonly HttpClient _client;
@@ -20,7 +20,7 @@ internal class TestFacade
     {
         _factory = factory;
         _client = factory.CreateClient();
-        _messageBroker = factory.Services.GetRequiredService<MesageBrokerFacade>();
+        MessageBroker = factory.Services.GetRequiredService<MesageBrokerFacade>();
         jwtHandler = factory.Services.GetRequiredService<IAuthHelper>();
 
     }
@@ -40,7 +40,7 @@ internal class TestFacade
     {
         var id = Guid.NewGuid();
         string username = id.ToString().Substring(0, 8);
-        var existingUser = await _messageBroker.SendUserCreatedEvent(id, username);
+        var existingUser = await MessageBroker.SendUserCreatedEvent(id, username);
         return existingUser;
     }
 
