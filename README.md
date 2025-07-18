@@ -1,4 +1,13 @@
 <h1>TODO:</h1>
+*admin mode if user is creator on post *filter by created by me settings
+*contact dev
+*delete user
+
+Engagement
+comment*
+report posts*
+contact support*
+Map*
 
 <h4>
   across the board
