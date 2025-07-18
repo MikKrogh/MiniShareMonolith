@@ -9,6 +9,7 @@ public static class SetupExtensions
     {
         serviceCollection.AddDbContext<EngagementDbContext>(options => options.EnableSensitiveDataLogging(false));
         serviceCollection.AddTransient<IPostLikeService, EngagementDbContext>();
+        serviceCollection.AddScoped<ICommentService, EngagementDbContext>();
     }
     public static void EngagementModuleEndpointSetup(this IEndpointRouteBuilder builder) 
     {
@@ -45,5 +46,9 @@ public static class SetupExtensions
             var hasLiked = await service.HasLiked(postid, userId);
             return Results.Ok(hasLiked);
         });
+
+        var commentsRoutes = rootApi.MapGroup("/comments").WithTags("engagementModule");
+        commentsRoutes.MapPost(string.Empty, Comments.AddComment.Process);
+        commentsRoutes.MapGet(string.Empty, Comments.GetComments.Process);
     }
 }

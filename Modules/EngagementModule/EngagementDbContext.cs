@@ -1,11 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EngagementModule.Comments;
+using Microsoft.EntityFrameworkCore;
 
 namespace EngagementModule;
 
-public class EngagementDbContext : DbContext, IPostLikeService
+internal class EngagementDbContext : DbContext, IPostLikeService, ICommentService
 {
     private readonly string connString;
     private  DbSet<PostLikeEntity> Likes { get; set; }
+    private  DbSet<CommentEntity> Comments { get; set; }
     public EngagementDbContext(DbContextOptions<EngagementDbContext> options,IConfiguration config, IWebHostEnvironment env):  base(options)
     {
         var connectionString = config["EngagementModuleConnString"];
@@ -30,6 +32,7 @@ public class EngagementDbContext : DbContext, IPostLikeService
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<PostLikeEntity>().ToTable("PostLikes");        
+        modelBuilder.Entity<CommentEntity>().ToTable("PostComments");        
 
         modelBuilder.Entity<PostLikeEntity>()
             .HasKey(l => new { l.UserId, l.PostId });
@@ -38,6 +41,14 @@ public class EngagementDbContext : DbContext, IPostLikeService
             .IsRequired();
         modelBuilder.Entity<PostLikeEntity>()
             .Property(l => l.PostId)
+            .IsRequired();
+
+
+        modelBuilder.Entity<CommentEntity>()
+            .HasKey(c => c.CommentId);
+        modelBuilder.Entity<CommentEntity>().Property(c => c.PostId)
+            .IsRequired();
+        modelBuilder.Entity<CommentEntity>().Property(c => c.UserId)
             .IsRequired();
         base.OnModelCreating(modelBuilder);
     }
@@ -60,6 +71,17 @@ public class EngagementDbContext : DbContext, IPostLikeService
         var hasLiked = await Likes.AnyAsync(l => l.PostId == postId && l.UserId == userId);
         return hasLiked;
     }
+
+    public async Task AddComment(CommentEntity comment)
+    {
+        await Comments.AddAsync(comment);
+        await SaveChangesAsync();
+    }
+
+    public Task<List<CommentEntity>> GetComments(string postId)
+    {
+        return Comments.Where(c => c.PostId == postId).ToListAsync();
+    }
 }
 
 public interface IPostLikeService
@@ -69,6 +91,12 @@ public interface IPostLikeService
     Task Unlike(string postId, string userId);
     Task<int> GetLikesCount(string postId);
 
+}
+
+internal interface ICommentService
+{
+    Task AddComment(CommentEntity comment);
+    Task<List<CommentEntity>> GetComments(string postId);
 }
 
 
