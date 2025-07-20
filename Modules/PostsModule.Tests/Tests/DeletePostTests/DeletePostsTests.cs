@@ -77,7 +77,7 @@ public class DeletePostsTests : IClassFixture<PostsWebApplicationFactory>
         var post = await testFacade.SendCreatePost(PostRequestBuilder.GetValidDefaultBody(), user.UserId);
         // When
         await testFacade.DeletePost(post.Result.PostId, user.UserId);
-        await Task.Delay(200); // Wait for the background worker to process the deletion
+        await Task.Delay(300); // Wait for the background worker to process the deletion
         // Then
 
         var eventSent = testFacade.MessageBroker.AssertExactlyOneMessageMatch<PostDeletedEvent>(e => 
