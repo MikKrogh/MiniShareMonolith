@@ -10,12 +10,13 @@ public static class SetupExtensions
         serviceCollection.AddDbContext<EngagementDbContext>(options => options.EnableSensitiveDataLogging(false));
         serviceCollection.AddTransient<IPostLikeService, EngagementDbContext>();
         serviceCollection.AddScoped<ICommentService, EngagementDbContext>();
+        serviceCollection.AddScoped<ChainActivityService, EngagementDbContext>();
     }
     public static void EngagementModuleEndpointSetup(this IEndpointRouteBuilder builder) 
     {
-        var rootApi = builder.MapGroup("/engagement/{postid}").WithTags("engagementModule");
+        var rootApi = builder.MapGroup("/engagement").WithTags("engagementModule");
 
-        var likesRoutes = rootApi.MapGroup("/likes").WithTags("likes");
+        var likesRoutes = rootApi.MapGroup("{postid}/likes").WithTags("likes");
         likesRoutes.MapPost(string.Empty, async (string postid, [FromQuery] string userId, [FromServices] IPostLikeService service) =>
         {
             try
@@ -47,8 +48,16 @@ public static class SetupExtensions
             return Results.Ok(hasLiked);
         });
 
-        var commentsRoutes = rootApi.MapGroup("/comments").WithTags("engagementModule");
+        var commentsRoutes = rootApi.MapGroup("{postid}/comments").WithTags("engagementModule");
         commentsRoutes.MapPost(string.Empty, Comments.AddComment.Process);
         commentsRoutes.MapGet(string.Empty, Comments.GetComments.Process);
+        
+
+        var notificationRoutes = rootApi.MapGroup("/notifications").WithTags("engagementModule");
+        notificationRoutes.MapGet(string.Empty, Notification.GetNotifications.Process);
+        notificationRoutes.MapPost(string.Empty, Notification.UpdateSyncronizationTime.Process);
+        
+
+        
     }
 }

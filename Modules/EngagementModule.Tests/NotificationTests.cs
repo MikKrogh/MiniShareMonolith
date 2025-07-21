@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using EngagementModule.Notification;
+using System.Net;
 using System.Net.Http.Json;
 
 namespace EngagementModule.Tests;
@@ -6,29 +7,36 @@ namespace EngagementModule.Tests;
 public class NotificationTests : IClassFixture<EngagementWebApplication>
 {
     HttpClient client;
+    EngagementWebApplication _factory;
 
     public NotificationTests(EngagementWebApplication factory)
     {
+        _factory = factory;
         client = factory.CreateClient();
     }
 
     [Fact]
-    public async Task WhenUserCommentsOnPost_ThenNotificaitonExistsForPostCreator()
+    public async Task GivenPostHasNewComment_WhenCreatorChecksForNotication_ThenNotificaitonExistsForPost()
     {
         // Given
         string postId = Guid.NewGuid().ToString();
-        string userId = Guid.NewGuid().ToString();
+        string creatorId = Guid.NewGuid().ToString();
+        await _factory.PublishPostCreatedEvent(postId, creatorId);
+        var t = await client.PostAsync($"/Engagement/notifications?userId={creatorId}", null);
+
+        string commentatorId = Guid.NewGuid().ToString();
         var comment = new { Content = "This is a test comment." };
-        
-        // When
-        var response = await client.PostAsJsonAsync($"/Engagement/{postId}/comments?userId={userId}", comment);
-        
+        await client.PostAsJsonAsync($"/Engagement/{postId}/comments?userId={commentatorId}", comment);
+
+        //When
+        var notificationResponse = await client.GetFromJsonAsync<List<NotifocationsDto>>($"/Engagement/Notifications?userId={creatorId}");
         // Then
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        
-        // Check if notification exists for the post creator
-        var notificationResponse = await client.GetAsync($"/Engagement/{postId}/notifications");
-        Assert.Equal(HttpStatusCode.OK, notificationResponse.StatusCode);
+        Assert.NotNull(notificationResponse);
+        Assert.Single(notificationResponse);
+        Assert.Equal(postId, notificationResponse[0].PostId);
+
+
+
 
     }
 }
