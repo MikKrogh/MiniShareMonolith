@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace EngagementModule.Comments;
+﻿namespace EngagementModule.Comments;
 
 internal class CommentEntity
 {
