@@ -17,7 +17,7 @@ internal class AddComment
         if (IsValid(entity))
         {
             await service.AddComment(entity);
-            return Results.Ok();
+            return Results.Ok(entity.CommentId);
         }
         return Results.BadRequest();
     }

@@ -87,13 +87,49 @@ internal class EngagementDbContext : DbContext, IPostLikeService, ICommentServic
         await Comments.AddAsync(comment);
         if (string.IsNullOrEmpty(comment.ParentCommentId))
         {
-            var postActivityChain = await ActivityChains                
+            var postCreatorChain = await ActivityChains                
                 .FirstOrDefaultAsync(c => c.Id == comment.PostId);
-            if (postActivityChain is not null)
-                postActivityChain.DateChanged = DateTime.UtcNow;
+            if (postCreatorChain is not null)
+                postCreatorChain.DateChanged = DateTime.UtcNow;
+
+            var rootCommentChain = new ActivityChain
+            {
+                Id = comment.CommentId,
+                PostId = comment.PostId,
+                DateChanged = DateTime.UtcNow,
+                Chains = new List<ChainLink>()
+
+            };
+            var chainlink = new ChainLink
+            {
+                UserId = comment.UserId,
+                AcitivtyChainId = rootCommentChain.Id,
+                Chain = rootCommentChain
+            };
+            rootCommentChain.Chains.Add(chainlink);
+            ActivityChains.Add(rootCommentChain);
         }
-
-
+        else
+        {
+            var chain = await ActivityChains
+                .Include(c => c.Chains)
+                .FirstOrDefaultAsync(c => c.Id == comment.ParentCommentId);
+            if (chain is not null)
+            {
+                chain.DateChanged = DateTime.UtcNow;
+                var existingLink = chain.Chains.FirstOrDefault(c => c.UserId == comment.UserId && c.AcitivtyChainId == chain.Id);
+                if (existingLink is null)
+                {
+                    var newLink = new ChainLink
+                    {
+                        UserId = comment.UserId,
+                        AcitivtyChainId = chain.Id,
+                        Chain = chain
+                    };
+                    chain.Chains.Add(newLink);
+                }
+            }
+        }
         await SaveChangesAsync();
     }
 

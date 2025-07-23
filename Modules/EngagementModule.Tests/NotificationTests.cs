@@ -1,6 +1,7 @@
 ﻿using EngagementModule.Notification;
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace EngagementModule.Tests;
 
@@ -57,7 +58,38 @@ public class NotificationTests : IClassFixture<EngagementWebApplication>
         Assert.Single(firstFetch);
         Assert.NotNull(secondFetch);
         Assert.Empty(secondFetch);
+    }
 
+
+    [Fact]
+    public async Task GivenSomeoneLeavesSubCommentOnRootComment_WhenRootCommentatorChecksNotification_ThenPostWithRootCommentIsReturned()
+    {
+               // Given
+        string postId = Guid.NewGuid().ToString();
+
+        await _factory.PublishPostCreatedEvent(postId, Guid.NewGuid().ToString());
+
+        string rootCommentatorId = Guid.NewGuid().ToString();
+        var rootComment = new { Content = "This is a test comment." };
+        var rootCommentResponse = await client.PostAsJsonAsync($"/Engagement/{postId}/comments?userId={rootCommentatorId}", rootComment);
+        var responseContent = await rootCommentResponse.Content.ReadAsStringAsync();
+        var rootCommentId = JsonSerializer.Deserialize<string>(responseContent);
+
+
+        await client.PostAsync($"/Engagement/notifications?userId={rootCommentatorId}", null);
+
+        string subCommentatorId = Guid.NewGuid().ToString();
+        var subComment = new {
+            Content = "This is a sub comment.",
+            ParentCommentId = rootCommentId
+        };
+        await client.PostAsJsonAsync($"/Engagement/{postId}/comments?userId={subCommentatorId}", subComment);
+        // When
+        var notificationResponse = await client.GetFromJsonAsync<List<NotifocationsDto>>($"/Engagement/Notifications?userId={rootCommentatorId}");
+        // Then
+        Assert.NotNull(notificationResponse);
+        Assert.Single(notificationResponse);
+        Assert.Equal(postId, notificationResponse[0].PostId);
     }
 
 }
