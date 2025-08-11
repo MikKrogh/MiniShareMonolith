@@ -11,7 +11,7 @@ internal class AddComment
             PostId = postId,
             UserId = userId,
             Content = dto.Content,
-            ParentCommentId = dto.ParentCommentId
+            ParentCommentId = string.IsNullOrEmpty(dto.ParentCommentId) ? null : dto.ParentCommentId,
         };
 
         if (IsValid(entity))
@@ -35,6 +35,6 @@ internal class AddComment
 internal record AddCommentDto
 {
     public string Content { get; set; } = string.Empty;
-    public string? ParentCommentId { get; set; } = string.Empty;
+    public string? ParentCommentId { get; set; } = null;
 
 };
