@@ -87,51 +87,60 @@ internal class EngagementDbContext : DbContext, IPostLikeService, ICommentServic
         await Comments.AddAsync(comment);
         if (string.IsNullOrEmpty(comment.ParentCommentId))
         {
-            var postCreatorChain = await ActivityChains                
+            var postCreatorChain = await ActivityChains.Include(c => c.Chains)
                 .FirstOrDefaultAsync(c => c.Id == comment.PostId);
-            if (postCreatorChain is not null)
+
+            var rootCommentChainListerner = postCreatorChain?.Chains.FirstOrDefault(x => x.AcitivtyChainId == comment.PostId);
+            var commentatorIsPostCreator = (rootCommentChainListerner?.UserId == comment.UserId) && !string.IsNullOrEmpty(comment.UserId);
+
+            if (postCreatorChain is not null && !commentatorIsPostCreator)
+            {
                 postCreatorChain.DateChanged = DateTime.UtcNow;
-
-            var rootCommentChain = new ActivityChain
-            {
-                Id = comment.CommentId,
-                PostId = comment.PostId,
-                DateChanged = DateTime.UtcNow,
-                Chains = new List<ChainLink>()
-
-            };
-            var chainlink = new ChainLink
-            {
-                UserId = comment.UserId,
-                AcitivtyChainId = rootCommentChain.Id,
-                Chain = rootCommentChain
-            };
-            rootCommentChain.Chains.Add(chainlink);
-            ActivityChains.Add(rootCommentChain);
-        }
-        else
-        {
-            var chain = await ActivityChains
-                .Include(c => c.Chains)
-                .FirstOrDefaultAsync(c => c.Id == comment.ParentCommentId);
-            if (chain is not null)
-            {
-                chain.DateChanged = DateTime.UtcNow;
-                var existingLink = chain.Chains.FirstOrDefault(c => c.UserId == comment.UserId && c.AcitivtyChainId == chain.Id);
-                if (existingLink is null)
+            }
+                var rootCommentChain = new ActivityChain
                 {
-                    var newLink = new ChainLink
+                    Id = comment.CommentId,
+                    PostId = comment.PostId,
+                    DateChanged = default,
+                    Chains = new List<ChainLink>()
+
+                };
+                var chainlink = new ChainLink
+                {
+                    UserId = comment.UserId,
+                    AcitivtyChainId = rootCommentChain.Id,
+                    Chain = rootCommentChain
+                };
+                rootCommentChain.Chains.Add(chainlink);
+                ActivityChains.Add(rootCommentChain);
+
+            }
+            else
+            {
+                var chain = await ActivityChains
+                    .Include(c => c.Chains)
+                    .FirstOrDefaultAsync(c => c.Id == comment.ParentCommentId);
+                if (chain is not null)
+                {
+
+
+                    chain.DateChanged = DateTime.UtcNow;
+                    var existingLink = chain.Chains.FirstOrDefault(c => c.UserId == comment.UserId && c.AcitivtyChainId == chain.Id);
+                    if (existingLink is null)
                     {
-                        UserId = comment.UserId,
-                        AcitivtyChainId = chain.Id,
-                        Chain = chain
-                    };
-                    chain.Chains.Add(newLink);
+                        var newLink = new ChainLink
+                        {
+                            UserId = comment.UserId,
+                            AcitivtyChainId = chain.Id,
+                            Chain = chain
+                        };
+                        chain.Chains.Add(newLink);
+                    }
                 }
             }
+            await SaveChangesAsync();
         }
-        await SaveChangesAsync();
-    }
+    
 
     public Task<List<CommentEntity>> GetComments(string postId)
     {
@@ -151,14 +160,24 @@ internal class EngagementDbContext : DbContext, IPostLikeService, ICommentServic
 
     public async Task<IEnumerable<string>> GetPostsWithNewComments(string userId)
     {
-        var lastsync = await UserSyncs.FindAsync(userId);
-        if (lastsync is null) return Enumerable.Empty<string>();
+        var user = await UserSyncs.FindAsync(userId) ?? new() 
+        {
+            LastSyncTime = new DateTime(), UserId = userId 
+        };
 
+        //query for acitivies the user is subscribed to, then remove those where the latest acitivity is the user itself
         var postIds = await ChainListeners
-            .Where(cl => cl.UserId == userId && cl.Chain.DateChanged > lastsync.LastSyncTime)
+            .Where(cl => cl.UserId == userId && cl.Chain.DateChanged > user.LastSyncTime)
             .Select(cl => cl.Chain.PostId)
-            .Distinct()
+            .Where(postId => Comments
+                .Where(c => c.PostId == postId)
+                .OrderByDescending(c => c.CreatedAt)
+                .Select(c => c.UserId)
+                .FirstOrDefault() != userId
+            )
             .ToListAsync();
+
+
 
         return postIds == null 
             ? Enumerable.Empty<string>() 

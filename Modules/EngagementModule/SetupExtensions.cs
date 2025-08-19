@@ -31,7 +31,7 @@ public static class SetupExtensions
                 else return Results.Problem();
             }
 
-        }); 
+        });
         likesRoutes.MapDelete(string.Empty, async (string postid, [FromQuery] string userId, IPostLikeService service) =>
         {
             await service.Unlike(postid, userId);
@@ -55,6 +55,7 @@ public static class SetupExtensions
 
         var notificationRoutes = rootApi.MapGroup("/notifications").WithTags("engagementModule");
         notificationRoutes.MapGet(string.Empty, Notification.GetNotifications.Process);
+        //notificationRoutes.MapPost("Tmp", Notification.PostCreated.PostCreatedHandler.Process);
         notificationRoutes.MapPost(string.Empty, Notification.UpdateSyncronizationTime.Process);
         
 
