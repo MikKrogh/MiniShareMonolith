@@ -15,15 +15,10 @@ Map*
   <li>
     improve firebase signup setup, verification email always ends up in spam, and the text in the mail is unfriendly
   </li>
-  <li>
-    keeping secrets in the uri is considered bad practice, becourse of securtiy. uri routes get stored/logged by browsers and used for analytics, and in our case, exposes the user's email. look into moving the user token into a header. 
-  </li>
-
 
 <h4>
   PostsModule
 </h4>
-
   <li>
     PostsRepository could use cleanup, and some benchmarking on the current dynamic filter/search/ orderby -solution, to ensure its nots shite
   </li>
@@ -52,24 +47,14 @@ Map*
 <li>
   admin mode if user is creator on post *filter by created by me settings
 </li>
-
-
 <li>
   contact dev  
 </li>
 <li>
-delete user  
-</li>
-<li>privacy policy
-</li>
-
-
-
-<li>
-  cleanup 
+  delete user  
 </li>
 <li>
-  tests
+  privacy policy
 </li>
 
 
