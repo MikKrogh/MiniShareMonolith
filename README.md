@@ -1,7 +1,4 @@
 <h1>TODO:</h1>
-*admin mode if user is creator on post *filter by created by me settings
-*contact dev
-*delete user
 
 Engagement
 comment*
@@ -52,6 +49,22 @@ Map*
 <li>
   better error handling for image upload, currently the user has no way of knowing how to handle image upload errors. also we need a frontend warning on filesize limits
 </li>
+<li>
+  admin mode if user is creator on post *filter by created by me settings
+</li>
+
+
+<li>
+  contact dev  
+</li>
+<li>
+delete user  
+</li>
+<li>privacy policy
+</li>
+
+
+
 <li>
   cleanup 
 </li>
