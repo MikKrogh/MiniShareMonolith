@@ -28,7 +28,6 @@ internal sealed class DeletePostService:  IDeletePostService
         var entity = await _context.DeletionJobs.FirstOrDefaultAsync( x => x.Id == postId);
         if (entity == null) return;
         entity.FailedAttempts++;
-
         if (!entity.PostDataDeletionCompleted)
         {
             var success = await DeletePostRelation(postId);

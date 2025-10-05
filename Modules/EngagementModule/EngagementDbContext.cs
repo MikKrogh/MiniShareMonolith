@@ -1,13 +1,19 @@
 ﻿using EngagementModule.Comments;
+using EngagementModule.Notification.PostCreated;
 using Microsoft.EntityFrameworkCore;
-
+using System.Runtime.CompilerServices;
+[assembly: InternalsVisibleTo("EngagementModule.Tests")]
 namespace EngagementModule;
 
-internal class EngagementDbContext : DbContext, IPostLikeService, ICommentService
+internal class EngagementDbContext : DbContext, IPostLikeService, ICommentService, ChainActivityService
 {
     private readonly string connString;
     private  DbSet<PostLikeEntity> Likes { get; set; }
     private  DbSet<CommentEntity> Comments { get; set; }
+    private  DbSet<ActivityChain> ActivityChains { get; set; }
+    private  DbSet<ChainLink> ChainListeners { get; set; }
+    private  DbSet<UserLastSync> UserSyncs { get; set; }
+    
     public EngagementDbContext(DbContextOptions<EngagementDbContext> options,IConfiguration config, IWebHostEnvironment env):  base(options)
     {
         var connectionString = config["EngagementModuleConnString"];
@@ -16,12 +22,6 @@ internal class EngagementDbContext : DbContext, IPostLikeService, ICommentServic
         if (string.IsNullOrEmpty(connectionString))
             throw new ArgumentNullException("Postgres connecion string must not be empty");
         else connString = connectionString;
-
-        if (env.IsDevelopment() || env.IsEnvironment("Test"))
-        {
-            Database.EnsureCreated();
-            SaveChanges();
-        }
     }
 
 
@@ -31,8 +31,12 @@ internal class EngagementDbContext : DbContext, IPostLikeService, ICommentServic
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        
         modelBuilder.Entity<PostLikeEntity>().ToTable("PostLikes");        
         modelBuilder.Entity<CommentEntity>().ToTable("PostComments");        
+        modelBuilder.Entity<ActivityChain>().ToTable("ActivityChains");        
+        modelBuilder.Entity<UserLastSync>().ToTable("UserSync");        
+        modelBuilder.Entity<ChainLink>().ToTable("ChainListeners");
 
         modelBuilder.Entity<PostLikeEntity>()
             .HasKey(l => new { l.UserId, l.PostId });
@@ -43,13 +47,20 @@ internal class EngagementDbContext : DbContext, IPostLikeService, ICommentServic
             .Property(l => l.PostId)
             .IsRequired();
 
-
         modelBuilder.Entity<CommentEntity>()
             .HasKey(c => c.CommentId);
         modelBuilder.Entity<CommentEntity>().Property(c => c.PostId)
             .IsRequired();
         modelBuilder.Entity<CommentEntity>().Property(c => c.UserId)
             .IsRequired();
+
+        modelBuilder.Entity<UserLastSync>().HasKey(x => x.UserId);
+        modelBuilder.Entity<ChainLink>().HasKey(x => new { x.UserId, x.AcitivtyChainId });
+        modelBuilder.Entity<ChainLink>()
+            .HasOne(x => x.Chain)
+            .WithMany(c => c.Chains)
+            .HasForeignKey(x => x.AcitivtyChainId);
+
         base.OnModelCreating(modelBuilder);
     }
     public async Task Like(string postId, string userId)
@@ -75,12 +86,121 @@ internal class EngagementDbContext : DbContext, IPostLikeService, ICommentServic
     public async Task AddComment(CommentEntity comment)
     {
         await Comments.AddAsync(comment);
-        await SaveChangesAsync();
-    }
+        if (string.IsNullOrEmpty(comment.ParentCommentId))
+        {
+            var postCreatorChain = await ActivityChains.Include(c => c.Chains)
+                .FirstOrDefaultAsync(c => c.Id == comment.PostId);
+
+            var rootCommentChainListerner = postCreatorChain?.Chains.FirstOrDefault(x => x.AcitivtyChainId == comment.PostId);
+            var commentatorIsPostCreator = (rootCommentChainListerner?.UserId == comment.UserId) && !string.IsNullOrEmpty(comment.UserId);
+
+            if (postCreatorChain is not null && !commentatorIsPostCreator)
+            {
+                postCreatorChain.DateChanged = DateTime.UtcNow;
+            }
+                var rootCommentChain = new ActivityChain
+                {
+                    Id = comment.CommentId,
+                    PostId = comment.PostId,
+                    DateChanged = default,
+                    Chains = new List<ChainLink>()
+
+                };
+                var chainlink = new ChainLink
+                {
+                    UserId = comment.UserId,
+                    AcitivtyChainId = rootCommentChain.Id,
+                    Chain = rootCommentChain
+                };
+                rootCommentChain.Chains.Add(chainlink);
+                ActivityChains.Add(rootCommentChain);
+
+            }
+            else
+            {
+                var chain = await ActivityChains
+                    .Include(c => c.Chains)
+                    .FirstOrDefaultAsync(c => c.Id == comment.ParentCommentId);
+                if (chain is not null)
+                {
+
+
+                    chain.DateChanged = DateTime.UtcNow;
+                    var existingLink = chain.Chains.FirstOrDefault(c => c.UserId == comment.UserId && c.AcitivtyChainId == chain.Id);
+                    if (existingLink is null)
+                    {
+                        var newLink = new ChainLink
+                        {
+                            UserId = comment.UserId,
+                            AcitivtyChainId = chain.Id,
+                            Chain = chain
+                        };
+                        chain.Chains.Add(newLink);
+                    }
+                }
+            }
+            await SaveChangesAsync();
+        }
+    
 
     public Task<List<CommentEntity>> GetComments(string postId)
     {
         return Comments.Where(c => c.PostId == postId).ToListAsync();
+    }
+
+    public async Task CreateChain(ActivityChain entity)
+    {
+        ActivityChains.Add(entity);
+        await SaveChangesAsync();
+    }
+
+    public Task AddChainLink(ChainLink entity)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<IEnumerable<string>> GetPostsWithNewComments(string userId)
+    {
+        var user = await UserSyncs.FindAsync(userId) ?? new() 
+        {
+            LastSyncTime = new DateTime(), UserId = userId 
+        };
+
+        //query for acitivies the user is subscribed to, then remove those where the latest acitivity is the user itself
+        var postIds = await ChainListeners
+            .Where(cl => cl.UserId == userId && cl.Chain.DateChanged > user.LastSyncTime)
+            .Select(cl => cl.Chain.PostId)
+            .Where(postId => Comments
+                .Where(c => c.PostId == postId)
+                .OrderByDescending(c => c.CreatedAt)
+                .Select(c => c.UserId)
+                .FirstOrDefault() != userId
+            )
+            .ToListAsync();
+
+
+
+        return postIds == null 
+            ? Enumerable.Empty<string>() 
+            : postIds;
+        
+
+    }
+
+    public async Task UpdateLastSync(string userId)
+    {
+        var lastsync = await UserSyncs.FindAsync(userId);
+        if (lastsync is null)
+        {
+            lastsync = new UserLastSync { UserId = userId, LastSyncTime = DateTime.UtcNow };
+            await UserSyncs.AddAsync(lastsync);
+        }
+        else
+        {
+            lastsync.LastSyncTime = DateTime.UtcNow;
+            UserSyncs.Update(lastsync);
+        }
+        await SaveChangesAsync();
     }
 }
 
@@ -92,11 +212,19 @@ public interface IPostLikeService
     Task<int> GetLikesCount(string postId);
 
 }
+internal interface ChainActivityService
+{
+    Task CreateChain(ActivityChain entity);
+    Task AddChainLink(ChainLink entity);
+    Task<IEnumerable<string>> GetPostsWithNewComments(string userId);
+    Task UpdateLastSync(string userId);
+}
 
 internal interface ICommentService
 {
     Task AddComment(CommentEntity comment);
     Task<List<CommentEntity>> GetComments(string postId);
+
 }
 
 

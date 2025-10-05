@@ -112,5 +112,44 @@ public class CommentTests : IClassFixture<EngagementWebApplication>
         Assert.Contains(result, c => c.Content == subCommentOne.Content && c.UserId == subCommentatorOneId);
         Assert.Contains(result, c => c.Content == subCommentTwo.Content && c.UserId == subCommentatorTwoId);
     }
+
+
+    [Fact]
+    public async Task WhenUserSubmitsChildComment_ThenChildKnowsItsParent()
+    {
+        // Given
+        string postId = Guid.NewGuid().ToString();
+        string userId = Guid.NewGuid().ToString();
+        var rootComment = new { Content = "This is a root comment." };
+        var response = await client.PostAsJsonAsync($"/Engagement/{postId}/comments?userId={userId}", rootComment);        
+        var getCommentsResponse = await client.GetAsync($"/Engagement/{postId}/comments");
+        var comments = await getCommentsResponse.Content.ReadFromJsonAsync<List<CommentDto>>();
+        var rootCommentDto = comments.Single();
+
+
+        // When
+        var childComment = new 
+        { 
+            Content = "This is a child comment.",
+            ParentCommentId = rootCommentDto.CommentId
+        };
+        var childResponse = await client.PostAsJsonAsync($"/Engagement/{postId}/comments?userId={userId}", childComment);
+        
+        // Then
+        Assert.Equal(HttpStatusCode.OK, childResponse.StatusCode);
+        
+        var updatedCommentsResponse = await client.GetAsync($"/Engagement/{postId}/comments");
+        var updatedComments = await updatedCommentsResponse.Content.ReadFromJsonAsync<List<CommentDto>>();
+        
+        Assert.NotNull(updatedComments);
+        Assert.Equal(2, updatedComments.Count);
+
+        var childCommentDto = updatedComments.FirstOrDefault(c => c.Content == childComment.Content);
+        Assert.NotNull(childCommentDto);
+        Assert.Equal(rootCommentDto.CommentId, childCommentDto.ParentCommentId);
+
+
+
+    }
 }
 

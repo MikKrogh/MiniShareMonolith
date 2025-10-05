@@ -1,13 +1,16 @@
-﻿using PostsModule.Domain;
+﻿using BarebonesMessageBroker;
+using PostsModule.Domain;
 namespace PostsModule.Application.Create;
 
 public  class CreatePostCommandConsumer
 {
     private readonly IPostsRepository repository;
+    private readonly IBus bus;
 
-    public CreatePostCommandConsumer(IPostsRepository repository)
+    public CreatePostCommandConsumer(IPostsRepository repository, IBus bus)
     {
         this.repository = repository;
+        this.bus = bus;
     }
     public async Task<CommandResult<CreatePostCommandResult>> Consume(CreatePostCommand context)
     {
@@ -15,6 +18,12 @@ public  class CreatePostCommandConsumer
         {
             Post post = CreateDomainEntity(context);
             await repository.Save(post);
+            await bus.Publish(new PostCreatedEvent
+            {
+                CreatorId = post.CreatorId,
+                PostId = post.Id.ToString(),
+                Title = post.Title
+            }, "PostModule.PostCreated");
             return CommandResult<CreatePostCommandResult>.Success(new() { PostId = post.Id.ToString() });
         }
         else
@@ -39,6 +48,13 @@ public  class CreatePostCommandConsumer
         var isValid = validator.IsValid(command);
         return isValid;
     }
+}
+public class PostCreatedEvent
+{
+    public string CreatorId { get; set; }
+    public string PostId { get; set; }
+    public string Title { get; set; }    
+
 }
 
 public class CreatePostCommandValidator : Validator<CreatePostCommand>

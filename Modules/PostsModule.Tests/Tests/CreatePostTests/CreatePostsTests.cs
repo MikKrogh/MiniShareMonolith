@@ -1,4 +1,5 @@
 ﻿
+using PostsModule.Application.Create;
 using PostsModule.Tests.Helper;
 using System.Net;
 
@@ -41,6 +42,24 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
 
         //Then
         Assert.True(create.Result?.PostId != null);
+    }
+
+    [Fact]
+    public async Task GivenUserExists_WhenUserCreatesPost_ThenPostCreatedEventIsPublished()
+    {
+        // Given
+        var user = await testFacade.SendCreateUserEvent();
+        //When
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
+        var createResponse = await testFacade.SendCreatePost(createBody, user.UserId);
+
+        //Then
+        var wasPublished = testFacade.MessageBroker.AssertExactlyOneMessageMatch<PostCreatedEvent>(x => 
+            x.PostId == createResponse?.Result?.PostId &&
+            x.Title == createBody.Title &&
+            x.CreatorId == user.UserId, "PostModule.PostCreated");
+        Assert.True(wasPublished, "PostCreatedEvent was not published or did not match the expected values.");
+
     }
 
     [Fact]
@@ -204,4 +223,5 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
 
         Assert.True(Domain.Colors.Unknown == getResponse.SecondaryColor);
     }
+
 }
