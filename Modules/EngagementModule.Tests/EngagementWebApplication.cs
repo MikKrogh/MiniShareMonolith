@@ -28,6 +28,7 @@ public class EngagementWebApplication : WebApplicationFactory<Program>
             });
 
             _dbContext = sp.GetRequiredService<EngagementDbContext>();
+            EnsureDatabaseCreated(_dbContext);
             MessageBroker = sp.GetRequiredService<IBus>();
         });
     }
