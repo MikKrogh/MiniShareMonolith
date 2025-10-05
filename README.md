@@ -1,7 +1,4 @@
 <h1>TODO:</h1>
-*admin mode if user is creator on post *filter by created by me settings
-*contact dev
-*delete user
 
 Engagement
 comment*
@@ -18,15 +15,10 @@ Map*
   <li>
     improve firebase signup setup, verification email always ends up in spam, and the text in the mail is unfriendly
   </li>
-  <li>
-    keeping secrets in the uri is considered bad practice, becourse of securtiy. uri routes get stored/logged by browsers and used for analytics, and in our case, exposes the user's email. look into moving the user token into a header. 
-  </li>
-
 
 <h4>
   PostsModule
 </h4>
-
   <li>
     PostsRepository could use cleanup, and some benchmarking on the current dynamic filter/search/ orderby -solution, to ensure its nots shite
   </li>
@@ -53,10 +45,16 @@ Map*
   better error handling for image upload, currently the user has no way of knowing how to handle image upload errors. also we need a frontend warning on filesize limits
 </li>
 <li>
-  cleanup 
+  admin mode if user is creator on post *filter by created by me settings
 </li>
 <li>
-  tests
+  contact dev  
+</li>
+<li>
+  delete user  
+</li>
+<li>
+  privacy policy
 </li>
 
 
