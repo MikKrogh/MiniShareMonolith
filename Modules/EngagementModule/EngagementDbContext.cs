@@ -1,7 +1,8 @@
 ﻿using EngagementModule.Comments;
 using EngagementModule.Notification.PostCreated;
 using Microsoft.EntityFrameworkCore;
-
+using System.Runtime.CompilerServices;
+[assembly: InternalsVisibleTo("EngagementModule.Tests")]
 namespace EngagementModule;
 
 internal class EngagementDbContext : DbContext, IPostLikeService, ICommentService, ChainActivityService
