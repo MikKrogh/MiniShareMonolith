@@ -1,6 +1,6 @@
 using Azure.Identity;
 using Azure.Monitor.OpenTelemetry.AspNetCore;
-using MassTransit;
+
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using PostsModule;
@@ -30,28 +30,15 @@ if (builder.Environment.IsProduction())
 builder.Services.AddPostModuleServices(builder.Configuration);
 builder.Services.AddEngagementModuleServices(builder.Configuration);
 builder.Services.AddUserModuleServices(builder.Configuration);
-builder.Services.AddLogging();
 builder.Services.AddSingleton<BarebonesMessageBroker.IBus>(sp =>
 {
     var scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
     return new BareBonesBus(scopeFactory);
 });
 builder.Logging.SetMinimumLevel(LogLevel.Information);
+builder.Services.AddLogging();
 
-builder.Services.AddMassTransit(x =>
-{
-    x.AddConsumers(typeof(PostsModule.ServiceExtensions).Assembly);
-    x.AddConsumers(typeof(UserModule.ServiceExtensions).Assembly);
-    x.AddConfigureEndpointsCallback((context, name, cfg) =>
-    {
-        cfg.UseMessageRetry(r => r.Immediate(5));
 
-    });
-    x.UsingInMemory((context, cfg) =>
-    {
-        cfg.ConfigureEndpoints(context);
-    });
-});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
