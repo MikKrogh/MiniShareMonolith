@@ -25,7 +25,7 @@ public static class RoutesMapping
 
             if (response.WasSucces)
             {
-                UserCreatedMeter.UserCreatedCounter.Add(1, new KeyValuePair<string, object>("user_role", "admin"));
+                UserCreatedMeter.UserCreatedCounter.Add(1);
                 return Results.Ok();
             }
             return Results.StatusCode(response.StatusCode);
