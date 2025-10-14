@@ -12,11 +12,10 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
     public CreatePostsTests(PostsWebApplicationFactory factory)
     {
         testFacade = new TestFacade(factory);
-
     }
 
     [Fact]
-    internal async Task GivenUserExists_WhenUserCreatesPost_ThenSuccessIsReturned()
+    public async Task GivenUserExists_WhenUserCreatesPost_ThenSuccessIsReturned()
     {
         // Given
         var user = await testFacade.SendCreateUserEvent();
@@ -31,7 +30,7 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
     }
 
     [Fact]
-    internal async Task GivenUserExists_WhenUserCreatesPost_ThenNewPostIdIsReturned()
+    public async Task GivenUserExists_WhenUserCreatesPost_ThenNewPostIdIsReturned()
     {
         // Given
         var user = await testFacade.SendCreateUserEvent();

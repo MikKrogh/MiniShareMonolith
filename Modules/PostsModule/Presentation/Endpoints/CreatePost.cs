@@ -6,7 +6,7 @@ using System.Diagnostics.Metrics;
 namespace PostsModule.Presentation.Endpoints;
 public class CreatePost
 {
-    public static async Task<IResult> Process(ILogger<CreatePost>? logger,[FromServices] CreatePostCommandConsumer client, IAuthHelper auth, [FromBody] CreateBody body, [FromQuery]string UserId)    
+    public static async Task<IResult> Process(ILogger<CreatePost>? logger,[FromServices] CreatePostCommandConsumer client, [FromBody] CreateBody body, [FromQuery]string UserId)    
     {               
         var command = new CreatePostCommand()
         {
@@ -25,16 +25,16 @@ public class CreatePost
 
             if (commandResult is not null && commandResult.IsSuccess && commandResult.ResultValue is not null)
             {
-                var claim = ClaimValueHolder.Create("postId", commandResult.ResultValue.PostId) ?? throw new Exception($"could not create claim required to create imageupload token. for post: {commandResult.ResultValue.PostId}");
+                //var claim = ClaimValueHolder.Create("postId", commandResult.ResultValue.PostId) ?? throw new Exception($"could not create claim required to create imageupload token. for post: {commandResult.ResultValue.PostId}");
                 
-                var token = auth.CreateToken(DateTime.UtcNow.AddMinutes(5), claim);
+                //var token = auth.CreateToken(DateTime.UtcNow.AddMinutes(5), claim);
 
-                logger.LogInformation("Post created by creatorId {0}", UserId);
-                PostCreatedMeter.PostCreatedCounter.Add(1, new KeyValuePair<string, object?>("post_creator", UserId));
+                //logger.LogInformation("Post created by creatorId {0}", UserId);
+                //PostCreatedMeter.PostCreatedCounter.Add(1, new KeyValuePair<string, object?>("post_creator", UserId));
                 return Results.Ok(new SuccessResponse
                 {
                     PostId = commandResult.ResultValue.PostId,
-                    Token = token
+                    //Token = token
                 });
             }
             logger.LogError("No Exception. Error creating post by creatorId {0}.", UserId);

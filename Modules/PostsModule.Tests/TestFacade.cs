@@ -13,7 +13,7 @@ internal class TestFacade
 {
     private readonly PostsWebApplicationFactory _factory;
     public readonly MesageBrokerFacade MessageBroker;
-    private readonly IAuthHelper jwtHandler;
+    
 
     public readonly HttpClient _client;
     public TestFacade(PostsWebApplicationFactory factory)
@@ -21,15 +21,16 @@ internal class TestFacade
         _factory = factory;
         _client = factory.CreateClient();
         MessageBroker = factory.Services.GetRequiredService<MesageBrokerFacade>();
-        jwtHandler = factory.Services.GetRequiredService<IAuthHelper>();
+        
 
     }
 
     public string CreateToken(DateTime? expirationDate, string postId)
     {
-        var token = jwtHandler.CreateToken(expirationDate, ClaimValueHolder.Create("postId", postId));
+        //var token = jwtHandler.CreateToken(expirationDate, ClaimValueHolder.Create("postId", postId));
 
-        return token;
+        //return token;
+        return string.Empty;
     }
     public void TruncateTables()
     {

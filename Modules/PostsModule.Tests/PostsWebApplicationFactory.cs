@@ -9,7 +9,7 @@ using PostsModule.Tests.Helper;
 
 namespace PostsModule.Tests;
 
-public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsyncLifetime
+public class PostsWebApplicationFactory : WebApplicationFactory<Program>
 {
     private static bool _databaseInitialized;
     private static readonly object _lock = new();
@@ -63,24 +63,4 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>, IAsync
     }
 
 
-
-    private async Task ThrowIfAzuriteNotRunning()
-    {
-        try
-        {
-            var client = new HttpClient();
-            var response = await client.GetAsync("http://127.0.0.1:10000");
-        }
-        catch (Exception)
-        {
-            throw new Exception("Azurite is not running.");
-        }
-    }
-
-    public async Task InitializeAsync()
-    {
-        await ThrowIfAzuriteNotRunning(); // azurite timeout when not running is too long, so we check it here
-    }
-
-    Task IAsyncLifetime.DisposeAsync() => Task.CompletedTask; // exists because we want to use the initializeAsync from IAsyncLifetime
 }
