@@ -92,7 +92,8 @@ public class CreateUserTests : IClassFixture<UserWebApplicationFactory>
         // When
         var requestWithDublicateName = UserBuilder.GenerateUserToCreate();
         requestWithDublicateName.DisplayName = initialUser.DisplayName;
-        await client.PostAsJsonAsync("User", requestWithDublicateName);
+        await client.SendCreateUserRequest(requestWithDublicateName);
+
 
         // Then
         var response = await client.GetAsync($"User/{requestWithDublicateName.UserId}");

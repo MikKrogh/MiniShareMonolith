@@ -8,7 +8,8 @@ public static class ServiceExtensions
 {
     public static void AddUserModuleServices(this IServiceCollection serviceCollection, IConfiguration configuration)
     {
-        serviceCollection.AddTransient<IUserRepository, UserRepository>();
+        serviceCollection.AddDbContext<UserDbContext>(options => { options.EnableSensitiveDataLogging(false); });
+        serviceCollection.AddTransient<IUserRepository, UserDbContext>();
         serviceCollection.AddTransient<SignupCommandHandler>();
         serviceCollection.AddTransient<GetUserCommandHandler>();
         serviceCollection.AddTransient<GetUsersCommandHandler>();
