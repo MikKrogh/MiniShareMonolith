@@ -22,12 +22,6 @@ public static class EndpointsExtensions
             .Produces<List<PostDto>>(200)
             .Produces(500);
 
-        api.MapGet("{postId}/Image/{ImageId}", GetImage.Process)
-            .Produces(200)
-            .Produces(404)
-            .Produces(500)
-            .WithSummary("Returns an image file");
-
         api.MapPost(string.Empty, CreatePost.Process)
             .WithSummary("Create a post")
             .Produces(200)
@@ -38,23 +32,5 @@ public static class EndpointsExtensions
             .WithSummary("Delete a post and images related to post")
             .Produces(200)
             .Produces(500);
-
-        api.MapPut("{postId}/Image", AddImage.Process)
-            .Produces(200)
-            .WithSummary("Appends image file to a post")
-            .Produces(500)
-            .DisableAntiforgery();
-
-        api.MapPut("{postId}/thumbnail", AddThumbnail.Process)
-            .Produces(200)
-            .Produces(500)
-            .WithSummary("Sets thumbnail for a post")
-            .DisableAntiforgery();
-
-        api.MapGet("{postId}/Thumbnail", GetThumbnail.Process)
-            .Produces(200)
-            .Produces(404)
-            .Produces(500)
-            .WithSummary("Returns an image file");
     }
 }

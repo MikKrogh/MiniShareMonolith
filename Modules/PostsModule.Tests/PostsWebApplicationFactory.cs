@@ -47,11 +47,7 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>
 
         lock (_lock)
         {
-            if (_databaseInitialized)
-                return;
-
-            // Apply migrations or EnsureCreated
-            context.Database.Migrate(); // preferred over EnsureCreated()
+            context.Database.Migrate(); 
             _databaseInitialized = true;
         }
     }

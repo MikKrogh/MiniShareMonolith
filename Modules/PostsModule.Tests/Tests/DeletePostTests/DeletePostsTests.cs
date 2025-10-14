@@ -48,25 +48,8 @@ public class DeletePostsTests : IClassFixture<PostsWebApplicationFactory>
     [Fact]
     public async Task GivenPostExists_WhenUserDeletesPost_ThenImagesAreDeleted()
     {
-        // Given
-        var user = await testFacade.SendCreateUserEvent();
-        var post = await testFacade.SendCreatePost(PostRequestBuilder.GetValidDefaultBody(), user.UserId);
-        await testFacade.UploadImage(post.Result.PostId, post.Result.Token);
-        await testFacade.UploadImage(post.Result.PostId, post.Result.Token);
-        await testFacade.UploadThumbnail(post.Result.PostId, post.Result.Token);
-        var postDto = await testFacade.GetPost(post.Result.PostId);
-        // When
-        var response = await testFacade.DeletePost(post.Result.PostId, user.UserId);
-        await Task.Delay(500);
+        throw new NotImplementedException("");
 
-        // Then
-        var imageOne = await testFacade.GetImage(postDto.Id, postDto.Images.ToList()[0]);
-        var imageTwo = await testFacade.GetImage(postDto.Id, postDto.Images.ToList()[1]);
-        var thumbnail = await testFacade.GetThumbnail(postDto.Id);
-
-        Assert.Equal(HttpStatusCode.NotFound, imageOne.StatusCode);
-        Assert.Equal(HttpStatusCode.NotFound, imageTwo.StatusCode);
-        Assert.Equal(HttpStatusCode.NotFound, thumbnail.StatusCode);
     }
 
     [Fact]

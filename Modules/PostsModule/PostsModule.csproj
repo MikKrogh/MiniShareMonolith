@@ -36,9 +36,6 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.12.1" />
 
   </ItemGroup>
-
-  <ItemGroup>
-  </ItemGroup>
 	<PropertyGroup>
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>

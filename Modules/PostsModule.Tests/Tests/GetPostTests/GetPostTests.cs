@@ -36,23 +36,4 @@ public class GetPostTests : IClassFixture<PostsWebApplicationFactory>
         Assert.Equal(createBody.SecondaryColor.ToLower(), post.SecondaryColor.ToString().ToLower());
     }
 
-    [Fact]
-    public async Task GivenPostExistsWithTwoImages_WhenUserAsksForPost_thenResponseContainsTwoImagePaths()
-    {
-        // Given
-        var user = await testFacade.SendCreateUserEvent();
-        var createBody = PostRequestBuilder.GetValidDefaultBody();
-        var create = await testFacade.SendCreatePost(createBody, user.UserId);
-
-        await testFacade.UploadImage(create.Result.PostId, create.Result.Token);
-        await testFacade.UploadImage(create.Result.PostId, create.Result.Token);
-
-        // When
-        var post = await testFacade.GetPost(create.Result.PostId);
-
-        // Then
-        Assert.True(post != null);
-        Assert.NotEmpty(post.Images);
-        Assert.Equal(2, post.Images.Count());
-    }
 }
