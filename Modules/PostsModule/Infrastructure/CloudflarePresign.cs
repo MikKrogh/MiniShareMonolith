@@ -4,7 +4,12 @@ using Amazon.S3.Model;
 
 namespace PostsModule.Infrastructure;
 
-public class CloudflarePresign
+public interface IPresignedUrlGenerator
+{
+    public Task<IEnumerable<string>> GetPresignedUris(string dirName, int count);
+}
+
+public class CloudflarePresign  : IPresignedUrlGenerator
 {
     private readonly string _accesKEey;
     private readonly string _secretAccessKey;

@@ -1,11 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PostsModule.Application.Create;
+using PostsModule.Infrastructure;
 using System.Diagnostics.Metrics;
 
 namespace PostsModule.Presentation.Endpoints;
 public class CreatePost
 {
-    public static async Task<IResult> Process(ILogger<CreatePost>? logger,[FromServices] CreatePostCommandConsumer client, [FromBody] CreateBody body, [FromQuery]string UserId)    
+    public static async Task<IResult> Process(ILogger<CreatePost>? logger,[FromServices] CreatePostCommandConsumer client,[FromServices] IPresignedUrlGenerator pug, [FromBody] CreateBody body, [FromQuery]string UserId)    
     {               
         var command = new CreatePostCommand()
         {
@@ -21,13 +22,14 @@ public class CreatePost
         {
             
             var commandResult = await client.Consume(command);
+            var presignedUrls = await pug.GetPresignedUris(commandResult.ResultValue.PostId, 8);
 
             if (commandResult is not null && commandResult.IsSuccess && commandResult.ResultValue is not null)
             {
                 return Results.Ok(new SuccessResponse
                 {
                     PostId = commandResult.ResultValue.PostId,
-                    //Token = token
+                    PresignedUrls = presignedUrls
                 });
             }
             logger.LogError("No Exception. Error creating post by creatorId {0}.", UserId);
@@ -43,7 +45,7 @@ public class CreatePost
 public class SuccessResponse
 {
     public string PostId { get; set; }
-    public string Token { get; set; }
+    public IEnumerable<string> PresignedUrls { get; set; }
 }
 
 public class PostCreatedMeter

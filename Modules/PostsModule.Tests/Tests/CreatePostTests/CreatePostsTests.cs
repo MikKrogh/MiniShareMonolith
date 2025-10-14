@@ -43,6 +43,19 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
         Assert.True(create.Result?.PostId != null);
     }
 
+
+    [Fact]
+    public async Task GivenUserExists_WhenUserCreatesPost_ThenDefaultAmountOfPresignedUrlsAreReturned()
+    {
+               // Given
+        var user = await testFacade.SendCreateUserEvent();
+        //When
+        var createBody = PostRequestBuilder.GetValidDefaultBody();
+        var create = await testFacade.SendCreatePost(createBody, user.UserId);
+        //Then
+        Assert.True(create.Result?.PresignedUrls?.Count() == 8);
+    }
+
     [Fact]
     public async Task GivenUserExists_WhenUserCreatesPost_ThenPostCreatedEventIsPublished()
     {

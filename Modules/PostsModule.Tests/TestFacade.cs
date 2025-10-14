@@ -123,7 +123,7 @@ public class TestFacadeResult<T>
 public class CreatePostResponse
 {
     public string PostId { get; set; }
-    public string Token { get; set; }
+    public IEnumerable<string> PresignedUrls { get; set; }
 }
 public record UserCreatedEvent
 {

@@ -14,6 +14,7 @@ public static class ServiceExtensions
         serviceCollection.AddDbContext<PostsContext>(options => options.EnableSensitiveDataLogging(false));
         serviceCollection.AddScoped<IPostsRepository, PostsRepository>();
         serviceCollection.AddTransient<IUserRepository, UserRepository>();
+        serviceCollection.AddTransient<IPresignedUrlGenerator, CloudflarePresign>();
         
         serviceCollection.AddTransient<IDeletePostService, DeletePostService>(); 
         serviceCollection.AddHostedService<DeletePostsProcessor>();

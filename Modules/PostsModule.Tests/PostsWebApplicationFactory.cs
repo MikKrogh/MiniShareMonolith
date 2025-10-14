@@ -33,6 +33,7 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>
             _postsContext = sp.GetRequiredService<PostsContext>();
             EnsureDatabaseCreated(_postsContext);
             services.AddSingleton<MesageBrokerFacade>();
+            services.AddTransient<IPresignedUrlGenerator, PresignedUrlGeneratorMock>();
             services.AddSingleton<BarebonesMessageBroker.IBus>(sp =>
             {
                 var scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
