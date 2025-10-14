@@ -4,7 +4,7 @@ namespace UserModule;
 public interface IUserRepository
 {
     Task CreateUser(User user);
-    Task<User> GetUser(string userId);
+    Task<User?> GetUser(string userId);
     Task<IEnumerable<User>> GetUsers(IReadOnlyCollection<string> userIds);
 }
 
@@ -47,9 +47,9 @@ public class UserDbContext : DbContext, IUserRepository
 
     }
 
-    public async Task<User> GetUser(string userId)
+    public async Task<User?> GetUser(string userId)
     {
-        return await Users.FirstAsync(u => u.Id == userId);
+        return await Users.FirstOrDefaultAsync(u => u.Id == userId);
     }
 
     public async Task<IEnumerable<User>> GetUsers(IReadOnlyCollection<string> userIds)
