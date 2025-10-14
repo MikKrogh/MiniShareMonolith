@@ -1,6 +1,7 @@
 ﻿using Azure.Identity;
 using UserModule.Features.CreateUser;
 using UserModule.Features.GetUser;
+using UserModule.Features.GetUsers;
 namespace UserModule;
 
 public static class ServiceExtensions
@@ -10,6 +11,7 @@ public static class ServiceExtensions
         serviceCollection.AddTransient<IUserRepository, UserRepository>();
         serviceCollection.AddTransient<SignupCommandHandler>();
         serviceCollection.AddTransient<GetUserCommandHandler>();
+        serviceCollection.AddTransient<GetUsersCommandHandler>();
     }
     public static void UserModuleAppConfiguration(this IHostApplicationBuilder hostBuilder)
     {
