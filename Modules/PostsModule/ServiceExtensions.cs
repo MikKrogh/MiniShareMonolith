@@ -1,5 +1,4 @@
-﻿using Azure.Identity;
-using PostsModule.Application.AddImage;
+﻿using PostsModule.Application.AddImage;
 using PostsModule.Application.AddThumbnail;
 using PostsModule.Application.Create;
 using PostsModule.Application.DeletePost;
@@ -7,7 +6,6 @@ using PostsModule.Application.Get;
 using PostsModule.Application.GetImage;
 using PostsModule.Application.GetPosts;
 using PostsModule.Domain;
-using PostsModule.Domain.Auth;
 using PostsModule.Infrastructure;
 namespace PostsModule;
 
@@ -20,8 +18,7 @@ public static class ServiceExtensions
         serviceCollection.AddTransient<IUserRepository, UserRepository>();
         serviceCollection.AddScoped<IImageRepository, ImageRepository>();
         serviceCollection.AddTransient<IDeletePostService, DeletePostService>();
-        serviceCollection.AddScoped<IImageStorageService, AzureBlobService>();
-        serviceCollection.AddSingleton<IAuthHelper, JwtHandler>();
+        serviceCollection.AddScoped<IImageStorageService, AzureBlobService>();        
         serviceCollection.AddHostedService<DeletePostsProcessor>();
         serviceCollection.AddTransient<AddImageCommandConsumer>();
         serviceCollection.AddTransient<AddThumbnailCommandConsumer>();
@@ -30,18 +27,5 @@ public static class ServiceExtensions
         serviceCollection.AddTransient<GetImageCommandConsumer>();
         serviceCollection.AddTransient<GetPostCommandConsumer>();
         serviceCollection.AddTransient<GetPostsCommandConsumer>();
-    }
-
-    public static void PostModuleAppConfiguration(this IHostApplicationBuilder hostBuilder)
-    {
-        var config = hostBuilder.Configuration.Build();
-        if (hostBuilder.Environment.IsProduction())
-        {
-            hostBuilder.Configuration.AddAzureAppConfiguration(options =>
-            {
-                options.Connect(new Uri(config["AppConfigEndpoint"]), new DefaultAzureCredential())
-                .Select("PostService*").TrimKeyPrefix("PostService:");
-            });
-        }
     }
 }

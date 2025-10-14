@@ -7,14 +7,14 @@ using System.Text;
 namespace PostsModule.Infrastructure;
 
 
-public sealed class JwtHandler : IAuthHelper
+public sealed class JwtHandler
 {
     public SymmetricSecurityKey securityKey { get; init; }
 
     public JwtHandler(IConfiguration configuration)
     {
-        string secret = configuration["JwtSecret"] ?? throw new Exception("Cannot generate jwt secret");
-        securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
+        //string secret = configuration["JwtSecret"] ?? throw new Exception("Cannot generate jwt secret");
+        //securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
     }
 
     public string CreateToken(DateTime? expirationDate = null, params ClaimValueHolder[] desiredClaims)
@@ -58,9 +58,5 @@ public sealed class JwtHandler : IAuthHelper
             return null; // Invalid token
         }
     }
-    public Dictionary<string, string>? ReadClaims(string token)
-    {
-        var principal = ValidateToken(token);
-        return principal?.Claims.ToDictionary(c => c.Type, c => c.Value);
-    }
+
 }

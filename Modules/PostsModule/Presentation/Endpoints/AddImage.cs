@@ -8,14 +8,10 @@ namespace PostsModule.Presentation.Endpoints;
 internal class AddImage
 {
     [RequestFormLimits(MultipartBodyLengthLimit = 9_000_000)]
-    internal static async Task<IResult> Process(IFormFile file, [FromServices] IAuthHelper authHelper, ILogger<AddImage> logger, [FromServices] AddImageCommandConsumer client, [FromRoute] Guid postId, [FromQuery] string token)
+    internal static async Task<IResult> Process(IFormFile file, ILogger<AddImage> logger, [FromServices] AddImageCommandConsumer client, [FromRoute] Guid postId, [FromQuery] string token)
     {
-        var claims = authHelper.ReadClaims(token);
-        if (claims == null || !claims.Any() || claims["postId"] != postId.ToString()) 
-        {
-            logger.LogError("request for AddImage called with bad token: {0} ", token);
-            return Results.Problem("bad token");        
-        }
+        
+
 
         var command = new AddImageCommand()
         {
@@ -25,15 +21,9 @@ internal class AddImage
         };
 
         long ticks;
-        long.TryParse(claims["exp"], out ticks);
-        DateTime expiration = DateTimeOffset.FromUnixTimeSeconds(ticks).LocalDateTime;
+                
 
-        var couldAdd = StreamBank.RegisterStream(command.PostId, command.StreamId, file.OpenReadStream(), expiration);
-        if (!couldAdd)
-        {
-            logger.LogError("failed to append imagestream for token: {0}", token);
-            return Results.Problem();
-        }
+  
 
         var result = await client.Consume(command);
 
