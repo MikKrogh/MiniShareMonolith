@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using UserModule.Features.CreateUser;
 using UserModule.Features.GetUser;
+using UserModule.Features.GetUsers;
 using UserModule.OpenTelemetry;
 
 namespace UserModule;
@@ -11,8 +12,6 @@ public static class RoutesMapping
     public static void AddUserModuleEndpoints(this IEndpointRouteBuilder builder)
     {
         var api = builder.MapGroup("/User").WithTags("UserModule");
-
-
 
         api.MapPost(string.Empty, async ([FromServices]SignupCommandHandler handler,[FromBody] SignupCommand body, [FromQuery]string UserId) =>
         {
@@ -46,5 +45,15 @@ public static class RoutesMapping
         .WithSummary("Returns a user")
         .Produces<User>(200)
         .Produces(500);
+
+        var usersApi = builder.MapGroup("/Users").WithTags("UserModule");
+
+        usersApi.MapGet("{userIds}", async ([FromRoute] string userIds, [FromServices] GetUsersCommandHandler handler) =>
+        {
+            List<string> ids = userIds.Split(',').ToList();
+            var command = new GetUsersCommand(ids);
+            var result = await handler.Consume(command);
+            return Results.Ok(result.Users);
+        });
     }
 }

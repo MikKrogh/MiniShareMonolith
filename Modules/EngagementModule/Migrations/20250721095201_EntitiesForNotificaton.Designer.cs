@@ -3,6 +3,7 @@ using System;
 using EngagementModule;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace EngagementModule.Migrations
 {
     [DbContext(typeof(EngagementDbContext))]
-    partial class EngagementDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250721095201_EntitiesForNotificaton")]
+    partial class EntitiesForNotificaton
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,38 +24,6 @@ namespace EngagementModule.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("EngagementModule.Comments.ActivityChain", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("DateChanged")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("PostId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("ActivityChains", (string)null);
-                });
-
-            modelBuilder.Entity("EngagementModule.Comments.ChainLink", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("AcitivtyChainId")
-                        .HasColumnType("text");
-
-                    b.HasKey("UserId", "AcitivtyChainId");
-
-                    b.HasIndex("AcitivtyChainId");
-
-                    b.ToTable("ChainListeners", (string)null);
-                });
 
             modelBuilder.Entity("EngagementModule.Comments.CommentEntity", b =>
                 {
@@ -82,17 +53,35 @@ namespace EngagementModule.Migrations
                     b.ToTable("PostComments", (string)null);
                 });
 
-            modelBuilder.Entity("EngagementModule.Comments.UserLastSync", b =>
+            modelBuilder.Entity("EngagementModule.PostCreated.ActivityChain", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("DateChanged")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ActivityChains", (string)null);
+                });
+
+            modelBuilder.Entity("EngagementModule.PostCreated.ChainLink", b =>
                 {
                     b.Property<string>("UserId")
                         .HasColumnType("text");
 
-                    b.Property<DateTime>("LastSyncTime")
+                    b.Property<string>("AcitivtyChainId")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("LastestSyncTime")
                         .HasColumnType("timestamp with time zone");
 
-                    b.HasKey("UserId");
+                    b.HasKey("UserId", "AcitivtyChainId");
 
-                    b.ToTable("UserSync", (string)null);
+                    b.HasIndex("AcitivtyChainId");
+
+                    b.ToTable("ChainListeners", (string)null);
                 });
 
             modelBuilder.Entity("EngagementModule.PostLikeEntity", b =>
@@ -108,9 +97,9 @@ namespace EngagementModule.Migrations
                     b.ToTable("PostLikes", (string)null);
                 });
 
-            modelBuilder.Entity("EngagementModule.Comments.ChainLink", b =>
+            modelBuilder.Entity("EngagementModule.PostCreated.ChainLink", b =>
                 {
-                    b.HasOne("EngagementModule.Comments.ActivityChain", "Chain")
+                    b.HasOne("EngagementModule.PostCreated.ActivityChain", "Chain")
                         .WithMany("Chains")
                         .HasForeignKey("AcitivtyChainId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -119,7 +108,7 @@ namespace EngagementModule.Migrations
                     b.Navigation("Chain");
                 });
 
-            modelBuilder.Entity("EngagementModule.Comments.ActivityChain", b =>
+            modelBuilder.Entity("EngagementModule.PostCreated.ActivityChain", b =>
                 {
                     b.Navigation("Chains");
                 });

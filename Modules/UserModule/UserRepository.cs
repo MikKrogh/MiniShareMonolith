@@ -8,6 +8,7 @@ public interface IUserRepository
 {
     Task CreateUser(User user);
     Task<User> GetUser(string userId);
+    Task<IEnumerable<User>> GetUsers(IReadOnlyCollection<string> userIds);
 }
 
 internal class UserRepository : IUserRepository
@@ -24,9 +25,56 @@ internal class UserRepository : IUserRepository
 
         if (connString == "UseDevelopmentStorage=true;")
             tableClient = new(connString, "User");
-
         else
             tableClient = new TableClient(new Uri(connString), "User", new DefaultAzureCredential());
+    }
+    public async Task<IEnumerable<User>> GetUsers(IReadOnlyCollection<string> userIds)
+    {
+        await CreateTable();
+        //string odataStringStart = "PartitionKey eq '" + partitionKey + "' " +
+        //    "AND (Rowkey eq "; 
+        //string odataStringMiddle = string.Join(" or RowKey eq ", userIds.Select(x => $"'{x}'"));
+        //string odataStringEnd = ")";
+        //string odataString = odataStringStart + odataStringMiddle + odataStringEnd;
+
+
+        var filters = userIds.Select(rk => TableClient.CreateQueryFilter<UserEntity>(e =>  e.RowKey == rk))
+        .ToList();
+
+        // Combine all filters using OR
+        string combined = "PartitionKey eq '" + partitionKey + "' " +
+              "AND (";
+        foreach (var item in filters)
+        {
+            combined += item + " or ";
+        }
+        string cleaned = combined.TrimEnd(' ', 'o', 'r', ' ');
+        cleaned += ")";
+        try
+        {
+            var userQuery = tableClient.QueryAsync<UserEntity>(cleaned);
+
+            var users = new List<User>();
+            await foreach (var userEntity in userQuery)
+            {
+                var user = new User
+                {
+                    Id = userEntity.Id,
+                    UserName = userEntity.UserName,
+                    CreationDate = userEntity.CreationDate,
+                };
+                users.Add(user);
+            }
+            return users;
+        }
+        catch (Exception e)
+        {
+
+            throw;
+        }
+
+
+
 
 
 
@@ -98,6 +146,8 @@ internal class UserRepository : IUserRepository
         }
         return false ;
     }
+
+
 
     private class UserEntity : ITableEntity
     {

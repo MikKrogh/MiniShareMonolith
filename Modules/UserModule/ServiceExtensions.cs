@@ -1,6 +1,7 @@
 ﻿
 using UserModule.Features.CreateUser;
 using UserModule.Features.GetUser;
+using UserModule.Features.GetUsers;
 namespace UserModule;
 
 public static class ServiceExtensions
@@ -10,5 +11,6 @@ public static class ServiceExtensions
         serviceCollection.AddTransient<IUserRepository, UserRepository>();
         serviceCollection.AddTransient<SignupCommandHandler>();
         serviceCollection.AddTransient<GetUserCommandHandler>();
+        serviceCollection.AddTransient<GetUsersCommandHandler>();
     }
 }

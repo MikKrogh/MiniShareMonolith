@@ -11,13 +11,13 @@ internal class AddComment
             PostId = postId,
             UserId = userId,
             Content = dto.Content,
-            ParentCommentId = dto.ParentCommentId
+            ParentCommentId = string.IsNullOrEmpty(dto.ParentCommentId) ? null : dto.ParentCommentId,
         };
 
         if (IsValid(entity))
         {
             await service.AddComment(entity);
-            return Results.Ok();
+            return Results.Ok(entity.CommentId);
         }
         return Results.BadRequest();
     }
@@ -35,6 +35,6 @@ internal class AddComment
 internal record AddCommentDto
 {
     public string Content { get; set; } = string.Empty;
-    public string? ParentCommentId { get; set; } = string.Empty;
+    public string? ParentCommentId { get; set; } = null;
 
 };
