@@ -4,6 +4,7 @@ user deleted*
 report posts*
 contact support*
 Map*
+frontend navigaitons buttons should have a onhover desciprion of what they do*
 CloudflarePresign could use a cleanup, the class itself should not use count or int, but be more "usuable", something like expose a method that takes a func<x,z,y,string> to create the key, removing the need to a unique method for thumbnail
 
 <h4>
