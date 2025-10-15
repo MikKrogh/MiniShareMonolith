@@ -1,7 +1,6 @@
 <h1>TODO:</h1>
-
-Engagement
-comment*
+delete images when post is deleted*
+user deleted*
 report posts*
 contact support*
 Map*
