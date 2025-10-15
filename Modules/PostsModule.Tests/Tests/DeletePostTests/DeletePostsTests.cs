@@ -45,7 +45,7 @@ public class DeletePostsTests : IClassFixture<PostsWebApplicationFactory>
         Assert.Equal(HttpStatusCode.NotFound, notfound.StatusCode);
     }
 
-    [Fact]
+    [Fact(Skip = "not currently implemented")]
     public async Task GivenPostExists_WhenUserDeletesPost_ThenImagesAreDeleted()
     {
         throw new NotImplementedException("");

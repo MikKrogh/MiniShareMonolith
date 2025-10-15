@@ -18,7 +18,6 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>
     private PostsContext _postsContext;
     public void TruncateTables()
     {
-        _postsContext.Database.ExecuteSqlRaw(@"DELETE FROM ""PostModule"".""Image"";");
         _postsContext.Database.ExecuteSqlRaw(@"DELETE FROM ""PostModule"".""Posts"";");
         _postsContext.Database.ExecuteSqlRaw(@"DELETE FROM ""PostModule"".""Users"";");
     }

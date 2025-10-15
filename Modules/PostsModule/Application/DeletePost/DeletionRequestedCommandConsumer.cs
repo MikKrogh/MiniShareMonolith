@@ -20,7 +20,7 @@ public class DeletionRequestedCommandConsumer
         var creatorId = await postsRepository.GetCreatorId(context.PostId);
         if(creatorId != context.UserId)
         {
-            logger.LogWarning("User {UserId} attempted to delete post {PostId} but is not the creator.", context.UserId, context.PostId);
+            logger.LogWarning("User {0} attempted to delete post {1} but is not the creator.", context.UserId, context.PostId);
             return CommandResult<DeletionRequestedCommandResult>.InternalError();            
         }
         else

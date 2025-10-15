@@ -31,18 +31,18 @@ internal sealed class DeletePostService:  IDeletePostService
             if (success)            
                 entity.PostDataDeletionCompleted = true;
         }
-        if (!entity.ImagesDeletionCompleted)
-        {
-            var success = await DeleteImageRelations(postId);
-            if (success) 
-                entity.ImagesDeletionCompleted = true;            
-        }
-        if (!entity.ThumbnailRemovedCompleted)
-        {
-            var success = await DeleteThumbnail(postId);    
-            if (success) 
-                entity.ThumbnailRemovedCompleted = true;
-        }
+        //if (!entity.ImagesDeletionCompleted)
+        //{
+        //    var success = await DeleteImageRelations(postId);
+        //    if (success) 
+        //        entity.ImagesDeletionCompleted = true;            
+        //}
+        //if (!entity.ThumbnailRemovedCompleted)
+        //{
+        //    var success = await DeleteThumbnail(postId);    
+        //    if (success) 
+        //        entity.ThumbnailRemovedCompleted = true;
+        //}
         if (!entity.PostDeletedEventPublished)
         {
             var success = await PublishPostDeletedEvent(postId);

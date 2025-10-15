@@ -22,17 +22,17 @@ public class CreatePost
         {
             
             var commandResult = await client.Consume(command);
-            var presignedUrls = await pug.GetPresignedUris(commandResult.ResultValue.PostId, 8);
 
             if (commandResult is not null && commandResult.IsSuccess && commandResult.ResultValue is not null)
             {
+                var presignedUrls = await pug.GetPresignedUris(commandResult.ResultValue.PostId, 8);
                 return Results.Ok(new SuccessResponse
                 {
                     PostId = commandResult.ResultValue.PostId,
                     PresignedUrls = presignedUrls
                 });
             }
-            logger.LogError("No Exception. Error creating post by creatorId {0}.", UserId);
+            logger.LogError("Error creating post by creatorId {0}.", UserId);
             return Results.StatusCode(commandResult.ResultStatus);
         }
         catch (Exception ex)

@@ -107,7 +107,7 @@ public class CreatePostsTests : IClassFixture<PostsWebApplicationFactory>
     [InlineData("beyondMaxCharCountofThirtytwoXxXx")]
     [InlineData("stringWithNumeric5")]
     [InlineData("12365487654")]
-    public async Task Given_UserExists_WhenSomeoneCreatesPostWithNonValidTitle_ThenBadRequestIsReturned(string? title)
+    public async Task GivenUserExists_WhenSomeoneCreatesPostWithNonValidTitle_ThenBadRequestIsReturned(string? title)
     {
         // Given
         var user = await testFacade.SendCreateUserEvent();
