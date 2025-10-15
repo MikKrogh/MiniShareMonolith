@@ -26,10 +26,12 @@ public class CreatePost
             if (commandResult is not null && commandResult.IsSuccess && commandResult.ResultValue is not null)
             {
                 var presignedUrls = await pug.GetPresignedUris(commandResult.ResultValue.PostId, 8);
+                var presignedthumbnailUrl = await pug.GetPresignedThumbnailUrl(commandResult.ResultValue.PostId);
                 return Results.Ok(new SuccessResponse
                 {
                     PostId = commandResult.ResultValue.PostId,
-                    PresignedUrls = presignedUrls
+                    PresignedUrls = presignedUrls,
+                    ThumnailUrl = presignedthumbnailUrl
                 });
             }
             logger.LogError("Error creating post by creatorId {0}.", UserId);
@@ -46,6 +48,7 @@ public class SuccessResponse
 {
     public string PostId { get; set; }
     public IEnumerable<string> PresignedUrls { get; set; }
+    public string ThumnailUrl { get; set; }
 }
 
 public class PostCreatedMeter

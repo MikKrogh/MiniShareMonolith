@@ -1,12 +1,13 @@
 ﻿using Amazon.Runtime;
 using Amazon.S3;
 using Amazon.S3.Model;
-
 namespace PostsModule.Infrastructure;
 
 public interface IPresignedUrlGenerator
 {
     public Task<IEnumerable<string>> GetPresignedUris(string dirName, int count);
+    public Task<string> GetPresignedThumbnailUrl(string postId);
+
 }
 
 public class CloudflarePresign  : IPresignedUrlGenerator
@@ -56,6 +57,27 @@ public class CloudflarePresign  : IPresignedUrlGenerator
             signedUrls[i] = await FetchPresignedUrl(s3Client, request);
         }
         return signedUrls;
+    }
+
+    public async Task<string> GetPresignedThumbnailUrl(string postId)
+    {
+        if (string.IsNullOrEmpty(postId))
+            throw new ArgumentException("Invalid arguments provided.");
+
+        var credentials = new BasicAWSCredentials(_accesKEey, _secretAccessKey);
+        IAmazonS3 s3Client = new AmazonS3Client(credentials, new AmazonS3Config
+        {
+            ServiceURL = _serviceUrl,
+        });
+
+        var request = new GetPreSignedUrlRequest
+        {
+            BucketName = _bucketName,
+            Key = Path.Combine("thumbnails", postId),
+            Verb = HttpVerb.PUT,
+            Expires = DateTime.Now.AddMinutes(8),
+        };
+        return await FetchPresignedUrl(s3Client, request);        
     }
     
     private async Task<string> FetchPresignedUrl(IAmazonS3 s3Client, GetPreSignedUrlRequest request)
