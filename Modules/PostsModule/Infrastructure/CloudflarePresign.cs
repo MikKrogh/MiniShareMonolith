@@ -50,7 +50,7 @@ public class CloudflarePresign  : IPresignedUrlGenerator
             var request = new GetPreSignedUrlRequest
             {
                 BucketName = _bucketName,
-                Key = GenerateFileKey(dirName,count),
+                Key = GenerateFileKey(dirName,i),
                 Verb = HttpVerb.PUT,
                 Expires = DateTime.Now.AddMinutes(8),
             };
@@ -73,7 +73,7 @@ public class CloudflarePresign  : IPresignedUrlGenerator
         var request = new GetPreSignedUrlRequest
         {
             BucketName = _bucketName,
-            Key = Path.Combine("thumbnails", postId),
+            Key = "thumbnails/"+ postId,
             Verb = HttpVerb.PUT,
             Expires = DateTime.Now.AddMinutes(8),
         };
