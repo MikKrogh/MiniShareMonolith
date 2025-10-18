@@ -25,8 +25,6 @@ builder.Services.AddSwaggerGen();
 var app = builder.Build();
 
 app.UseMetricServer();
-app.UseHttpMetrics();
-
 app.UseSwagger();
 app.UseSwaggerUI();
 

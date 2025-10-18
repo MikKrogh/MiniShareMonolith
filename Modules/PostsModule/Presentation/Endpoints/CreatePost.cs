@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using PostsModule.Application.Create;
-using PostsModule.Domain.Auth;
+using PostsModule.Infrastructure;
 using System.Diagnostics.Metrics;
 
 namespace PostsModule.Presentation.Endpoints;
 public class CreatePost
 {
-    public static async Task<IResult> Process(ILogger<CreatePost>? logger,[FromServices] CreatePostCommandConsumer client, [FromBody] CreateBody body, [FromQuery]string UserId)    
+    public static async Task<IResult> Process(ILogger<CreatePost>? logger,[FromServices] CreatePostCommandConsumer client,[FromServices] IPresignedUrlGenerator pug, [FromBody] CreateBody body, [FromQuery]string UserId)    
     {               
         var command = new CreatePostCommand()
         {
@@ -25,19 +25,16 @@ public class CreatePost
 
             if (commandResult is not null && commandResult.IsSuccess && commandResult.ResultValue is not null)
             {
-                //var claim = ClaimValueHolder.Create("postId", commandResult.ResultValue.PostId) ?? throw new Exception($"could not create claim required to create imageupload token. for post: {commandResult.ResultValue.PostId}");
-                
-                //var token = auth.CreateToken(DateTime.UtcNow.AddMinutes(5), claim);
-
-                //logger.LogInformation("Post created by creatorId {0}", UserId);
-                //PostCreatedMeter.PostCreatedCounter.Add(1, new KeyValuePair<string, object?>("post_creator", UserId));
+                var presignedUrls = await pug.GetPresignedUris(commandResult.ResultValue.PostId, 8);
+                var presignedthumbnailUrl = await pug.GetPresignedThumbnailUrl(commandResult.ResultValue.PostId);
                 return Results.Ok(new SuccessResponse
                 {
                     PostId = commandResult.ResultValue.PostId,
-                    //Token = token
+                    PresignedUrls = presignedUrls,
+                    ThumnailUrl = presignedthumbnailUrl
                 });
             }
-            logger.LogError("No Exception. Error creating post by creatorId {0}.", UserId);
+            logger.LogError("Error creating post by creatorId {0}.", UserId);
             return Results.StatusCode(commandResult.ResultStatus);
         }
         catch (Exception ex)
@@ -50,7 +47,8 @@ public class CreatePost
 public class SuccessResponse
 {
     public string PostId { get; set; }
-    public string Token { get; set; }
+    public IEnumerable<string> PresignedUrls { get; set; }
+    public string ThumnailUrl { get; set; }
 }
 
 public class PostCreatedMeter

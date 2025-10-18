@@ -79,14 +79,6 @@ public class Post
         if (creationDate != default)
             CreationDate = creationDate;
     }
-
-    public void SetImages(string filename)
-    {
-        if (Images is null)
-            Images = new();
-        Images.Add(filename);
-    }
-
 }
 
 

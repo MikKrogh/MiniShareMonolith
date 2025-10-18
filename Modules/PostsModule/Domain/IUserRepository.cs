@@ -8,9 +8,3 @@ public interface IUserRepository
     Task Update(User user);
     Task Delete(string userId);
 }
-
-public interface IImageRepository
-{
-    Task Create(Image image);
-
-}

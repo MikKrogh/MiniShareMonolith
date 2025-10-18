@@ -73,34 +73,6 @@ public class GetPostsTests : IClassFixture<PostsWebApplicationFactory>
 
     }
 
-    [Fact]
-    public async Task GivenOnlyTwoPostsExistsAndUserHasUploadedImageToEach_WhenUserAsksForPosts_ThenImagePathsAreSet()
-    {
-        // Given
-        testFacade.TruncateTables();
-        var user = await testFacade.SendCreateUserEvent();
-        var createBody = PostRequestBuilder.GetValidDefaultBody();
-        var firstCreation = await testFacade.SendCreatePost(createBody, user.UserId);
-        var secondCreation = await testFacade.SendCreatePost(createBody, user.UserId);
-
-        await testFacade.UploadImage(firstCreation.Result.PostId, firstCreation.Result.Token);
-        await testFacade.UploadImage(secondCreation.Result.PostId, secondCreation.Result.Token);
-
-        // When
-        var getPosts = await testFacade.GetPosts();
-
-
-        // Then 
-        Assert.Equal(2, getPosts.Result?.Items.Count());
-
-        var firstPost = getPosts.Result.Items.SingleOrDefault(x => x.Id == firstCreation.Result.PostId);
-        var secondPost = getPosts.Result.Items.SingleOrDefault(x => x.Id == secondCreation.Result.PostId);
-        Assert.Equal(1, firstPost?.Images?.Count());
-        Assert.Equal(1, secondPost?.Images?.Count());
-        Assert.NotEqual(firstPost?.Images?.Single(), secondPost?.Images?.Single());
-
-    }
-
     //pagination
     [Fact]
     public async Task GivenThreePostsExists_WhenUserQueriesPosts_ThenTotalCountIsReturned()

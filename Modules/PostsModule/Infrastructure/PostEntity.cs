@@ -7,7 +7,6 @@ internal record PostEntity
 
     public string CreatorId { get; set; } = string.Empty;
     public UserEntity? Creator { get; set; }
-    public ICollection<ImageEntity>? Images { get; set; }
     public string Faction { get; set; } = string.Empty;
 
     public string PrimaryColor { get; set; } = string.Empty;

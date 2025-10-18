@@ -18,7 +18,6 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>
     private PostsContext _postsContext;
     public void TruncateTables()
     {
-        _postsContext.Database.ExecuteSqlRaw(@"DELETE FROM ""PostModule"".""Image"";");
         _postsContext.Database.ExecuteSqlRaw(@"DELETE FROM ""PostModule"".""Posts"";");
         _postsContext.Database.ExecuteSqlRaw(@"DELETE FROM ""PostModule"".""Users"";");
     }
@@ -33,6 +32,7 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>
             _postsContext = sp.GetRequiredService<PostsContext>();
             EnsureDatabaseCreated(_postsContext);
             services.AddSingleton<MesageBrokerFacade>();
+            services.AddTransient<IPresignedUrlGenerator, PresignedUrlGeneratorMock>();
             services.AddSingleton<BarebonesMessageBroker.IBus>(sp =>
             {
                 var scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
@@ -47,11 +47,7 @@ public class PostsWebApplicationFactory : WebApplicationFactory<Program>
 
         lock (_lock)
         {
-            if (_databaseInitialized)
-                return;
-
-            // Apply migrations or EnsureCreated
-            context.Database.Migrate(); // preferred over EnsureCreated()
+            context.Database.Migrate(); 
             _databaseInitialized = true;
         }
     }

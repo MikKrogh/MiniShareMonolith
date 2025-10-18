@@ -21,7 +21,7 @@ internal class PostsRepository : IPostsRepository
 
     public async Task<Post?> Get(string id)
     {
-        var entity = await context.Posts.Include(post => post.Creator).Include(post => post.Images).FirstOrDefaultAsync<PostEntity>(x => x.Id == id);
+        var entity = await context.Posts.Include(post => post.Creator).FirstOrDefaultAsync<PostEntity>(x => x.Id == id);
         if (entity == null) return null;
 
         var post = Post.CreateNew(entity.Title, entity.CreatorId, entity.Faction);
@@ -31,10 +31,6 @@ internal class PostsRepository : IPostsRepository
         post.SetDescription(entity.Description);
         post.SetPrimaryColor(entity.PrimaryColor);
         post.SetSecondaryColor(entity.SecondaryColor);
-        foreach (var image in entity.Images)
-        {
-            post.SetImages(image.Id);
-        }
         return post;
     }
 
@@ -86,10 +82,6 @@ internal class PostsRepository : IPostsRepository
                 post.SetSecondaryColor(postEntity.SecondaryColor);
                 post.SetCreationDate(postEntity.CreationDate);
                 post.SetCreatorName(postEntity.Creator.UserName);
-                foreach (var image in postEntity.Images)
-                {
-                    post.SetImages(image.Id);
-                }
                 result.Add(post);
             }
             catch (Exception)
@@ -106,7 +98,6 @@ internal class PostsRepository : IPostsRepository
     {
         return context.Posts
             .Include(post => post.Creator)
-            .Include(post => post.Images)
             .AsQueryable();
     }
 

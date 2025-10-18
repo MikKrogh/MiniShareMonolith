@@ -2,22 +2,19 @@
 using BarebonesMessageBroker;
 using Microsoft.EntityFrameworkCore;
 using PostsModule.Application.DeletePost;
-using PostsModule.Domain;
-
 
 namespace PostsModule.Infrastructure;
 
 internal sealed class DeletePostService:  IDeletePostService
 {
     private readonly PostsContext _context;
-    private readonly IImageStorageService blobStorage;
+    
     private readonly ILogger<DeletePostService> logger;
     private readonly IBus bus;
 
-    public DeletePostService(PostsContext context, IImageStorageService blobStorage, ILogger<DeletePostService> logger, IBus bus)
+    public DeletePostService(PostsContext context, ILogger<DeletePostService> logger, IBus bus)
     {
         _context = context;
-        this.blobStorage = blobStorage;
         this.logger = logger;
         this.bus = bus;
     }
@@ -34,18 +31,18 @@ internal sealed class DeletePostService:  IDeletePostService
             if (success)            
                 entity.PostDataDeletionCompleted = true;
         }
-        if (!entity.ImagesDeletionCompleted)
-        {
-            var success = await DeleteImageRelations(postId);
-            if (success) 
-                entity.ImagesDeletionCompleted = true;            
-        }
-        if (!entity.ThumbnailRemovedCompleted)
-        {
-            var success = await DeleteThumbnail(postId);    
-            if (success) 
-                entity.ThumbnailRemovedCompleted = true;
-        }
+        //if (!entity.ImagesDeletionCompleted)
+        //{
+        //    var success = await DeleteImageRelations(postId);
+        //    if (success) 
+        //        entity.ImagesDeletionCompleted = true;            
+        //}
+        //if (!entity.ThumbnailRemovedCompleted)
+        //{
+        //    var success = await DeleteThumbnail(postId);    
+        //    if (success) 
+        //        entity.ThumbnailRemovedCompleted = true;
+        //}
         if (!entity.PostDeletedEventPublished)
         {
             var success = await PublishPostDeletedEvent(postId);
@@ -84,29 +81,12 @@ internal sealed class DeletePostService:  IDeletePostService
     }
     private async Task<bool> DeleteImageRelations(string postId)
     {
-        try
-        {
-            await blobStorage.DeleteDirectory(postId);            
-            return true;
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Failed to delete images in blob for post {0}", postId);
-            return false;
-        }
+        throw new NotImplementedException("Image deletion not implemented yet");
+
     }
     private async Task<bool> DeleteThumbnail(string postId)
     {
-        try
-        {
-            await blobStorage.DeleteThumbnail(postId);
-            return true;
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Failed to delete thumbnail in blob for post {0}", postId);
-            return false;
-        }
+        throw new NotImplementedException("Image deletion not implemented yet");
     }
 
     private async Task<bool> PublishPostDeletedEvent(string postId)

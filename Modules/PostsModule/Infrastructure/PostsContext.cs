@@ -8,8 +8,7 @@ internal class PostsContext : DbContext
     private readonly string connString;
 
     public DbSet<PostEntity> Posts { get; set; }
-    public DbSet<UserEntity> Users { get; set; }
-    public DbSet<ImageEntity> Images { get; set; }
+    public DbSet<UserEntity> Users { get; set; }    
     public DbSet<DeletePostJob> DeletionJobs { get; set; }
     public string DbPath { get; }
 
@@ -21,8 +20,7 @@ internal class PostsContext : DbContext
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        
+    {        
         optionsBuilder.UseNpgsql(connString, options => 
         {
             options.EnableRetryOnFailure(5, TimeSpan.FromSeconds(5), null);
@@ -35,18 +33,12 @@ internal class PostsContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<UserEntity>().ToTable("Users", "PostModule");
-        modelBuilder.Entity<PostEntity>().ToTable("Posts", "PostModule");
-        modelBuilder.Entity<ImageEntity>().ToTable("Image", "PostModule");
+        modelBuilder.Entity<PostEntity>().ToTable("Posts", "PostModule");        
         modelBuilder.Entity<DeletePostJob>().ToTable("DeletionJobs", "PostModule");
 
         modelBuilder.Entity<PostEntity>()
             .HasOne(p => p.Creator)
             .WithMany(u => u.Posts)
             .HasForeignKey(p => p.CreatorId);
-
-        modelBuilder.Entity<ImageEntity>()
-            .HasOne(i => i.Post)
-            .WithMany(p => p.Images)
-            .HasForeignKey(i => i.PostId);
     }
 }
