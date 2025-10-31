@@ -12,8 +12,8 @@ using UserModule;
 namespace UserModule.Migrations
 {
     [DbContext(typeof(UserDbContext))]
-    [Migration("20251014082051_initialUserMigration")]
-    partial class initialUserMigration
+    [Migration("20251031110710_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
