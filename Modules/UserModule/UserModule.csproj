@@ -6,26 +6,6 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
-
-	<!---->
-	<!-- we need to hardcode this to avoid the dotnet publish command to create appsettings files from each module.-->
-  <ItemGroup>
-    <Content Remove="appsettings.Development.json" />
-    <Content Remove="appsettings.json" />
-    <Content Remove="appsettings.Test.json" />
-
-    <None Include="appsettings.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-    <None Include="appsettings.Test.json">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="appsettings.Development.json" />
-  </ItemGroup>
-
   <ItemGroup>
 	<PackageReference Include="BarebonesMessageBroker" Version="0.0.11" />	
 	<PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.4" />

@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.Extensions.DependencyInjection;
 using PostsModule.Application.Create;
 using PostsModule.Application.DeletePost;
 using PostsModule.Application.Get;
@@ -14,13 +15,25 @@ public static class ServiceExtensions
         serviceCollection.AddDbContext<PostsContext>(options => options.EnableSensitiveDataLogging(false));
         serviceCollection.AddScoped<IPostsRepository, PostsRepository>();
         serviceCollection.AddTransient<IUserRepository, UserRepository>();
-        serviceCollection.AddTransient<IPresignedUrlGenerator, CloudflarePresign>();
-        
+        serviceCollection.AddTransient<IPresignedUrlGenerator, CloudflarePresign>();        
         serviceCollection.AddTransient<IDeletePostService, DeletePostService>(); 
+
         serviceCollection.AddHostedService<DeletePostsProcessor>();
         serviceCollection.AddTransient<CreatePostCommandConsumer>();
         serviceCollection.AddTransient<DeletionRequestedCommandConsumer>();
         serviceCollection.AddTransient<GetPostCommandConsumer>();
         serviceCollection.AddTransient<GetPostsCommandConsumer>();
+
+        OverridePostModuleSettings(serviceCollection, configuration);
+    }
+
+    private static void OverridePostModuleSettings(this IServiceCollection services, IConfiguration configuration)
+    {
+        var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")?.ToLower();
+        if (env == "development" || env == "test")
+        {
+            services.AddTransient<IPresignedUrlGenerator, PresignedUrlGeneratorMock>();
+        }
+
     }
 }

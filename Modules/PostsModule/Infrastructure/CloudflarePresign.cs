@@ -22,9 +22,9 @@ public class CloudflarePresign  : IPresignedUrlGenerator
     {
         this.logger = logger;
         
-        _accesKEey              = config["PostModule.PreSignUri.accessKey"];
-        _secretAccessKey        = config["PostModule.PreSignUri.secretAccessKey"];
-        _serviceUrl             = config["PostModule.PreSignUri.S3Endpoint"];
+        _accesKEey              = config["PostModule__PreSignUri__accessKey"];
+        _secretAccessKey        = config["PostModule__PreSignUri__secretAccessKey"];
+        _serviceUrl             = config["PostModule__PreSignUri__S3Endpoint"];
 
 
         if (string.IsNullOrEmpty(_serviceUrl)) throw new InvalidOperationException("R2 Key is not set.");
@@ -105,4 +105,18 @@ public class CloudflarePresign  : IPresignedUrlGenerator
     }
 
     private string GenerateFileKey(string directive, int fileName) => $"{directive}/{fileName}";
+}
+internal class PresignedUrlGeneratorMock : IPresignedUrlGenerator
+{
+    public Task<string> GetPresignedThumbnailUrl(string postId)
+    {
+        return Task.FromResult(postId);
+    }
+
+    public async Task<IEnumerable<string>> GetPresignedUris(string dirName, int count)
+    {
+        var uris = Enumerable.Range(0, count).Select(i => i.ToString());
+
+        return await Task.FromResult(uris);
+    }
 }

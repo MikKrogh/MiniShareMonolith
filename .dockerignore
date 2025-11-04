@@ -1,0 +1,13 @@
+# Ignore build outputs
+**/bin/
+**/obj/
+
+# Ignore test projects
+**/*Tests/
+**/*Test*/  # optional if some tests are named differently
+
+# Ignore VS and user files
+.vs/
+*.user
+*.suo
+*.log

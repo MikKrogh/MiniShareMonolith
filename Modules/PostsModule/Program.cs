@@ -1,6 +1,5 @@
 using BarebonesMessageBroker;
 using PostsModule;
-using PostsModule.Presentation;
 
 var builder = WebApplication.CreateBuilder(args);
 

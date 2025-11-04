@@ -1,7 +1,7 @@
 ﻿using PostsModule.Application;
 using PostsModule.Presentation.Endpoints;
 
-namespace PostsModule.Presentation;
+namespace PostsModule;
 
 public static class EndpointsExtensions
 {

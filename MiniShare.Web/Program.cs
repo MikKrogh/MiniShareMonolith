@@ -1,10 +1,9 @@
 using BarebonesMessageBroker;
-using EngagementModule;
 using OpenTelemetry.Metrics;
-using PostsModule;
-using PostsModule.Presentation;
 using Prometheus;
 using UserModule;
+using PostsModule;
+using EngagementModule;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,8 +15,7 @@ builder.Services.AddUserModuleServices(builder.Configuration);
 builder.Services.AddOpenTelemetry()
     .WithMetrics(metrics =>
     {
-        metrics
-            .AddAspNetCoreInstrumentation();
+        metrics.AddAspNetCoreInstrumentation();        
     });
 
 builder.Services.AddSingleton<BarebonesMessageBroker.IBus>(sp =>
@@ -47,7 +45,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.AddPostModuleEndpoints();
-app.AddUserModuleEndpoints();
 app.EngagementModuleEndpointSetup();
+app.AddUserModuleEndpoints();
 
 app.Run();
