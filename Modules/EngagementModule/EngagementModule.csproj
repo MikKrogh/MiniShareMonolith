@@ -18,5 +18,10 @@
     <PackageReference Include="BarebonesMessageBroker" Version="0.0.11" />
 
     </ItemGroup>
+	<ItemGroup>
+		<Content Update="appsettings.Development.json" CopyToPublishDirectory="Never" />
+		<Content Update="appsettings.Test.json" CopyToPublishDirectory="Never" />
+	</ItemGroup>
 
+	
 </Project>

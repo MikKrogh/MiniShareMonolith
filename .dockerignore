@@ -11,3 +11,8 @@
 *.user
 *.suo
 *.log
+appsettings.*
+
+# Ignore Makefile and environment files
+Makefile
+.env

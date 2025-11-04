@@ -25,4 +25,12 @@
 		<PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.12.1" />
 
 	</ItemGroup>
+
+	<ItemGroup>
+		<Content Update="appsettings.Development.json" CopyToPublishDirectory="Never" />
+		<Content Update="appsettings.Test.json" CopyToPublishDirectory="Never" />
+	</ItemGroup>
+	
+
+
 </Project>
