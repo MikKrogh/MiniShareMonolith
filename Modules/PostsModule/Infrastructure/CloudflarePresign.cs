@@ -22,12 +22,13 @@ public class CloudflarePresign  : IPresignedUrlGenerator
     {
         this.logger = logger;
         
-        _accesKEey              = config["PostModule__PreSignUri__accessKey"];
-        _secretAccessKey        = config["PostModule__PreSignUri__secretAccessKey"];
-        _serviceUrl             = config["PostModule__PreSignUri__S3Endpoint"];
+        _accesKEey              = config["PostModule_PreSignUri_accessKey"];
+        _secretAccessKey        = config["PostModule_PreSignUri_secretAccessKey"];
+        _serviceUrl             = config["PostModule_PreSignUri_S3Endpoint"];
 
 
-        if (string.IsNullOrEmpty(_serviceUrl)) throw new InvalidOperationException("R2 Key is not set.");
+        if (string.IsNullOrEmpty(_serviceUrl)) throw new InvalidOperationException("R2 Key " +
+            "is not set.");
         if (string.IsNullOrEmpty(_accesKEey)) throw new InvalidOperationException("Access Key is not set.");
         if (string.IsNullOrEmpty(_secretAccessKey)) throw new InvalidOperationException("Secret Key is not set.");        
     }
