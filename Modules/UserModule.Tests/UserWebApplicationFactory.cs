@@ -8,6 +8,9 @@ namespace UserModule.Tests;
 
 public class UserWebApplicationFactory : WebApplicationFactory<Program>
 {
+    private static bool _databaseInitialized;
+    private static readonly object _lock = new();
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Test");
@@ -24,14 +27,25 @@ public class UserWebApplicationFactory : WebApplicationFactory<Program>
             using (var scope = sp.CreateScope())
             {
                 var dbContext = scope.ServiceProvider.GetRequiredService<UserDbContext>();
-                dbContext.Database.Migrate(); 
+                EnsureDatabaseCreated(dbContext);
             }
 
         });
 
     }
+    private static void EnsureDatabaseCreated(UserDbContext context)
+    {
+        if (_databaseInitialized)
+            return;
+
+        lock (_lock)
+        {
+            context.Database.Migrate();
+            _databaseInitialized = true;
+        }
+    }
 
 
-  
+
 }
 

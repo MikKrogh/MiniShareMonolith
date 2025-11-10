@@ -15,7 +15,7 @@ builder.Services.AddUserModuleServices(builder.Configuration);
 builder.Services.AddOpenTelemetry()
     .WithMetrics(metrics =>
     {
-        metrics.AddAspNetCoreInstrumentation();        
+        metrics.AddAspNetCoreInstrumentation();
     });
 
 builder.Services.AddSingleton<BarebonesMessageBroker.IBus>(sp =>
@@ -36,7 +36,7 @@ app.UseExceptionHandler(errorApp =>
     errorApp.Run(async context =>
     {
         context.Response.StatusCode = 500;
-        context.Response.ContentType = "application/json";      
+        context.Response.ContentType = "application/json";
     });
 });
 
