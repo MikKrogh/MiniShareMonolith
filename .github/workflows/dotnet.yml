@@ -8,17 +8,11 @@ on:
   pull_request:
     branches: [ "master" ]
 
-jobs!:
+jobs:
   build:
 
     runs-on: ubuntu-latest
-    services:
-      azurite:
-        image: mcr.microsoft.com/azure-storage/azurite
-        ports:
-          - 10000:10000  # Blob
-          - 10001:10001  # Queue
-          - 10002:10002  # Table        
+    services:      
       postgres:
         image: postgres:latest
         ports:
