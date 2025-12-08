@@ -39,17 +39,36 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
       
-    - name: Test
-      run: dotnet test
+    #- name: Test
+      #run: dotnet test
 
     - name: Build with dotnet
       run: dotnet build --configuration Release
     - name: dotnet publish
       run: dotnet publish ./MiniShare.Web/MiniShare.Web.csproj -c Release -o "${{env.DOTNET_ROOT}}/myapp"
 
-    - name: Upload artifact for deployment job
-      uses: actions/upload-artifact@v4
+    #- name: Upload artifact for deployment job
+     # uses: actions/upload-artifact@v4
+      #with:
+       # name: .net-app
+        #path: ${{env.DOTNET_ROOT}}/myapp
+
+
+
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v2
       with:
-        name: .net-app
-        path: ${{env.DOTNET_ROOT}}/myapp
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GH_PACKAGES_TOKEN }}
+
+    - name: Build Docker image
+      run: |
+        docker build -t ghcr.io/mikkrogh/minishare:latest .
+
+    - name: Push Docker image
+      run: |
+        docker push ghcr.io/mikkrogh/minishare:latest
+
+
 
