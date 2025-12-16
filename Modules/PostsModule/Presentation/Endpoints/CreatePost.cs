@@ -31,7 +31,7 @@ public class CreatePost
                 {
                     PostId = commandResult.ResultValue.PostId,
                     PresignedUrls = presignedUrls,
-                    ThumnailUrl = presignedthumbnailUrl
+                    ThumbnailUrl = presignedthumbnailUrl
                 });
             }
             logger.LogError("Error creating post by creatorId {0}.", UserId);
@@ -48,7 +48,7 @@ public class SuccessResponse
 {
     public string PostId { get; set; }
     public IEnumerable<string> PresignedUrls { get; set; }
-    public string ThumnailUrl { get; set; }
+    public string ThumbnailUrl { get; set; }
 }
 
 public class PostCreatedMeter
